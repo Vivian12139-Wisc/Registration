@@ -1,0 +1,3420 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考试基本资料 — NATD</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0efec;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #5f5e5a;
+    --text3: #9a9890;
+    --teal: #1D9E75;
+    --teal-bg: #e1f5ee;
+    --teal-text: #0f6e56;
+    --amber-bg: #faeeda;
+    --amber-text: #854f0b;
+    --red-bg: #fcebeb;
+    --red-text: #a32d2d;
+    --info-bg: #e6f1fb;
+    --info-text: #185fa5;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #242422;
+      --bg3: #2c2c2a;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --text: #e8e6e0;
+      --text2: #9a9890;
+      --text3: #5f5e5a;
+      --teal-bg: #04342c;
+      --teal-text: #9fe1cb;
+      --amber-bg: #412402;
+      --amber-text: #fac775;
+      --red-bg: #501313;
+      --red-text: #f7c1c1;
+      --info-bg: #042c53;
+      --info-text: #b5d4f4;
+    }
+  }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg3);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+
+  .sidebar {
+    width: 200px;
+    background: var(--bg2);
+    border-right: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .sidebar-logo .lt { font-size: 13px; font-weight: 600; color: var(--text); }
+  .sidebar-logo .ls { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  .nav-section {
+    padding: 12px 12px 4px;
+    font-size: 10px;
+    color: var(--text3);
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    margin: 1px 4px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: background .1s, color .1s;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--bg); color: var(--text); font-weight: 500; }
+  .nav-item i { font-size: 15px; flex-shrink: 0; }
+
+  /* ── Main area ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+
+  .topbar {
+    height: 46px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .topbar-title { font-size: 14px; font-weight: 500; flex: 1; }
+  .topbar-sub { font-size: 12px; color: var(--text2); }
+
+  .page { padding: 20px; flex: 1; overflow-y: auto; }
+  .page-hidden { display: none !important; }
+
+  /* ── Buttons ── */
+  button {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border2);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    transition: background .1s, opacity .1s;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  button:hover { background: var(--bg2); }
+  button:active { transform: scale(.98); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.primary {
+    background: var(--teal);
+    color: #fff;
+    border-color: var(--teal);
+  }
+  button.primary:hover { opacity: .88; background: var(--teal); }
+  button.danger { color: var(--red-text); border-color: transparent; background: transparent; }
+  button.danger:hover { background: var(--red-bg); }
+
+  /* ── Inputs ── */
+  input[type=text], input[type=number], select, textarea {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border2);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 2px rgba(29,158,117,0.12);
+  }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    border-bottom: 0.5px solid var(--border);
+    background: var(--bg2);
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 12px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg2); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .card-flush { padding: 0; overflow: hidden; }
+
+  .section-title { font-size: 13px; font-weight: 500; margin-bottom: 10px; }
+
+  /* ── Pills ── */
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .pill-ballroom { background: var(--info-bg); color: var(--info-text); }
+  .pill-latin    { background: var(--amber-bg); color: var(--amber-text); }
+  .pill-pro      { background: #f0ebfa; color: #5e2d96; }
+  .pill-other    { background: var(--bg3); color: var(--text2); }
+
+  /* ── Btn-row toolbar ── */
+  .btn-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+  .btn-row .spacer { flex: 1; }
+
+  /* ── Search ── */
+  .search-wrap { position: relative; }
+  .search-wrap i { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
+  .search-wrap input { padding-left: 28px; width: 200px; }
+
+  /* ── Exam code badge ── */
+  .code-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'SF Mono', monospace;
+    background: var(--bg3);
+    color: var(--text2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    letter-spacing: .02em;
+  }
+
+  /* ── Expand row ── */
+  .exam-row { cursor: pointer; }
+  .exam-row .expand-icon { transition: transform .2s; color: var(--text3); }
+  .exam-row.expanded .expand-icon { transform: rotate(90deg); }
+  .grades-row { background: var(--bg2); }
+  .grades-row td { padding: 0; }
+  .grades-row.hidden { display: none; }
+
+  .grade-inner {
+    padding: 10px 16px 10px 44px;
+    border-top: 0.5px solid var(--border);
+  }
+  .grade-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .grade-table th {
+    background: transparent;
+    color: var(--text3);
+    font-size: 10.5px;
+    padding: 4px 8px;
+    border-bottom: 0.5px solid var(--border);
+    font-weight: 500;
+  }
+  .grade-table td {
+    padding: 6px 8px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--text);
+  }
+  .grade-table tr:last-child td { border-bottom: none; }
+  .grade-table tbody tr:hover td { background: var(--bg3); }
+
+  .count-badge {
+    display: inline-block;
+    font-size: 10px;
+    background: var(--bg3);
+    color: var(--text3);
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+  }
+
+  /* ── Add grade inline ── */
+  .add-grade-row td { padding: 8px 8px 8px 0; }
+  .add-grade-fields { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .add-grade-fields input, .add-grade-fields select { width: auto; min-width: 80px; }
+  .add-grade-fields .f-wide { min-width: 140px; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-title i { color: var(--teal); }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--border);
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 11px; font-weight: 500; color: var(--text2); }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .1s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 500; }
+
+  /* ── Stats row ── */
+  .stats-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .stat-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    min-width: 110px;
+  }
+  .stat-label { font-size: 10.5px; color: var(--text3); margin-bottom: 2px; }
+  .stat-val { font-size: 20px; font-weight: 600; color: var(--text); }
+
+  /* ── Empty ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text3);
+    font-size: 13px;
+  }
+  .empty-state i { font-size: 32px; display: block; margin-bottom: 8px; }
+
+
+  /* ── Template tabs ── */
+  .tmpl-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .tmpl-tab {
+    padding: 9px 18px;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color .15s;
+  }
+  .tmpl-tab:hover { color: var(--text); }
+  .tmpl-tab.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 500; }
+
+  /* ── Template doc card list ── */
+  .tmpl-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 8px;
+  }
+  .tmpl-doc-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+  }
+  .tmpl-doc-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .tmpl-doc-desc { flex: 1; font-size: 12px; color: var(--text3); }
+  .tmpl-doc-status {
+    font-size: 12px;
+    width: 90px;
+    flex-shrink: 0;
+  }
+  .tmpl-doc-status.configured { color: var(--teal-text); }
+  .tmpl-doc-status.pending    { color: var(--text3); }
+  .tmpl-doc-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  /* ── Template editor shell ── */
+  .tmpl-config-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .tmpl-config-item { display: flex; align-items: center; gap: 6px; }
+  .tmpl-config-label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .tmpl-config-sep { width: 1px; height: 18px; background: var(--border2); }
+
+  .tmpl-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .tmpl-tb-btn {
+    padding: 3px 6px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text2);
+    min-width: 26px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tmpl-tb-btn:hover { background: var(--bg3); color: var(--text); }
+  .tmpl-tb-select {
+    font-size: 12px;
+    border: 0.5px solid var(--border2);
+    border-radius: 4px;
+    padding: 2px 4px;
+    color: var(--text2);
+    background: var(--bg);
+  }
+  .tmpl-tb-sep { width: 1px; height: 16px; background: var(--border); margin: 0 3px; }
+
+  .tmpl-page-preview {
+    width: 600px;
+    min-height: 700px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,.1);
+    padding: 36px 40px;
+    font-size: 12px;
+    color: #222;
+    box-sizing: border-box;
+  }
+  .tmpl-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+  }
+  .tmpl-preview-table td, .tmpl-preview-table th {
+    border: 1px solid #aaa;
+    padding: 5px 8px;
+    vertical-align: top;
+  }
+  .tmpl-preview-table th {
+    background: #f4f4f4;
+    font-weight: 600;
+    text-align: center;
+  }
+  .tmpl-notice-text {
+    font-size: 11px;
+    line-height: 1.7;
+    color: #333;
+    margin-top: 6px;
+  }
+
+  .tmpl-bottom-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  /* ── Right ref panel ── */
+  .tmpl-ref-panel {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .tmpl-ref-title {
+    padding: 12px 16px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #tmpl-ref-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .tmpl-ref-section {
+    padding: 6px 16px 2px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .tmpl-ref-row {
+    display: flex;
+    align-items: center;
+    padding: 5px 16px;
+    gap: 8px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .tmpl-ref-row:last-child { border-bottom: none; }
+  .tmpl-ref-field { flex: 1; font-size: 12px; color: var(--text2); }
+  .tmpl-ref-code {
+    font-size: 11.5px;
+    color: var(--teal-text);
+    font-family: monospace;
+    background: var(--teal-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: all;
+  }
+
+  /* ── Template card list ── */
+  .tmpl-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .tmpl-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .tmpl-card-icon {
+    width: 36px; height: 36px;
+    background: var(--bg2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text2);
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+  .tmpl-card-body { flex: 1; min-width: 0; }
+  .tmpl-card-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .tmpl-card-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .tmpl-card-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .tmpl-card-actions span {
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text3);
+    transition: color .12s;
+  }
+  .tmpl-card-actions span:hover { color: var(--text); }
+  .tmpl-card-actions span.danger:hover { color: var(--red-text); }
+
+  .tmpl-empty {
+    padding: 32px 0;
+    text-align: center;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  /* ── Status pill ── */
+  .status-arranged { color: var(--teal-text); }
+  .status-pending   { color: var(--text3); }
+
+  /* ── Report styles ── */
+  .rpt-header { display:flex; justify-content:space-between; font-size:10px; margin-bottom:4px; }
+  .rpt-title  { text-align:center; font-size:13px; font-weight:bold; margin:8px 0 14px; }
+  .rpt-table  { width:100%; border-collapse:collapse; font-size:11px; }
+  .rpt-table th { border-bottom:1px solid #333; padding:3px 8px; text-align:left; font-weight:600; }
+  .rpt-table td { padding:3px 8px; }
+  .rpt-table .num { text-align:right; }
+  .rpt-total-row td { border-top:1px dashed #999; font-weight:600; padding-top:6px; }
+  .rpt-applicant-block { margin-bottom:24px; padding-bottom:16px; border-bottom:1px dashed #ccc; }
+  .rpt-applicant-header { display:flex; gap:24px; margin-bottom:6px; font-size:11px; }
+  .rpt-applicant-totals { float:right; font-size:11px; line-height:1.8; text-align:right; margin-bottom:6px; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #rpt-print-area, #rpt-print-area * { visibility: visible; }
+    #rpt-print-area { position:fixed; top:0; left:0; width:100%; background:#fff; padding:40px 48px; }
+  }
+
+  /* ── Dev note ── */
+  .dev-note {
+    background: #1a1a18;
+    color: #c8c6c0;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 11.5px;
+    line-height: 1.7;
+    max-width: 480px;
+  }
+  .dev-note-title {
+    font-weight: 600;
+    color: #f0c060;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+  }
+  .dev-note ul {
+    margin: 0;
+    padding-left: 16px;
+  }
+  .dev-note li { margin-bottom: 2px; }
+
+  /* ── Table footer (count + pagination) ── */
+  .table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-top: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .pagination { display: flex; gap: 4px; align-items: center; }
+  .pagination button {
+    padding: 3px 8px;
+    font-size: 12px;
+    min-width: 28px;
+    border-radius: 5px;
+  }
+  .pagination button.active {
+    background: var(--teal);
+    color: #fff;
+    border-color: var(--teal);
+  }
+  .pagination select { width: auto; padding: 3px 6px; font-size: 12px; }
+
+  /* ── Import bar ── */
+  .import-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--info-bg);
+    border: 0.5px dashed var(--info-text);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    opacity: .9;
+  }
+  .import-icon { font-size: 24px; color: var(--info-text); flex-shrink: 0; }
+  .import-title { font-size: 13px; font-weight: 500; color: var(--info-text); }
+  .import-hint  { font-size: 11px; color: var(--info-text); opacity: .7; margin-top: 2px; }
+  .import-text  { flex: 1; }
+
+  /* ── kv grid fix ── */
+  .card .kv { border-bottom: 0.5px solid var(--border); }
+  .card .kv:nth-last-child(-n+3) { border-bottom: none; }
+
+  /* ── Gender pill ── */
+  .pill-m { background: var(--info-bg); color: var(--info-text); }
+  .pill-f { background: #fce8f3; color: #9c1f6e; }
+
+  /* ── Dance type page specifics ── */
+  .branch-group-header {
+    padding: 6px 12px;
+    background: var(--bg2);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    color: var(--text3);
+    text-transform: uppercase;
+    border-bottom: 0.5px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="lt">NATD</div>
+    </div>
+    <div class="nav-section">基本配置</div>
+    <div class="nav-item active" onclick="showPage('exam', this)">
+      <i class="ti ti-certificate"></i> 专业级别
+    </div>
+    <div class="nav-item" onclick="showPage('dance', this)">
+      <i class="ti ti-music"></i> 舞蹈种类
+    </div>
+    <div class="nav-item" onclick="showPage('centres', this)">
+      <i class="ti ti-building"></i> 考试场地
+    </div>
+    <div class="nav-section">报名管理</div>
+    <div class="nav-item" onclick="showPage('applicants', this)">
+      <i class="ti ti-users"></i> 申请人管理
+    </div>
+    <div class="nav-section">考务操作</div>
+    <div class="nav-item" onclick="showPage('arrange', this)">
+      <i class="ti ti-clipboard-list"></i> 考试编排
+    </div>
+    <div class="nav-item" onclick="showPage('templates', this)">
+      <i class="ti ti-file-text"></i> 考务资料
+    </div>
+    <div class="nav-item" onclick="showPage('results', this)">
+      <i class="ti ti-award"></i> 考生成绩
+    </div>
+    <div class="nav-section">报告</div>
+    <div class="nav-item" onclick="showPage('report-entry', this)">
+      <i class="ti ti-list-numbers"></i> 报名统计
+    </div>
+    <div class="nav-item" onclick="showPage('report-fee', this)">
+      <i class="ti ti-receipt"></i> 费用统计
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- ══════════════════════════════════════
+         PAGE 1: 考试专业及级别
+    ══════════════════════════════════════ -->
+    <div id="page-exam" class="page" style="display:flex;flex-direction:column;">
+
+      <!-- Topbar -->
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">专业级别</div>
+      </div>
+
+      <div class="page" style="flex:1;">
+
+        <!-- Toolbar -->
+        <div class="btn-row">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="专业代码 / 专业名称 / 级别名称" id="exam-search" oninput="filterExams()">
+          </div>
+          <div class="spacer"></div>
+          <button class="primary" onclick="openAddExamModal()">
+            <i class="ti ti-plus"></i> 新增专业
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table id="exam-table">
+              <thead>
+                <tr>
+                  <th style="width:32px;"></th>
+                  <th>专业代码</th>
+                  <th>专业名称</th>
+                  <th style="text-align:center;">级别数</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="exam-tbody">
+                <!-- Rows rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-exam -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE 2: 舞蹈种类
+    ══════════════════════════════════════ -->
+    <div id="page-dance" class="page" style="display:none;flex-direction:column;">
+
+      <!-- Topbar -->
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">舞蹈种类</div>
+      </div>
+
+      <div class="page" style="flex:1;">
+
+        <!-- Toolbar -->
+        <div class="btn-row">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="舞蹈代码 / 舞蹈名称" id="dance-search" oninput="filterDances()">
+          </div>
+          <select id="dance-branch-filter" onchange="filterDances()" style="width:140px;">
+            <option value="">全部分枝</option>
+            <option value="BALLROOM">BALLROOM</option>
+            <option value="LATIN">LATIN</option>
+            </select>
+          <div class="spacer"></div>
+          <button class="primary" onclick="openAddDanceModal()">
+            <i class="ti ti-plus"></i> 新增舞蹈种类
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table id="dance-table">
+              <thead>
+                <tr>
+                  <th style="width:80px;">舞蹈代码</th>
+                  <th>舞蹈名称</th>
+                  <th style="width:140px;">舞蹈分枝</th>
+                  <th style="text-align:right; width:100px;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="dance-tbody">
+                <!-- Rows rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-dance -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE: 考场资料
+    ══════════════════════════════════════ -->
+    <div id="page-centres" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">考试场地</div>
+      </div>
+      <div class="page" style="flex:1;">
+
+        <!-- Toolbar -->
+        <div class="btn-row">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="考场代码 / 考场名称" id="centre-search" oninput="filterCentres()">
+          </div>
+          <div class="spacer"></div>
+          <input type="file" id="centre-csv-input" accept=".csv" style="display:none;" onchange="handleCentreImport(this)">
+          <button onclick="document.getElementById('centre-csv-input').click()">
+            <i class="ti ti-upload"></i> 导入 CSV
+          </button>
+          <button class="primary" onclick="openAddCentreModal()">
+            <i class="ti ti-plus"></i> 新增场地
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table id="centre-table">
+              <thead>
+                <tr>
+                  <th style="width:100px;">考场代码</th>
+                  <th>考场名称</th>
+                  <th style="width:140px;">联络电话</th>
+                  <th>地址</th>
+                  <th style="text-align:right; width:80px;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="centre-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="centre-count-label"></span>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-centres -->
+
+
+    <!-- MODAL: 新增 / 编辑考场 -->
+    <div class="modal-overlay" id="modal-centre">
+      <div class="modal-box" style="max-width:460px;">
+        <div class="modal-title" id="modal-centre-title"><i class="ti ti-building"></i> 新增考场</div>
+        <input type="hidden" id="centre-edit-idx" value="-1">
+        <div class="form-row">
+          <label>考场代码 Centre Code <span style="color:var(--red-text);">*</span></label>
+          <input type="text" id="centre-code" placeholder="e.g. 002">
+        </div>
+        <div class="form-row">
+          <label>考场名称 Centre Name <span style="color:var(--red-text);">*</span></label>
+          <input type="text" id="centre-name" placeholder="考场全称">
+        </div>
+        <div class="form-row">
+          <label>联络电话 Telephone No.</label>
+          <input type="text" id="centre-tel" placeholder="e.g. 2345 6789">
+        </div>
+        <div class="form-row">
+          <label>地址 Address</label>
+          <textarea id="centre-addr" rows="2" placeholder="考场地址" style="resize:vertical;"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal('modal-centre')">取消</button>
+          <button class="primary" onclick="saveCentre()">保存</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+         PAGE 3: 考试编排
+    ══════════════════════════════════════ -->
+    <div id="page-arrange" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">考试编排</div>
+      </div>
+      <div class="page" style="flex:1;">
+
+
+        <!-- Toolbar -->
+        <div class="btn-row">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="考生编号 / 姓名 / 申请人" id="arrange-search" oninput="filterSchedule()">
+          </div>
+          <select id="arrange-venue-filter" onchange="filterSchedule()" style="width:160px;">
+            <option value="">全部考场</option>
+          </select>
+          <select id="arrange-status-filter" onchange="filterSchedule()" style="width:120px;">
+            <option value="">全部状态</option>
+            <option value="arranged">已编排</option>
+            <option value="pending">待编排</option>
+          </select>
+          <div class="spacer"></div>
+          <button onclick="exportScheduleTemplate()">
+            <i class="ti ti-download"></i> 导出模板
+          </button>
+          <input type="file" id="arrange-file-input" accept=".csv" style="display:none;" onchange="handleScheduleImport(this)">
+          <button class="primary" onclick="document.getElementById('arrange-file-input').click()">
+            <i class="ti ti-upload"></i> 上传编排
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>考生编号</th>
+                  <th>考生姓名</th>
+                  <th>申请人</th>
+                  <th>报考专业</th>
+                  <th>级别</th>
+                  <th>考场代码</th>
+                  <th>考试日期</th>
+                  <th>考试时间</th>
+                  <th style="text-align:center;">状态</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="arrange-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="arrange-count-label"></span>
+            <div class="pagination" id="arrange-pagination"></div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-arrange -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE: 考生成绩
+    ══════════════════════════════════════ -->
+    <div id="page-results" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">考生成绩</div>
+      </div>
+      <div class="page" style="flex:1;">
+
+        <!-- Toolbar -->
+        <div class="btn-row">
+          <!-- Filter: 考生姓名 -->
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" id="result-search-name" placeholder="考生姓名" oninput="filterResults()" style="width:120px;">
+          </div>
+          <!-- Filter: 专业 -->
+          <select id="result-filter-exam" onchange="filterResults()" style="width:160px;">
+            <option value="">全部专业</option>
+          </select>
+          <!-- Filter: 级别 -->
+          <select id="result-filter-grade" onchange="filterResults()" style="width:140px;">
+            <option value="">全部级别</option>
+          </select>
+          <!-- Filter: 考场 -->
+          <select id="result-filter-centre" onchange="filterResults()" style="width:140px;">
+            <option value="">全部考场</option>
+          </select>
+          <!-- Filter: 成绩 -->
+          <select id="result-filter-result" onchange="filterResults()" style="width:120px;">
+            <option value="">全部成绩</option>
+            <option value="HC">Highly Commended</option>
+            <option value="C">Commended</option>
+            <option value="P">Pass</option>
+            <option value="F">Fail</option>
+            <option value="ABS">Absent</option>
+          </select>
+          <div class="spacer"></div>
+          <button onclick="exportResultTemplate()"><i class="ti ti-download"></i> 导出模板</button>
+          <input type="file" id="result-file-input" accept=".xlsx,.csv" style="display:none;" onchange="handleResultImport(this)">
+          <button class="primary" onclick="document.getElementById('result-file-input').click()">
+            <i class="ti ti-upload"></i> 导入成绩
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>申请人编号</th>
+                  <th>组别</th>
+                  <th>考生姓名</th>
+                  <th>专业</th>
+                  <th>级别</th>
+                  <th>考场代码</th>
+                  <th>考试日期</th>
+                  <th>考试时间</th>
+                  <th style="text-align:center;">成绩</th>
+                </tr>
+              </thead>
+              <tbody id="result-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="result-count-label"></span>
+            <div class="pagination" id="result-pagination"></div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-results -->
+
+
+    <!-- ══════════════════════════════════════
+         MODAL: 成绩导入结果
+    ══════════════════════════════════════ -->
+    <div class="modal-overlay" id="modal-result-import">
+      <div class="modal-box" style="max-width:440px;">
+        <div class="modal-title"><i class="ti ti-file-check"></i> 导入结果</div>
+        <div id="result-import-msg" style="font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;"></div>
+        <div class="modal-footer">
+          <button class="primary" onclick="closeModal('modal-result-import')">确定</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+         PAGE: 考务资料 — 卡片列表
+    ══════════════════════════════════════ -->
+    <div id="page-templates" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">考务资料</div>
+      </div>
+      <div class="page" style="flex:1;">
+
+        <!-- 准考证 -->
+        <div class="tmpl-section-label">准考证</div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-id-badge-2"></i> 准考证</div>
+          <div class="tmpl-doc-desc">每位考生一张，含考试地点、日期及时间</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('admission','准考证')">模板配置</button>
+            <button class="primary" onclick="openExportModal('admission')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+
+        <!-- 日程表 -->
+        <div class="tmpl-section-label" style="margin-top:20px;">日程表</div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-calendar-event"></i> 考官日程表</div>
+          <div class="tmpl-doc-desc">Day Sheet for Examiner，含成绩填写栏</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('daysheet-ex','考官日程表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('daysheet-ex')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-calendar-event"></i> 监考员日程表</div>
+          <div class="tmpl-doc-desc">Day Sheet for Waiting Room Supervisor，含出席记录栏</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('daysheet-sv','监考员日程表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('daysheet-sv')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+
+        <!-- 评分表 -->
+        <div class="tmpl-section-label" style="margin-top:20px;">评分表</div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余标准舞评分表</div>
+          <div class="tmpl-doc-desc">Amateur Ballroom — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-ballroom','业余标准舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-ballroom')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余拉丁舞评分表</div>
+          <div class="tmpl-doc-desc">Amateur Latin — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-latin','业余拉丁舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-latin')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余牛仔线舞评分表</div>
+          <div class="tmpl-doc-desc">Amateur Country &amp; Western Line Dancing — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-country','业余牛仔线舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-country')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余流行社交舞评分表</div>
+          <div class="tmpl-doc-desc">Amateur Popular Social Dance Test — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-social','业余流行社交舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-social')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 彩虹奖评分表</div>
+          <div class="tmpl-doc-desc">Rainbow — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-rainbow','彩虹奖评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-rainbow')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 职业标准舞评分表</div>
+          <div class="tmpl-doc-desc">Professional Ballroom — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-pro-ballroom','职业标准舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-pro-ballroom')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+        <div class="tmpl-doc-card">
+          <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 职业拉丁舞评分表</div>
+          <div class="tmpl-doc-desc">Professional Latin — Examiner's Report Form</div>
+
+          <div class="tmpl-doc-actions">
+            <button onclick="openTmplEditor('ms-pro-latin','职业拉丁舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-pro-latin')"><i class="ti ti-printer"></i> 导出</button>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-templates -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE: 模板编辑器 (sub-page)
+    ══════════════════════════════════════ -->
+    <div id="page-template-editor" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <!-- Topbar with back button -->
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <span onclick="closeTmplEditor()" style="cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;margin-right:16px;">
+          <i class="ti ti-arrow-left"></i> 返回考务资料
+        </span>
+        <div class="topbar-title" id="tmpl-editor-title">模板配置</div>
+      </div>
+
+      <!-- Editor shell — full height, two columns -->
+      <div style="flex:1;display:flex;overflow:hidden;">
+
+        <!-- Left: editor area -->
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);">
+
+          <!-- Config bar -->
+          <div class="tmpl-config-bar">
+            <div class="tmpl-config-item">
+              <span class="tmpl-config-label">模板类型</span>
+              <select style="width:120px;"><option>竖向模板</option><option>横向模板</option></select>
+            </div>
+          </div>
+
+          <!-- Formatting toolbar -->
+          <div class="tmpl-toolbar">
+            <select class="tmpl-tb-select" style="width:72px;"><option>段落</option><option>标题1</option><option>标题2</option></select>
+            <select class="tmpl-tb-select" style="width:56px;"><option>14px</option><option>12px</option><option>16px</option><option>18px</option></select>
+            <select class="tmpl-tb-select" style="width:80px;"><option>Verdana</option><option>Arial</option><option>宋体</option></select>
+            <div class="tmpl-tb-sep"></div>
+            <button class="tmpl-tb-btn" title="粗体"><b>B</b></button>
+            <button class="tmpl-tb-btn" title="斜体"><i>I</i></button>
+            <button class="tmpl-tb-btn" title="下划线"><u>U</u></button>
+            <button class="tmpl-tb-btn" title="删除线"><s>S</s></button>
+            <div class="tmpl-tb-sep"></div>
+            <button class="tmpl-tb-btn" title="插入表格"><i class="ti ti-table"></i></button>
+            <div class="tmpl-tb-sep"></div>
+            <button class="tmpl-tb-btn" title="左对齐"><i class="ti ti-align-left"></i></button>
+            <button class="tmpl-tb-btn" title="居中"><i class="ti ti-align-center"></i></button>
+            <button class="tmpl-tb-btn" title="右对齐"><i class="ti ti-align-right"></i></button>
+            <button class="tmpl-tb-btn" title="两端对齐"><i class="ti ti-align-justified"></i></button>
+            <div class="tmpl-tb-sep"></div>
+            <button class="tmpl-tb-btn" title="撤销"><i class="ti ti-arrow-back-up"></i></button>
+            <button class="tmpl-tb-btn" title="重做"><i class="ti ti-arrow-forward-up"></i></button>
+            <div class="tmpl-tb-sep"></div>
+            <button class="tmpl-tb-btn" title="插入图片"><i class="ti ti-photo"></i></button>
+            <button class="tmpl-tb-btn" title="全屏"><i class="ti ti-maximize"></i></button>
+          </div>
+
+          <!-- Editable content area -->
+          <div style="flex:1;overflow-y:auto;background:#e8e8e8;padding:24px;display:flex;justify-content:center;">
+            <div class="tmpl-page-preview" id="tmpl-editor-content" contenteditable="true" style="outline:none;cursor:text;"></div>
+          </div>
+
+          <!-- Bottom bar -->
+          <div class="tmpl-bottom-bar">
+            <div style="flex:1;"></div>
+            <button><i class="ti ti-eye"></i> 预览</button>
+            <button class="primary" onclick="saveTmpl()"><i class="ti ti-device-floppy"></i> 保存模板</button>
+          </div>
+        </div>
+
+        <!-- Right: field reference panel -->
+        <div class="tmpl-ref-panel">
+          <div class="tmpl-ref-title">
+            字段对应表
+            <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;">点击代码可复制</span>
+          </div>
+          <div id="tmpl-ref-body"></div>
+        </div>
+
+      </div>
+    </div><!-- /page-template-editor -->
+
+
+    <!-- ══════════════════════════════════════
+         MODAL: 保存模板成功
+    ══════════════════════════════════════ -->
+    <div class="modal-overlay" id="modal-save-tmpl-ok">
+      <div class="modal-box" style="max-width:380px;">
+        <div class="modal-title" style="justify-content:space-between;">
+          提示
+          <span onclick="closeModal('modal-save-tmpl-ok')" style="cursor:pointer;color:var(--text3);font-size:16px;font-weight:400;">×</span>
+        </div>
+        <div style="font-size:13px;color:var(--text2);padding:8px 0 24px;"><span id="save-tmpl-msg">保存模板成功</span></div>
+        <div class="modal-footer" style="padding-top:0;">
+          <button class="primary" onclick="closeModal('modal-save-tmpl-ok')">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         MODAL: 导出文件
+    ══════════════════════════════════════ -->
+    <div class="modal-overlay" id="modal-export-doc">
+      <div class="modal-box" style="max-width:420px;">
+        <div class="modal-title" id="export-doc-title"><i class="ti ti-printer"></i> 导出</div>
+        <div id="export-doc-body" style="display:flex;flex-direction:column;gap:14px;"></div>
+        <div class="modal-footer">
+          <button onclick="closeModal('modal-export-doc')">取消</button>
+          <button class="primary" id="export-doc-confirm-btn"><i class="ti ti-download"></i> 确认导出</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+         PAGE: 报名统计 (Entry Statistics NATD215)
+    ══════════════════════════════════════ -->
+    <div id="page-report-entry" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">报名统计</div>
+      </div>
+      <div class="page" style="flex:1;">
+        <div class="btn-row" style="margin-bottom:12px;">
+          <div style="flex:1;"></div>
+          <button class="primary" onclick="exportReportPDF('entry')"><i class="ti ti-file-type-pdf"></i> 导出 PDF</button>
+        </div>
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table id="report-entry-table">
+              <thead>
+                <tr>
+                  <th>Exam Code</th>
+                  <th>Grade Code</th>
+                  <th style="text-align:right;">No of Candidates</th>
+                </tr>
+              </thead>
+              <tbody id="report-entry-tbody">
+                <tr><td colspan="3" style="color:var(--text3);text-align:center;padding:32px;">暂无资料</td></tr>
+              </tbody>
+              <tfoot id="report-entry-tfoot"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /page-report-entry -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE: 费用统计 (Fee Statement NATD210)
+    ══════════════════════════════════════ -->
+    <div id="page-report-fee" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">费用统计</div>
+      </div>
+      <div class="page" style="flex:1;">
+        <div class="btn-row" style="margin-bottom:12px;">
+          <div style="flex:1;"></div>
+          <button class="primary" onclick="exportReportPDF('fee')"><i class="ti ti-file-type-pdf"></i> 导出 PDF</button>
+        </div>
+        <div id="report-fee-container">
+          <div style="color:var(--text3);text-align:center;padding:32px;">暂无资料</div>
+        </div>
+      </div>
+    </div><!-- /page-report-fee -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE 4: 申请人列表
+    ══════════════════════════════════════ -->
+    <div id="page-applicants" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <div class="topbar-title">申请人管理</div>
+      </div>
+      <div class="page" style="flex:1;">
+
+        <!-- Toolbar -->
+        <div class="btn-row">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="申请人编号 / 姓名 / 电话" id="applicant-search" oninput="filterApplicants()">
+          </div>
+          <div class="spacer"></div>
+          <input type="file" id="csv-file-input" accept=".csv,.xlsx" style="display:none;" onchange="handleCsvImport(this)">
+          <button class="primary" onclick="document.getElementById('csv-file-input').click()">
+            <i class="ti ti-upload"></i> 导入 CSV / Excel
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>申请人编号</th>
+                  <th>姓名</th>
+                  <th>联络电话</th>
+                  <th>联络电邮</th>
+                  <th style="text-align:center;">考生数</th>
+                  <th style="text-align:right;">已付费用</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="applicant-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="applicant-count-label"></span>
+            <div class="pagination" id="applicant-pagination"></div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-applicants -->
+
+
+    <!-- ══════════════════════════════════════
+         PAGE 4: 申请人详情
+    ══════════════════════════════════════ -->
+    <div id="page-applicant-detail" class="page" style="display:none;flex-direction:column;">
+      <div class="topbar" style="position:sticky;top:0;z-index:10;">
+        <button onclick="showPage('applicants', null)" style="border:none;background:none;padding:4px 6px;color:var(--text2);">
+          <i class="ti ti-arrow-left"></i>
+        </button>
+        <div class="topbar-title" id="detail-title">申请人详情</div>
+        <span class="topbar-sub" id="detail-sub"></span>
+      </div>
+      <div class="page" style="flex:1;">
+
+        <!-- Applicant info card -->
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:12px;">申请人资料</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;">
+            <div class="kv"><span class="kv-k">申请人编号</span><span class="kv-v" id="d-id"></span></div>
+            <div class="kv"><span class="kv-k">姓名</span><span class="kv-v" id="d-name"></span></div>
+            <div class="kv"><span class="kv-k">联络电话</span><span class="kv-v" id="d-phone"></span></div>
+            <div class="kv"><span class="kv-k">联络电邮</span><span class="kv-v" id="d-email"></span></div>
+            <div class="kv" style="grid-column:span 2;"><span class="kv-k">联络地址</span><span class="kv-v" id="d-address"></span></div>
+            <div class="kv"><span class="kv-k">已付费用总额</span><span class="kv-v" id="d-paid" style="font-weight:600;"></span></div>
+          </div>
+        </div>
+
+        <!-- Candidates -->
+        <div class="btn-row" style="margin-bottom:12px;">
+          <div class="section-title" style="margin:0; flex-shrink:0;">考生列表</div>
+          <div class="search-wrap" style="margin-left:12px;">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="考生姓名" id="candidate-search" oninput="filterCandidates()" style="width:160px;">
+          </div>
+        </div>
+
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>考生编号</th>
+                  <th>姓名</th>
+                  <th style="width:50px;">性别</th>
+                  <th>证件号码</th>
+                  <th>出生日期</th>
+                  <th>组别编号</th>
+                  <th>报考专业</th>
+                  <th>级别</th>
+                  <th>舞蹈种类</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="candidate-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="candidate-count-label"></span>
+            <div class="pagination" id="candidate-pagination"></div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-applicant-detail -->
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+
+<!-- ══════════════════════════════════════
+     MODAL: 新增考试专业
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-add-exam">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-certificate"></i> 新增考试专业</div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">专业代码 *</label>
+        <input type="text" id="new-exam-code" placeholder="如 ADB" style="text-transform:uppercase;">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">专业名称 *</label>
+        <input type="text" id="new-exam-name" placeholder="如 Adults - Ballroom Branch">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-add-exam')">取消</button>
+      <button class="primary" onclick="confirmAddExam()"><i class="ti ti-check"></i> 确认新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: 新增考试级别
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-add-grade">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-award"></i> 新增考试级别</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;">
+      专业：<strong id="modal-grade-exam-label"></strong>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">级别代码 *</label>
+        <input type="text" id="new-grade-code" placeholder="如 ADBGC" style="text-transform:uppercase;">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">级别名称 *</label>
+        <input type="text" id="new-grade-name" placeholder="如 Gold Cross">
+      </div>
+      <div class="form-group">
+        <label class="form-label">考试费 (HKD)</label>
+        <input type="number" id="new-grade-fee" placeholder="如 1890">
+      </div>
+      <div class="form-group">
+        <label class="form-label">场地附加费 (HKD)</label>
+        <input type="number" id="new-grade-surcharge" placeholder="如 370">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-add-grade')">取消</button>
+      <button class="primary" onclick="confirmAddGrade()"><i class="ti ti-check"></i> 确认新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: 新增舞蹈种类
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-add-dance">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-music"></i> 新增舞蹈种类</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">舞蹈代码 *</label>
+        <input type="text" id="new-dance-code" placeholder="如 15">
+      </div>
+      <div class="form-group">
+        <label class="form-label">舞蹈分枝 *</label>
+        <select id="new-dance-branch">
+          <option value="">请选择…</option>
+          <option value="BALLROOM">BALLROOM</option>
+          <option value="LATIN">LATIN</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">舞蹈名称 *</label>
+        <input type="text" id="new-dance-name" placeholder="如 Waltz">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-add-dance')">取消</button>
+      <button class="primary" onclick="confirmAddDance()"><i class="ti ti-check"></i> 确认新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: 编辑排程
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-edit-arrange">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-title"><i class="ti ti-calendar-event"></i> 编辑排程</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;" id="es-candidate-label"></div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">考场代码</label>
+        <select id="es-venue" style="width:100%;">
+          <option value="">— 请选择考场 —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">考试日期</label>
+        <input type="text" id="es-date" placeholder="YYYY-MM-DD">
+      </div>
+      <div class="form-group">
+        <label class="form-label">考试时间</label>
+        <input type="text" id="es-time" placeholder="如 09:30">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-edit-arrange')">取消</button>
+      <button class="primary" onclick="confirmEditSchedule()"><i class="ti ti-check"></i> 确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: 导入结果
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-import-result">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-title"><i class="ti ti-file-check"></i> 导入结果</div>
+    <div id="import-result-body"></div>
+    <div class="modal-footer">
+      <button class="primary" onclick="closeModal('modal-import-result')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: 确认删除
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-confirm-delete">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-title" style="color:var(--red-text)"><i class="ti ti-trash"></i> 确认删除</div>
+    <div style="font-size:13px;color:var(--text2);" id="delete-confirm-text"></div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-confirm-delete')">取消</button>
+      <button style="background:var(--red-bg);color:var(--red-text);border-color:transparent;" id="delete-confirm-btn">
+        <i class="ti ti-trash"></i> 删除
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+
+const exams = [
+  { code: 'AD',   name: 'Adults - One Dance Tests',          seq: null, grades: [
+    { code:'ADOD', name:'One Dance Test',       fee:1510, surcharge:310, ageMin:16, ageMax:99, time:5, seq:null }
+  ]},
+  { code: 'ADB',  name: 'Adults - Ballroom Branch',          seq: null, grades: [
+    { code:'ADBGC', name:'Gold Cross',          fee:1890, surcharge:370, ageMin:16, ageMax:99, time:15, seq:4 },
+    { code:'ADBGB', name:'Gold Bar',            fee:2010, surcharge:370, ageMin:16, ageMax:99, time:15, seq:5 },
+    { code:'ADBNA', name:'National Award',      fee:2160, surcharge:370, ageMin:16, ageMax:99, time:15, seq:6 },
+    { code:'ADBA2', name:'National Award 2',    fee:2280, surcharge:370, ageMin:16, ageMax:99, time:15, seq:7 },
+    { code:'ADBA3', name:'National Award 3',    fee:2420, surcharge:370, ageMin:16, ageMax:99, time:15, seq:8 },
+    { code:'ADBPA', name:"Premier Award",       fee:2540, surcharge:370, ageMin:16, ageMax:99, time:15, seq:9 },
+    { code:'ADBDA', name:"President's Award",   fee:2640, surcharge:370, ageMin:16, ageMax:99, time:15, seq:10 },
+    { code:'ADBBR', name:'Bronze',              fee:1540, surcharge:310, ageMin:16, ageMax:99, time:5,  seq:null },
+    { code:'ADBSI', name:'Silver',              fee:1630, surcharge:340, ageMin:16, ageMax:99, time:10, seq:null },
+    { code:'ADBGO', name:'Gold',                fee:1760, surcharge:340, ageMin:16, ageMax:99, time:15, seq:null },
+  ]},
+  { code: 'ADL',  name: 'Adults - Latin Branch',             seq: null, grades: [
+    { code:'ADLA2', name:'National Award 2',    fee:2280, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLNA', name:'National Award',      fee:2160, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLPA', name:'Premier Award',       fee:2540, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLGO', name:'Gold',                fee:1760, surcharge:340, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLSI', name:'Silver',              fee:1630, surcharge:340, ageMin:16, ageMax:99, time:10, seq:null },
+    { code:'ADLBR', name:'Bronze',              fee:1540, surcharge:310, ageMin:16, ageMax:99, time:5,  seq:null },
+    { code:'ADLGB', name:'Gold Bar',            fee:2010, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLGC', name:'Gold Cross',          fee:1890, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLA3', name:'National Award 3',    fee:2420, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+    { code:'ADLDA', name:"President's Award",   fee:2640, surcharge:370, ageMin:16, ageMax:99, time:15, seq:null },
+  ]},
+  { code: 'CWLD', name: 'Country & Western Line Dancing',    seq: null, grades: [
+    { code:'CPA',  name:'Premier Award',        fee:2540, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CSI',  name:'Silver',               fee:1630, surcharge:340, ageMin:0,  ageMax:99, time:10, seq:null },
+    { code:'CDA',  name:"President's Award",    fee:2640, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CBR',  name:'Bronze',               fee:1540, surcharge:310, ageMin:0,  ageMax:99, time:5,  seq:null },
+    { code:'CGB',  name:'Gold Bar',             fee:2010, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CGC',  name:'Gold Cross',           fee:1890, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CGO',  name:'Gold',                 fee:1760, surcharge:340, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CNA',  name:'National Award',       fee:2160, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CNA2', name:'National Award 2',     fee:2280, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'CNA3', name:'National Award 3',     fee:2420, surcharge:370, ageMin:0,  ageMax:99, time:15, seq:null },
+    { code:'COD',  name:'One Dance Test',       fee:1510, surcharge:310, ageMin:0,  ageMax:99, time:5,  seq:null },
+  ]},
+  { code: 'GB',   name: 'Pre Bronze 1 & 2 - Ballroom',       seq: null, grades: [
+    { code:'GB1',  name:'PRE BRONZE 1',         fee:1460, surcharge:310, ageMin:8,  ageMax:99, time:5,  seq:null },
+    { code:'GB2',  name:'PRE BRONZE 2',         fee:1460, surcharge:310, ageMin:8,  ageMax:99, time:10, seq:null },
+  ]},
+  { code: 'GL',   name: 'Pre Bronze 1 & 2 - Latin',          seq: null, grades: [
+    { code:'GL1',  name:'PRE BRONZE 1',         fee:1460, surcharge:310, ageMin:8,  ageMax:99, time:5,  seq:null },
+    { code:'GL2',  name:'PRE BRONZE 2',         fee:1460, surcharge:310, ageMin:8,  ageMax:99, time:10, seq:null },
+  ]},
+  { code: 'JN',   name: 'Juniors - One Dance Tests',         seq: null, grades: [
+    { code:'JNOD', name:'One Dance Test',       fee:1510, surcharge:310, ageMin:12, ageMax:16, time:5,  seq:null },
+  ]},
+  { code: 'JNB',  name: 'Juniors - Ballroom Branch',         seq: null, grades: [
+    { code:'JNBDA', name:"President's Award",   fee:2640, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBA2', name:'National Award 2',    fee:2280, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBNA', name:'National Award',      fee:2160, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBGC', name:'Gold Cross',          fee:1890, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBSI', name:'Silver',              fee:1630, surcharge:340, ageMin:12, ageMax:16, time:10, seq:null },
+    { code:'JNBBR', name:'Bronze',              fee:1540, surcharge:310, ageMin:12, ageMax:16, time:5,  seq:null },
+    { code:'JNBGB', name:'Gold Bar',            fee:2010, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBPA', name:'Premier Award',       fee:2540, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBA3', name:'National Award 3',    fee:2420, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNBGO', name:'Gold',                fee:1760, surcharge:340, ageMin:12, ageMax:16, time:15, seq:null },
+  ]},
+  { code: 'JNL',  name: 'Juniors - Latin Branch',            seq: null, grades: [
+    { code:'JNLNA', name:'National Award',      fee:2160, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLA3', name:'National Award 3',    fee:2420, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLA2', name:'National Award 2',    fee:2280, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLPA', name:'Premier Award',       fee:2540, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLDA', name:"President's Award",   fee:2640, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLSI', name:'Silver',              fee:1630, surcharge:340, ageMin:12, ageMax:16, time:10, seq:null },
+    { code:'JNLGB', name:'Gold Bar',            fee:2010, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLBR', name:'Bronze',              fee:1540, surcharge:310, ageMin:12, ageMax:16, time:5,  seq:null },
+    { code:'JNLGC', name:'Gold Cross',          fee:1890, surcharge:370, ageMin:12, ageMax:16, time:15, seq:null },
+    { code:'JNLGO', name:'Gold',                fee:1760, surcharge:340, ageMin:12, ageMax:16, time:15, seq:null },
+  ]},
+  { code: 'JV',   name: 'Juveniles - One Dance Tests',       seq: null, grades: [
+    { code:'JVOD', name:'One Dance Test',       fee:1510, surcharge:310, ageMin:0,  ageMax:11, time:5,  seq:null },
+  ]},
+  { code: 'JVB',  name: 'Juveniles - Ballroom Branch',       seq: null, grades: [
+    { code:'JVBGB', name:'Gold Bar',            fee:2010, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBGO', name:'Gold',                fee:1760, surcharge:340, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBSI', name:'Silver',              fee:1630, surcharge:340, ageMin:0,  ageMax:11, time:10, seq:null },
+    { code:'JVBBR', name:'Bronze',              fee:1540, surcharge:310, ageMin:0,  ageMax:11, time:5,  seq:null },
+    { code:'JVBA3', name:'National Award 3',    fee:2420, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBA2', name:'National Award 2',    fee:2280, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBDA', name:"President's Award",   fee:2640, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBPA', name:'Premier Award',       fee:2540, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBNA', name:'National Award',      fee:2160, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVBGC', name:'Gold Cross',          fee:1890, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+  ]},
+  { code: 'JVL',  name: 'Juveniles - Latin Branch',          seq: null, grades: [
+    { code:'JVLGC', name:'Gold Cross',          fee:1890, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLGO', name:'Gold',                fee:1760, surcharge:340, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLSI', name:'Silver',              fee:1630, surcharge:340, ageMin:0,  ageMax:11, time:10, seq:null },
+    { code:'JVLBR', name:'Bronze',              fee:1540, surcharge:310, ageMin:0,  ageMax:11, time:5,  seq:null },
+    { code:'JVLGB', name:'Gold Bar',            fee:2010, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLDA', name:"President's Award",   fee:2640, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLA2', name:'National Award 2',    fee:2280, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLA3', name:'National Award 3',    fee:2420, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLNA', name:'National Award',      fee:2160, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+    { code:'JVLPA', name:'Premier Award',       fee:2540, surcharge:370, ageMin:0,  ageMax:11, time:15, seq:null },
+  ]},
+  { code: 'PB',   name: 'Professional Ballroom Branch',      seq: null, grades: [
+    { code:'BPDD1', name:'Professional Dancing Diploma 1', fee:6570,  surcharge:790, ageMin:0,  ageMax:99, time:30, seq:null },
+    { code:'BFEL',  name:'Fellowship',                     fee:10620, surcharge:920, ageMin:24, ageMax:99, time:75, seq:null },
+    { code:'BLIC',  name:'Licentiate',                     fee:8510,  surcharge:880, ageMin:21, ageMax:99, time:60, seq:null },
+    { code:'BASS',  name:'Associate',                      fee:6570,  surcharge:790, ageMin:17, ageMax:99, time:45, seq:null },
+    { code:'BPDD3', name:'Professional Dancing Diploma 3', fee:10620, surcharge:920, ageMin:0,  ageMax:99, time:30, seq:null },
+    { code:'BPRS',  name:'Preliminary Student',            fee:3570,  surcharge:710, ageMin:16, ageMax:99, time:20, seq:null },
+    { code:'BSTT',  name:'Student Certificate',            fee:4290,  surcharge:710, ageMin:16, ageMax:99, time:30, seq:null },
+    { code:'BPDD2', name:'Professional Dancing Diploma 2', fee:8510,  surcharge:880, ageMin:0,  ageMax:99, time:30, seq:null },
+  ]},
+  { code: 'PC',   name: 'Country & Western Line Dancing (Prof)', seq: null, grades: [
+    { code:'PCTC', name:'Teaching Certificate',            fee:6570,  surcharge:710, ageMin:0,  ageMax:99, time:45, seq:null },
+  ]},
+  { code: 'PL',   name: 'Professional Latin Branch',         seq: null, grades: [
+    { code:'LPRS',  name:'Preliminary Student',            fee:3570,  surcharge:710, ageMin:16, ageMax:99, time:20, seq:null },
+    { code:'LFEL',  name:'Fellowship',                     fee:10620, surcharge:920, ageMin:24, ageMax:99, time:75, seq:null },
+    { code:'LPDD3', name:'Professional Dancing Diploma 3', fee:10620, surcharge:920, ageMin:0,  ageMax:99, time:30, seq:null },
+    { code:'LPDD2', name:'Professional Dancing Diploma 2', fee:8510,  surcharge:880, ageMin:0,  ageMax:99, time:30, seq:null },
+    { code:'LPDD1', name:'Professional Dancing Diploma 1', fee:6570,  surcharge:790, ageMin:0,  ageMax:99, time:30, seq:null },
+    { code:'LSTT',  name:'Student Certificate',            fee:4290,  surcharge:710, ageMin:16, ageMax:99, time:30, seq:null },
+    { code:'LLIC',  name:'Licentiate',                     fee:8510,  surcharge:880, ageMin:21, ageMax:99, time:60, seq:null },
+    { code:'LASS',  name:'Associate',                      fee:6570,  surcharge:790, ageMin:17, ageMax:99, time:45, seq:null },
+  ]},
+  { code: 'PSDT', name: 'Popular Social Dance Test',         seq: null, grades: [
+    { code:'P3', name:'Part 3', fee:1460, surcharge:310, ageMin:8, ageMax:99, time:15, seq:null },
+    { code:'P2', name:'Part 2', fee:1460, surcharge:310, ageMin:8, ageMax:99, time:10, seq:null },
+    { code:'P1', name:'Part 1', fee:1460, surcharge:310, ageMin:8, ageMax:99, time:5,  seq:null },
+  ]},
+  { code: 'PV',   name: 'Professional Viennese Waltz',       seq: null, grades: [
+    { code:'VASS', name:'Associate',  fee:4240, surcharge:790, ageMin:17, ageMax:99, time:20, seq:null },
+    { code:'VLIC', name:'Licentiate', fee:5870, surcharge:920, ageMin:21, ageMax:99, time:30, seq:null },
+    { code:'VFEL', name:'Fellowship', fee:4950, surcharge:880, ageMin:24, ageMax:99, time:30, seq:null },
+  ]},
+  { code: 'RA1',  name: 'Rainbow Awards 1',                  seq: null, grades: [
+    { code:'VIO', name:'Violet', fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+    { code:'IND', name:'Indigo', fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+    { code:'BLU', name:'Blue',   fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+    { code:'RED', name:'Red',    fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+    { code:'YEL', name:'Yellow', fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+    { code:'ORA', name:'Orange', fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+    { code:'GRE', name:'Green',  fee:1350, surcharge:310, ageMin:0, ageMax:8, time:5, seq:null },
+  ]},
+];
+
+const dances = [
+  { code:'01', name:'Waltz',               branch:'BALLROOM' },
+  { code:'02', name:'Tango',               branch:'BALLROOM' },
+  { code:'03', name:'Foxtrot',             branch:'BALLROOM' },
+  { code:'04', name:'Quickstep',           branch:'BALLROOM' },
+  { code:'05', name:'Viennese Waltz',      branch:'BALLROOM' },
+  { code:'06', name:'Slow Social Foxtrot', branch:'BALLROOM' },
+  { code:'07', name:'Quick Social Foxtrot',branch:'BALLROOM' },
+  { code:'08', name:'Rhythmic Dance',      branch:'BALLROOM' },
+  { code:'09', name:'Rumba',               branch:'LATIN'    },
+  { code:'10', name:'Cha Cha Cha',         branch:'LATIN'    },
+  { code:'11', name:'Jive',                branch:'LATIN'    },
+  { code:'12', name:'Samba',               branch:'LATIN'    },
+  { code:'13', name:'Paso Doble',          branch:'LATIN'    },
+  { code:'14', name:'Rhythmic Dance',      branch:'LATIN'    },
+];
+
+// ══════════════════════════════════════
+// CENTRES DATA
+// ══════════════════════════════════════
+let centres = [
+  { code:'001', name:'香港考試及評核局大樓',         tel:'2894 5109', addr:'香港鰂魚涌英皇道382號' },
+  { code:'002', name:'九龍塘教育服務中心',            tel:'2336 6823', addr:'九龍九龍塘沙福道19號' },
+  { code:'003', name:'香港大會堂低座演奏廳',          tel:'2921 2840', addr:'香港中區愛丁堡廣場5號' },
+  { code:'004', name:'九龍灣國際展貿中心',            tel:'2629 3389', addr:'九龍灣宏照道1號' },
+  { code:'005', name:'沙田大會堂文娛廳',              tel:'2694 2509', addr:'新界沙田源禾路1號' },
+  { code:'006', name:'荃灣大會堂演奏廳',              tel:'2414 0144', addr:'新界荃灣市中心海壩街72號' },
+  { code:'007', name:'屯門大會堂文娛廳',              tel:'2450 0329', addr:'新界屯門屯喜路3號' },
+];   // { code, name, tel, addr }
+let filteredCentres = [];
+
+function filterCentres() {
+  const q = (document.getElementById('centre-search')?.value || '').trim().toLowerCase();
+  filteredCentres = centres.filter(c =>
+    !q || c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
+  );
+  renderCentres();
+}
+
+function renderCentres() {
+  const tbody = document.getElementById('centre-tbody');
+  if (!tbody) return;
+  if (!filteredCentres.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-building-off"></i>${centres.length ? '无符合条件的记录' : '暂无考场资料，请新增或导入'}</div></td></tr>`;
+    document.getElementById('centre-count-label').textContent = '';
+    return;
+  }
+  tbody.innerHTML = filteredCentres.map((c, i) => {
+    const idx = centres.indexOf(c);
+    return `<tr>
+      <td><b>${c.code}</b></td>
+      <td>${c.name}</td>
+      <td>${c.tel || '—'}</td>
+      <td>${c.addr || '—'}</td>
+      <td style="text-align:right;white-space:nowrap;">
+        <span onclick="openEditCentreModal(${idx})" style="cursor:pointer;color:var(--teal-text);margin-right:12px;">编辑</span>
+        <span onclick="deleteCentre(${idx})" style="cursor:pointer;color:var(--red-text);">删除</span>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('centre-count-label').textContent = `共 ${filteredCentres.length} 个考场`;
+}
+
+function openAddCentreModal() {
+  document.getElementById('modal-centre-title').innerHTML = '<i class="ti ti-building"></i> 新增考场';
+  document.getElementById('centre-edit-idx').value = '-1';
+  document.getElementById('centre-code').value = '';
+  document.getElementById('centre-name').value = '';
+  document.getElementById('centre-tel').value  = '';
+  document.getElementById('centre-addr').value = '';
+  openModal('modal-centre');
+}
+
+function openEditCentreModal(idx) {
+  const c = centres[idx];
+  if (!c) return;
+  document.getElementById('modal-centre-title').innerHTML = '<i class="ti ti-pencil"></i> 编辑考场';
+  document.getElementById('centre-edit-idx').value = idx;
+  document.getElementById('centre-code').value = c.code;
+  document.getElementById('centre-name').value = c.name;
+  document.getElementById('centre-tel').value  = c.tel  || '';
+  document.getElementById('centre-addr').value = c.addr || '';
+  openModal('modal-centre');
+}
+
+function saveCentre() {
+  const code = document.getElementById('centre-code').value.trim();
+  const name = document.getElementById('centre-name').value.trim();
+  if (!code || !name) { alert('考场代码和考场名称为必填项'); return; }
+  const tel  = document.getElementById('centre-tel').value.trim();
+  const addr = document.getElementById('centre-addr').value.trim();
+  const idx  = parseInt(document.getElementById('centre-edit-idx').value);
+  if (idx >= 0) {
+    centres[idx] = { code, name, tel, addr };
+  } else {
+    if (centres.find(c => c.code === code)) { alert(`考场代码 ${code} 已存在`); return; }
+    centres.push({ code, name, tel, addr });
+  }
+  closeModal('modal-centre');
+  filterCentres();
+}
+
+function deleteCentre(idx) {
+  if (!confirm(`确定删除考场「${centres[idx].name}」？`)) return;
+  centres.splice(idx, 1);
+  filterCentres();
+}
+
+function exportCentreTemplate() {
+  const header = 'Centre_Code,Centre_Name,Telephone_No,Address';
+  const rows = centres.length
+    ? centres.map(c => [c.code, c.name, c.tel||'', c.addr||''].map(v => `"${v}"`).join(','))
+    : ['"002","Sample Centre","2345 6789","Sample Address"'];
+  const blob = new Blob([header + '\n' + rows.join('\n')], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '考场资料模板.csv';
+  a.click();
+}
+
+function handleCentreImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const lines = e.target.result.split('\n').map(l => l.trim()).filter(Boolean);
+    let added = 0, updated = 0, skipped = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(v => v.replace(/^"|"$/g,'').trim());
+      const [code, name, tel, addr] = cols;
+      if (!code || !name) { skipped++; continue; }
+      const exist = centres.find(c => c.code === code);
+      if (exist) { exist.name = name; exist.tel = tel||''; exist.addr = addr||''; updated++; }
+      else { centres.push({ code, name, tel: tel||'', addr: addr||'' }); added++; }
+    }
+    input.value = '';
+    filterCentres();
+    alert(`导入完成：新增 ${added} 条，更新 ${updated} 条，跳过 ${skipped} 条`);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let expandedExams = new Set();
+let addGradeTarget = null;
+let deleteCallback = null;
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+
+// ══════════════════════════════════════
+// RENDER — EXAM PAGE
+// ══════════════════════════════════════
+function renderExams(list) {
+  const tbody = document.getElementById('exam-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-inbox"></i>暂无数据</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(exam => {
+    const expanded = expandedExams.has(exam.code);
+    return `
+      <tr class="exam-row ${expanded ? 'expanded' : ''}" onclick="toggleExam('${exam.code}', this)">
+        <td><i class="ti ti-chevron-right expand-icon" style="font-size:14px;"></i></td>
+        <td>${exam.code}</td>
+        <td>${exam.name}</td>
+        <td style="text-align:center;">
+          <span class="count-badge">${exam.grades.length}</span>
+        </td>
+        <td style="text-align:right;" onclick="event.stopPropagation()">
+          <button onclick="openAddGradeModal('${exam.code}')" title="新增级别" style="padding:4px 8px;font-size:11px;">
+            <i class="ti ti-plus"></i> 新增级别
+          </button>
+          <button class="danger" onclick="deleteExam('${exam.code}')" title="删除专业" style="padding:4px 8px;font-size:11px;">
+            <i class="ti ti-trash"></i>
+          </button>
+        </td>
+      </tr>
+      <tr class="grades-row ${expanded ? '' : 'hidden'}" id="grades-${exam.code}">
+        <td colspan="5">
+          <div class="grade-inner">
+            <table class="grade-table">
+              <thead>
+                <tr>
+                  <th>级别代码</th>
+                  <th>级别名称</th>
+                  <th style="text-align:right;">考试费</th>
+                  <th style="text-align:right;">场地附加费</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${exam.grades.map(g => `
+                  <tr>
+                    <td>${g.code}</td>
+                    <td>${g.name}</td>
+                    <td style="text-align:right;">$${g.fee.toLocaleString()}</td>
+                    <td style="text-align:right;">$${g.surcharge.toLocaleString()}</td>
+                    <td style="text-align:right;">
+                      <button class="danger" onclick="deleteGrade('${exam.code}','${g.code}')" style="padding:3px 6px;font-size:11px;">
+                        <i class="ti ti-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+}
+
+function toggleExam(code, row) {
+  if (expandedExams.has(code)) {
+    expandedExams.delete(code);
+    row.classList.remove('expanded');
+    document.getElementById('grades-' + code).classList.add('hidden');
+  } else {
+    expandedExams.add(code);
+    row.classList.add('expanded');
+    document.getElementById('grades-' + code).classList.remove('hidden');
+  }
+}
+
+function filterExams() {
+  const q = document.getElementById('exam-search').value.trim().toLowerCase();
+  if (!q) { renderExams(exams); return; }
+  const filtered = exams
+    .map(e => {
+      const examMatch = e.code.toLowerCase().includes(q) || e.name.toLowerCase().includes(q);
+      if (examMatch) return e;
+      const matchedGrades = e.grades.filter(g =>
+        g.code.toLowerCase().includes(q) || g.name.toLowerCase().includes(q)
+      );
+      if (matchedGrades.length) {
+        expandedExams.add(e.code);
+        return { ...e, grades: matchedGrades };
+      }
+      return null;
+    })
+    .filter(Boolean);
+  renderExams(filtered);
+}
+
+// ══════════════════════════════════════
+// RENDER — DANCE PAGE
+// ══════════════════════════════════════
+function branchPill(b) {
+  if (b === 'BALLROOM') return '<span class="pill pill-ballroom">BALLROOM</span>';
+  if (b === 'LATIN')    return '<span class="pill pill-latin">LATIN</span>';
+  return `<span class="pill pill-other">${b}</span>`;
+}
+
+function renderDances(list) {
+  const tbody = document.getElementById('dance-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="ti ti-inbox"></i>暂无数据</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(d => `
+    <tr>
+      <td>${d.code}</td>
+      <td>${d.name}</td>
+      <td>${d.branch}</td>
+      <td style="text-align:right;">
+        <button class="danger" onclick="deleteDance('${d.code}')" style="padding:3px 6px;font-size:11px;">
+          <i class="ti ti-trash"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+}
+
+function filterDances() {
+  const q = document.getElementById('dance-search').value.trim().toLowerCase();
+  const branch = document.getElementById('dance-branch-filter').value;
+  let list = dances;
+  if (branch) list = list.filter(d => d.branch === branch);
+  if (q)      list = list.filter(d => d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q));
+  renderDances(list);
+}
+
+// ══════════════════════════════════════
+// MODALS — EXAM
+// ══════════════════════════════════════
+function openAddExamModal() {
+  document.getElementById('new-exam-code').value = '';
+  document.getElementById('new-exam-name').value = '';
+  openModal('modal-add-exam');
+}
+
+function confirmAddExam() {
+  const code = document.getElementById('new-exam-code').value.trim().toUpperCase();
+  const name = document.getElementById('new-exam-name').value.trim();
+  if (!code || !name) { alert('请填写专业代码和名称'); return; }
+  if (exams.find(e => e.code === code)) { alert('专业代码已存在'); return; }
+  exams.push({ code, name, seq: null, grades: [] });
+  closeModal('modal-add-exam');
+  renderExams(exams);
+}
+
+// ══════════════════════════════════════
+// MODALS — GRADE
+// ══════════════════════════════════════
+function openAddGradeModal(examCode) {
+  addGradeTarget = examCode;
+  const exam = exams.find(e => e.code === examCode);
+  document.getElementById('modal-grade-exam-label').textContent = `${exam.code} — ${exam.name}`;
+  ['new-grade-code','new-grade-name','new-grade-fee','new-grade-surcharge'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  openModal('modal-add-grade');
+}
+
+function confirmAddGrade() {
+  const code = document.getElementById('new-grade-code').value.trim().toUpperCase();
+  const name = document.getElementById('new-grade-name').value.trim();
+  if (!code || !name) { alert('请填写级别代码和名称'); return; }
+  const exam = exams.find(e => e.code === addGradeTarget);
+  if (exam.grades.find(g => g.code === code)) { alert('级别代码已存在'); return; }
+  exam.grades.push({
+    code, name,
+    fee:       parseInt(document.getElementById('new-grade-fee').value)       || 0,
+    surcharge: parseInt(document.getElementById('new-grade-surcharge').value) || 0,
+    seq:       null
+  });
+  expandedExams.add(addGradeTarget);
+  closeModal('modal-add-grade');
+  renderExams(exams);
+}
+
+// ══════════════════════════════════════
+// MODALS — DANCE
+// ══════════════════════════════════════
+function openAddDanceModal() {
+  document.getElementById('new-dance-code').value   = '';
+  document.getElementById('new-dance-name').value   = '';
+  document.getElementById('new-dance-branch').value = '';
+  openModal('modal-add-dance');
+}
+
+function confirmAddDance() {
+  const code   = document.getElementById('new-dance-code').value.trim();
+  const name   = document.getElementById('new-dance-name').value.trim();
+  const branch = document.getElementById('new-dance-branch').value;
+  if (!code || !name || !branch) { alert('请填写所有必填字段'); return; }
+  if (dances.find(d => d.code === code)) { alert('舞蹈代码已存在'); return; }
+  dances.push({ code, name, branch });
+  closeModal('modal-add-dance');
+  filterDances();
+}
+
+// ══════════════════════════════════════
+// DELETE
+// ══════════════════════════════════════
+function deleteExam(code) {
+  const exam = exams.find(e => e.code === code);
+  document.getElementById('delete-confirm-text').innerHTML =
+    `确定要删除考试专业 <strong>${exam.code} — ${exam.name}</strong>？<br>
+    <span style="color:var(--red-text);font-size:12px;">此专业下共 ${exam.grades.length} 个级别也将被删除。</span>`;
+  document.getElementById('delete-confirm-btn').onclick = () => {
+    const idx = exams.findIndex(e => e.code === code);
+    if (idx !== -1) exams.splice(idx, 1);
+    closeModal('modal-confirm-delete');
+    renderExams(exams);
+  };
+  openModal('modal-confirm-delete');
+}
+
+function deleteGrade(examCode, gradeCode) {
+  const exam  = exams.find(e => e.code === examCode);
+  const grade = exam.grades.find(g => g.code === gradeCode);
+  document.getElementById('delete-confirm-text').innerHTML =
+    `确定要删除级别 <strong>${grade.code} — ${grade.name}</strong>？`;
+  document.getElementById('delete-confirm-btn').onclick = () => {
+    exam.grades = exam.grades.filter(g => g.code !== gradeCode);
+    closeModal('modal-confirm-delete');
+    expandedExams.add(examCode);
+    renderExams(exams);
+  };
+  openModal('modal-confirm-delete');
+}
+
+function deleteDance(code) {
+  const dance = dances.find(d => d.code === code);
+  document.getElementById('delete-confirm-text').innerHTML =
+    `确定要删除舞蹈种类 <strong>${dance.code} — ${dance.name}</strong>？`;
+  document.getElementById('delete-confirm-btn').onclick = () => {
+    const idx = dances.findIndex(d => d.code === code);
+    if (idx !== -1) dances.splice(idx, 1);
+    closeModal('modal-confirm-delete');
+    filterDances();
+  };
+  openModal('modal-confirm-delete');
+}
+
+// ══════════════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+});
+
+// ══════════════════════════════════════
+// APPLICANT DATA
+// ══════════════════════════════════════
+const applicants = [];
+
+let currentApplicantId = null;
+
+// ══════════════════════════════════════
+// PAGINATION HELPERS
+// ══════════════════════════════════════
+let applicantPage = 1, applicantPageSize = 10;
+let candidatePage = 1, candidatePageSize = 10;
+let filteredApplicants = [];
+let filteredCandidates = [];
+
+function renderPagination(containerId, total, current, pageSize, onPage) {
+  const pages = Math.ceil(total / pageSize) || 1;
+  const el = document.getElementById(containerId);
+  let html = `
+    <select onchange="onPageSizeChange('${containerId}', this.value)" style="margin-right:6px;">
+      ${[10,20,30].map(n => `<option value="${n}" ${n===pageSize?'selected':''}>${n} 条/页</option>`).join('')}
+    </select>
+    <button onclick="(${onPage})(${current-1})" ${current<=1?'disabled':''}>‹</button>
+  `;
+  for (let p = 1; p <= pages; p++) {
+    if (pages > 7 && Math.abs(p - current) > 2 && p !== 1 && p !== pages) {
+      if (p === 2 || p === pages - 1) html += `<button disabled style="border:none;background:none;">…</button>`;
+      continue;
+    }
+    html += `<button class="${p===current?'active':''}" onclick="(${onPage})(${p})">${p}</button>`;
+  }
+  html += `<button onclick="(${onPage})(${current+1})" ${current>=pages?'disabled':''}>›</button>`;
+  el.innerHTML = html;
+}
+
+function onPageSizeChange(containerId, val) {
+  if (containerId === 'applicant-pagination') { applicantPageSize = +val; applicantPage = 1; renderApplicants(filteredApplicants); }
+  if (containerId === 'candidate-pagination') { candidatePageSize = +val; candidatePage = 1; renderCandidates(filteredCandidates); }
+}
+
+// ══════════════════════════════════════
+// RENDER — APPLICANT LIST
+// ══════════════════════════════════════
+function renderApplicants(list) {
+  filteredApplicants = list;
+  const total = list.length;
+  const start = (applicantPage - 1) * applicantPageSize;
+  const page  = list.slice(start, start + applicantPageSize);
+  const tbody = document.getElementById('applicant-tbody');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i>暂无申请人资料</div></td></tr>`;
+    document.getElementById('applicant-count-label').textContent = '';
+    document.getElementById('applicant-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = page.map(a => `
+    <tr>
+      <td>${a.id}</td>
+      <td>${a.name}</td>
+      <td>${a.phone}</td>
+      <td>${a.email}</td>
+      <td style="text-align:center;">${a.candidates.length}</td>
+      <td style="text-align:right;">$${a.paid.toLocaleString()}</td>
+      <td style="text-align:right;">
+        <span onclick="openApplicantDetail('${a.id}')" style="color:var(--info-text);cursor:pointer;font-size:13px;">查看详情</span>
+        <span onclick="deleteApplicant('${a.id}')" style="color:var(--red-text);cursor:pointer;font-size:13px;margin-left:12px;">删除</span>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('applicant-count-label').textContent = `共 ${total} 位申请人`;
+  renderPagination('applicant-pagination', total, applicantPage, applicantPageSize,
+    `function(p){applicantPage=p;renderApplicants(filteredApplicants);}`);
+}
+
+function filterApplicants() {
+  const q = document.getElementById('applicant-search').value.trim().toLowerCase();
+  applicantPage = 1;
+  const list = q
+    ? applicants.filter(a => a.id.toLowerCase().includes(q) || a.name.toLowerCase().includes(q) || a.phone.includes(q))
+    : applicants;
+  renderApplicants(list);
+}
+
+// ══════════════════════════════════════
+// APPLICANT DETAIL
+// ══════════════════════════════════════
+function openApplicantDetail(id) {
+  const a = applicants.find(x => x.id === id);
+  if (!a) return;
+  currentApplicantId = id;
+
+  document.getElementById('detail-title').textContent = a.name;
+  document.getElementById('detail-sub').textContent   = a.id;
+  document.getElementById('d-id').textContent      = a.id;
+  document.getElementById('d-name').textContent    = a.name;
+  document.getElementById('d-phone').textContent   = a.phone;
+  document.getElementById('d-email').textContent   = a.email;
+  document.getElementById('d-address').textContent = a.address;
+  document.getElementById('d-paid').textContent = `HKD $${a.paid.toLocaleString()}`;
+
+  renderCandidates(a.candidates);
+
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector('[onclick="showPage(\'applicants\', this)"]').classList.add('active');
+
+  document.getElementById('page-exam').style.display             = 'none';
+  document.getElementById('page-dance').style.display            = 'none';
+  document.getElementById('page-applicants').style.display       = 'none';
+  document.getElementById('page-applicant-detail').style.display = 'flex';
+  document.getElementById('dev-note-float').style.display        = 'none';
+}
+
+function renderCandidates(list) {
+  filteredCandidates = list;
+  const total = list.length;
+  const start = (candidatePage - 1) * candidatePageSize;
+  const page  = list.slice(start, start + candidatePageSize);
+  const tbody = document.getElementById('candidate-tbody');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="ti ti-user-off"></i>暂无考生资料</div></td></tr>`;
+    document.getElementById('candidate-count-label').textContent = '';
+    document.getElementById('candidate-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = page.map(c => {
+    const exam  = exams.find(e => e.code === c.examCode);
+    const grade = exam ? exam.grades.find(g => g.code === c.gradeCode) : null;
+    const dance = dances.find(d => d.code === c.dance);
+    const genderText = c.gender === 'M' ? '男' : c.gender === 'F' ? '女' : c.gender;
+    return `
+      <tr>
+        <td>${c.no}</td>
+        <td>${c.name}</td>
+        <td>${genderText}</td>
+        <td>${c.idno}</td>
+        <td>${c.dob}</td>
+        <td>${c.group}</td>
+        <td>${exam ? exam.name : c.examCode}</td>
+        <td>${grade ? grade.name : c.gradeCode}</td>
+        <td>${dance ? dance.name : c.dance}</td>
+        <td style="text-align:right;">
+          <span onclick="deleteCandidate('${c.no}')" style="color:var(--red-text);cursor:pointer;font-size:13px;">删除</span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('candidate-count-label').textContent = `共 ${total} 位考生`;
+  renderPagination('candidate-pagination', total, candidatePage, candidatePageSize,
+    `function(p){candidatePage=p;renderCandidates(filteredCandidates);}`);
+}
+
+function filterCandidates() {
+  const a = applicants.find(x => x.id === currentApplicantId);
+  if (!a) return;
+  const q = document.getElementById('candidate-search').value.trim().toLowerCase();
+  candidatePage = 1;
+  const list = q ? a.candidates.filter(c => c.name.toLowerCase().includes(q)) : a.candidates;
+  renderCandidates(list);
+}
+
+// ══════════════════════════════════════
+// CSV IMPORT
+// 场景说明：
+//   每行 = 一位考生，申请人信息随行重复
+//   同一申请人编号在文件中多次出现 → 以首行申请人信息为准，考生逐行累加
+//   同一考生编号在文件中重复出现 → 跳过并记录警告
+//   申请人编号在文件中存在、系统中不存在 → 新增
+//   申请人编号在系统中已存在 → 覆盖更新（申请人信息及考生列表整体替换）
+// ══════════════════════════════════════
+function handleCsvImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (lines.length < 2) {
+      showImportResult(0, 0, 0, 0, ['档案内容为空或格式错误'], 0);
+      input.value = ''; return;
+    }
+
+    const newMap = {};   // aid → { applicant, candidateNos: Set }
+    const warnings = [];
+    let rowSuccess = 0;
+
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.trim());
+      if (cols.length < 15) { warnings.push(`第 ${i+1} 行：列数不足，已跳过`); continue; }
+      const [aid, aname, phone, email, address, paidStr,
+             cno, group, cname, gender, idno, dob, examCode, gradeCode, dance] = cols;
+      if (!aid || !aname) { warnings.push(`第 ${i+1} 行：申请人编号或姓名为空，已跳过`); continue; }
+
+      // 首次出现该申请人编号 → 初始化
+      if (!newMap[aid]) {
+        newMap[aid] = {
+          applicant: { id: aid, name: aname, phone, email, address,
+                       paid: parseInt(paidStr) || 0, candidates: [] },
+          candidateNos: new Set()
+        };
+      }
+
+      // 考生行
+      if (cno && cname) {
+        if (newMap[aid].candidateNos.has(cno)) {
+          warnings.push(`第 ${i+1} 行：考生编号 ${cno} 在档案中重复，已跳过`);
+          continue;
+        }
+        newMap[aid].candidateNos.add(cno);
+        newMap[aid].applicant.candidates.push({ no: cno, group, name: cname, gender, idno, dob, examCode, gradeCode, dance });
+      }
+      rowSuccess++;
+    }
+
+    let added = 0, updated = 0, addedCandidates = 0, updatedCandidates = 0;
+    Object.values(newMap).forEach(({ applicant: na }) => {
+      const existing = applicants.find(a => a.id === na.id);
+      if (existing) {
+        // 逐字段合并申请人信息
+        ['name','phone','email','address','paid'].forEach(f => {
+          if (na[f] !== undefined && na[f] !== '') existing[f] = na[f];
+        });
+        // 逐位考生 upsert
+        na.candidates.forEach(nc => {
+          const ec = existing.candidates.find(c => c.no === nc.no);
+          if (ec) {
+            Object.assign(ec, nc);
+            updatedCandidates++;
+          } else {
+            existing.candidates.push(nc);
+            addedCandidates++;
+          }
+        });
+        updated++;
+      } else {
+        applicants.push(na);
+        added++;
+        addedCandidates += na.candidates.length;
+      }
+    });
+
+    input.value = '';
+    renderApplicants(applicants);
+    showImportResult(added, updated, addedCandidates, updatedCandidates, warnings, rowSuccess);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function showImportResult(added, updated, addedCandidates, updatedCandidates, warnings, rowSuccess) {
+  const body = document.getElementById('import-result-body');
+  const lines = [];
+  lines.push(`共处理 ${rowSuccess} 行数据。`);
+  lines.push('');
+  if (added)   lines.push(`新增申请人 ${added} 位，含考生 ${addedCandidates} 位。`);
+  if (updated) {
+    const cParts = [];
+    if (addedCandidates) cParts.push(`新增考生 ${addedCandidates} 位`);
+    if (updatedCandidates) cParts.push(`更新考生 ${updatedCandidates} 位`);
+    lines.push(`修改申请人 ${updated} 位${cParts.length ? '（' + cParts.join('，') + '）' : ''}。`);
+  }
+  if (!added && !updated) lines.push('未导入任何申请人。');
+  if (warnings.length) {
+    lines.push('');
+    lines.push(`以下 ${warnings.length} 行已跳过：`);
+    warnings.forEach(w => lines.push(`• ${w}`));
+  } else {
+    lines.push('');
+    lines.push('无跳过或错误行。');
+  }
+  body.innerHTML = `<p style="font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;">${lines.join('\n')}</p>`;
+  openModal('modal-import-result');
+}
+
+// ══════════════════════════════════════
+// SCHEDULE DATA & RENDER
+// ══════════════════════════════════════
+// arrange entries are built from applicants' candidates on demand
+// { no, name, applicantId, applicantName, examCode, gradeCode, venue, date, time }
+let arrangeData = [];
+let filteredSchedule = [];
+let arrangePage = 1, arrangePageSize = 10;
+let editingScheduleNo = null;
+
+function buildScheduleData() {
+  // Merge existing arrange fields back in
+  const existing = {};
+  arrangeData.forEach(s => { existing[s.no] = s; });
+  arrangeData = [];
+  applicants.forEach(a => {
+    a.candidates.forEach(c => {
+      const prev = existing[c.no] || {};
+      arrangeData.push({
+        no:            c.no,
+        name:          c.name,
+        applicantId:   a.id,
+        applicantName: a.name,
+        examCode:      c.examCode,
+        gradeCode:     c.gradeCode,
+        venue:  prev.venue  || '',
+        date:   prev.date   || '',
+        time:   prev.time   || '',
+      });
+    });
+  });
+}
+
+function renderSchedule(list) {
+  filteredSchedule = list;
+  const total = list.length;
+  const start = (arrangePage - 1) * arrangePageSize;
+  const page  = list.slice(start, start + arrangePageSize);
+  const tbody = document.getElementById('arrange-tbody');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i class="ti ti-calendar-off"></i>暂无排程数据，请先导入申请人资料</div></td></tr>`;
+    document.getElementById('arrange-count-label').textContent = '';
+    document.getElementById('arrange-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = page.map(s => {
+    const exam  = exams.find(e => e.code === s.examCode);
+    const grade = exam ? exam.grades.find(g => g.code === s.gradeCode) : null;
+    const arranged = s.venue && s.date && s.time;
+    return `
+      <tr>
+        <td>${s.no}</td>
+        <td>${s.name}</td>
+        <td>${s.applicantName}</td>
+        <td>${exam ? exam.name : s.examCode}</td>
+        <td>${grade ? grade.name : s.gradeCode}</td>
+        <td>${s.venue ? s.venue + (centres.find(c=>c.code===s.venue) ? ' — '+centres.find(c=>c.code===s.venue).name : '') : '<span style="color:var(--text3)">—</span>'}</td>
+        <td>${s.date  || '<span style="color:var(--text3)">—</span>'}</td>
+        <td>${s.time  || '<span style="color:var(--text3)">—</span>'}</td>
+        <td style="text-align:center;" class="${arranged ? 'status-arranged' : 'status-pending'}">${arranged ? '已编排' : '待编排'}</td>
+        <td style="text-align:right;">
+          <span onclick="openEditSchedule('${s.no}')" style="color:var(--info-text);cursor:pointer;font-size:13px;">编辑</span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  const arranged = arrangeData.filter(s => s.venue && s.date && s.time).length;
+  document.getElementById('arrange-count-label').textContent =
+    `共 ${total} 位考生，已编排 ${arranged} 位`;
+  renderPagination('arrange-pagination', total, arrangePage, arrangePageSize,
+    `function(p){arrangePage=p;renderSchedule(filteredSchedule);}`);
+
+  // Update venue filter options
+  const venues = [...new Set(arrangeData.map(s => s.venue).filter(Boolean))];
+  const vf = document.getElementById('arrange-venue-filter');
+  const cur = vf.value;
+  vf.innerHTML = '<option value="">全部考场</option>' +
+    venues.map(v => {
+      const c = centres.find(c => c.code === v);
+      return `<option value="${v}" ${v===cur?'selected':''}>${v}${c?' — '+c.name:''}</option>`;
+    }).join('');
+}
+
+function filterSchedule() {
+  const q      = document.getElementById('arrange-search').value.trim().toLowerCase();
+  const venue  = document.getElementById('arrange-venue-filter').value;
+  const status = document.getElementById('arrange-status-filter').value;
+  arrangePage = 1;
+  let list = arrangeData;
+  if (q)      list = list.filter(s => s.no.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.applicantName.toLowerCase().includes(q));
+  if (venue)  list = list.filter(s => s.venue === venue);
+  if (status === 'arranged') list = list.filter(s => s.venue && s.date && s.time);
+  if (status === 'pending')   list = list.filter(s => !s.venue || !s.date || !s.time);
+  renderSchedule(list);
+}
+
+// ── Edit single arrange ──
+function openEditSchedule(no) {
+  const s = arrangeData.find(x => x.no === no);
+  if (!s) return;
+  editingScheduleNo = no;
+  document.getElementById('es-candidate-label').textContent = `${s.no} — ${s.name}`;
+  // Populate centre dropdown
+  const venSel = document.getElementById('es-venue');
+  venSel.innerHTML = '<option value="">— 请选择考场 —</option>' +
+    centres.map(c => `<option value="${c.code}" ${c.code===s.venue?'selected':''}>${c.code} — ${c.name}</option>`).join('');
+  if (!centres.length) venSel.innerHTML += `<option value="${s.venue}" selected>${s.venue||'（无考场资料）'}</option>`;
+  document.getElementById('es-date').value  = s.date;
+  document.getElementById('es-time').value  = s.time;
+  openModal('modal-edit-arrange');
+}
+
+function confirmEditSchedule() {
+  const s = arrangeData.find(x => x.no === editingScheduleNo);
+  if (!s) return;
+  s.venue = document.getElementById('es-venue').value.trim();
+  s.date  = document.getElementById('es-date').value.trim();
+  s.time  = document.getElementById('es-time').value.trim();
+  closeModal('modal-edit-arrange');
+  filterSchedule();
+}
+
+// ── Export template ──
+function exportScheduleTemplate() {
+  buildScheduleData();
+  if (!arrangeData.length) { alert('暂无考生资料，请先导入申请人数据。'); return; }
+  const header = '考生编号,考生姓名,申请人编号,申请人姓名,报考专业代码,报考级别代码,考场代码,考试日期,考试时间';
+  const rows = arrangeData.map(s =>
+    [s.no, s.name, s.applicantId, s.applicantName, s.examCode, s.gradeCode,
+     s.venue, s.date, s.time].join(',')
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '考试编排模板.csv';
+  a.click();
+}
+
+// ── Import arrange ──
+function handleScheduleImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
+    if (lines.length < 2) { alert('档案内容为空或格式错误'); input.value=''; return; }
+    // Expected: 考生编号,考生姓名,申请人编号,申请人姓名,报考专业代码,报考级别代码,考场代码,考试日期,考试时间
+    let updated = 0, skipped = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.trim());
+      if (cols.length < 9) { skipped++; continue; }
+      const [no,,,,,,venue, date, time] = cols;
+      const s = arrangeData.find(x => x.no === no);
+      if (s) { s.venue = venue; s.date = date; s.time = time; updated++; }
+      else skipped++;
+    }
+    input.value = '';
+    filterSchedule();
+    alert(`排程上传完成。\n\n已更新 ${updated} 位考生排程${skipped ? `，${skipped} 行已跳过（考生编号不存在或格式错误）` : '，无跳过行'}。`);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// ══════════════════════════════════════
+// DELETE APPLICANT / CANDIDATE
+// ══════════════════════════════════════
+function deleteApplicant(id) {
+  const a = applicants.find(x => x.id === id);
+  document.getElementById('delete-confirm-text').innerHTML =
+    `确定要删除申请人 <strong>${a.name}（${a.id}）</strong>？该申请人下 ${a.candidates.length} 位考生资料也将一并删除。`;
+  document.getElementById('delete-confirm-btn').onclick = () => {
+    applicants.splice(applicants.findIndex(x => x.id === id), 1);
+    closeModal('modal-confirm-delete');
+    filterApplicants();
+  };
+  openModal('modal-confirm-delete');
+}
+
+function deleteCandidate(no) {
+  const a = applicants.find(x => x.id === currentApplicantId);
+  const c = a.candidates.find(x => x.no === no);
+  document.getElementById('delete-confirm-text').innerHTML =
+    `确定要删除考生 <strong>${c.name}（${c.no}）</strong>？`;
+  document.getElementById('delete-confirm-btn').onclick = () => {
+    a.candidates = a.candidates.filter(x => x.no !== no);
+    closeModal('modal-confirm-delete');
+    filterCandidates();
+  };
+  openModal('modal-confirm-delete');
+}
+
+// ══════════════════════════════════════
+// TEMPLATE MANAGEMENT (考务资料)
+// ══════════════════════════════════════
+let currentTmplType = 'admission';
+
+const tmplRefFields = {
+  admission: {
+    title: '准考证字段对应表',
+    sections: [
+      { label: '考生信息', fields: [
+        ['姓名','φφ姓名φφ'],['性别','φφ性别φφ'],['出生日期','φφ出生日期φφ'],
+        ['证件类型','φφ证件类型φφ'],['证件号码','φφ证件号码φφ'],['考生编号','φφ考生编号φφ'],
+      ]},
+      { label: '申请人信息', fields: [
+        ['申请人姓名','ψψ申请人姓名ψψ'],['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+      ]},
+      { label: '考试信息', fields: [
+        ['考试名称','μμ考试名称μμ'],['准考证号','μμ准考证号μμ'],['专业名称','μμ专业名称μμ'],
+        ['级别名称','μμ级别名称μμ'],['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+        ['座位号码','μμ座位号码μμ'],['考点名称','μμ考点名称μμ'],['考点地址','μμ考点地址μμ'],
+        ['考场名称','μμ考场名称μμ'],['考场地址','μμ考场地址μμ'],['考点交通','μμ考点交通μμ'],
+      ]},
+    ]
+  },
+  marksheet: {
+    title: '评分表字段对应表',
+    sections: [
+      { label: '考生信息', fields: [
+        ['姓名','φφ姓名φφ'],['出生日期','φφ出生日期φφ'],
+        ['考生编号','φφ考生编号φφ'],['证件号码','φφ证件号码φφ'],['考试中心','φφ考试中心φφ'],
+      ]},
+      { label: '申请人信息', fields: [
+        ['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+      ]},
+      { label: '考试信息', fields: [
+        ['专业名称','μμ专业名称μμ'],['级别名称','μμ级别名称μμ'],
+        ['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+      ]},
+    ]
+  },
+  'daysheet-ex': {
+    title: '考官日程表字段对应表',
+    sections: [
+      { label: '考生信息', fields: [
+        ['考生姓名','φφ考生姓名φφ'],['考生编号','φφ考生编号φφ'],
+      ]},
+      { label: '申请人信息', fields: [
+        ['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+      ]},
+      { label: '考试信息', fields: [
+        ['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+        ['专业名称','μμ专业名称μμ'],['级别名称','μμ级别名称μμ'],
+      ]},
+    ]
+  },
+  'daysheet-sv': {
+    title: '监考员日程表字段对应表',
+    sections: [
+      { label: '考生信息', fields: [
+        ['考生姓名','φφ考生姓名φφ'],['考生编号','φφ考生编号φφ'],
+        ['出生日期','φφ出生日期φφ'],['证件号码','φφ证件号码φφ'],
+      ]},
+      { label: '申请人信息', fields: [
+        ['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+      ]},
+      { label: '考试信息', fields: [
+        ['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+        ['专业名称','μμ专业名称μμ'],['级别名称','μμ级别名称μμ'],
+      ]},
+    ]
+  },
+};
+
+const tmplExportLabels = {
+  admission: '导出准考证',
+  marksheet: '导出评分表',
+  'daysheet-ex': '导出考官日程表',
+  'daysheet-sv': '导出监考员日程表',
+};
+
+// field ref data keyed by type (marksheet types all share same fields)
+const tmplRefSections = {
+  admission: [
+    { label: '考生信息', fields: [
+      ['姓名','φφ姓名φφ'],['性别','φφ性别φφ'],['出生日期','φφ出生日期φφ'],
+      ['证件类型','φφ证件类型φφ'],['证件号码','φφ证件号码φφ'],['考生编号','φφ考生编号φφ'],
+    ]},
+    { label: '申请人信息', fields: [
+      ['申请人姓名','ψψ申请人姓名ψψ'],['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+    ]},
+    { label: '考试信息', fields: [
+      ['考试名称','μμ考试名称μμ'],['准考证号','μμ准考证号μμ'],['专业名称','μμ专业名称μμ'],
+      ['级别名称','μμ级别名称μμ'],['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+      ['座位号码','μμ座位号码μμ'],['考点名称','μμ考点名称μμ'],['考点地址','μμ考点地址μμ'],
+      ['考场名称','μμ考场名称μμ'],['考场地址','μμ考场地址μμ'],['考点交通','μμ考点交通μμ'],
+    ]},
+  ],
+  daysheet: [
+    { label: '考生信息', fields: [
+      ['考生姓名','φφ考生姓名φφ'],['考生编号','φφ考生编号φφ'],
+      ['出生日期','φφ出生日期φφ'],['证件号码','φφ证件号码φφ'],
+    ]},
+    { label: '申请人信息', fields: [
+      ['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+    ]},
+    { label: '考试信息', fields: [
+      ['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+      ['专业名称','μμ专业名称μμ'],['级别名称','μμ级别名称μμ'],
+    ]},
+  ],
+  marksheet: [
+    { label: '考生信息', fields: [
+      ['姓名','φφ姓名φφ'],['出生日期','φφ出生日期φφ'],
+      ['考生编号','φφ考生编号φφ'],['证件号码','φφ证件号码φφ'],
+    ]},
+    { label: '申请人信息', fields: [
+      ['申请人编号','ψψ申请人编号ψψ'],['组别编号','ψψ组别编号ψψ'],
+    ]},
+    { label: '考试信息', fields: [
+      ['专业名称','μμ专业名称μμ'],['级别名称','μμ级别名称μμ'],
+      ['考试日期','μμ考试日期μμ'],['考试时间','μμ考试时间μμ'],
+    ]},
+  ],
+};
+
+const tmplDefaultContent = {
+  admission: `<div style="text-align:center;font-weight:bold;font-size:15px;margin-bottom:12px;">μμ考试名称μμ 准考证</div>
+<table class="tmpl-preview-table"><tr><td>考生姓名：φφ姓名φφ</td><td>性别：φφ性别φφ</td></tr>
+<tr><td>证件类型：φφ证件类型φφ</td><td>证件号码：φφ证件号码φφ</td></tr>
+<tr><td>专业名称：μμ专业名称μμ</td><td>考试时间：μμ考试时间μμ</td></tr>
+<tr><td>准考证号：μμ准考证号μμ</td><td>座位号码：μμ座位号码μμ</td></tr>
+<tr><td colspan="2">考点名称：μμ考点名称μμ</td></tr>
+<tr><td colspan="2">考点地址：μμ考点地址μμ</td></tr>
+<tr><td colspan="2">考场名称：μμ考场名称μμ</td></tr>
+<tr><td colspan="2">考场地址：μμ考场地址μμ</td></tr></table>`,
+  marksheet: `<div style="text-align:center;font-weight:bold;font-size:13px;margin-bottom:4px;">NATIONAL ASSOCIATION of TEACHERS of DANCING LIMITED</div>
+<div style="text-align:center;font-size:12px;margin-bottom:12px;">μμ专业名称μμ EXAMINATION — EXAMINER'S REPORT FORM</div>
+<table class="tmpl-preview-table">
+<tr><td>Name of Centre</td><td>φφ考试中心φφ</td><td>Candidate No.</td><td>φφ考生编号φφ</td></tr>
+<tr><td>Name in full</td><td colspan="3">φφ姓名φφ</td></tr>
+<tr><td>Date of Birth</td><td>φφ出生日期φφ</td><td>Grade of Exam</td><td>μμ级别名称μμ</td></tr>
+<tr><td>Teacher Ref No.</td><td>ψψ申请人编号ψψ</td><td>Date of Exam</td><td>μμ考试日期μμ</td></tr></table>
+<table class="tmpl-preview-table" style="margin-top:8px;">
+<tr><th>Dance</th><th>Marks</th><th>Remarks</th></tr>
+<tr><td>Dance 1</td><td style="height:28px;"></td><td></td></tr>
+<tr><td>Dance 2</td><td></td><td></td></tr>
+<tr><td>Dance 3</td><td></td><td></td></tr>
+<tr><td>General Remarks</td><td colspan="2" style="height:40px;"></td></tr></table>
+<table class="tmpl-preview-table" style="margin-top:8px;">
+<tr><td>Result</td><td>□ PASS　□ COMMENDED　□ HIGHLY COMMENDED</td></tr>
+<tr><td>Examiner</td><td style="height:32px;"></td></tr></table>`,
+  daysheet: `<div style="text-align:center;font-size:12px;margin-bottom:8px;">National Association of Teachers of Dancing (NATD), UK<br>Ballroom &amp; Latin Dance Examination</div>
+<div style="font-size:12px;margin-bottom:8px;">Examination Date: μμ考试日期μμ</div>
+<table class="tmpl-preview-table">
+<tr><th>Exam Time</th><th>Teacher</th><th>Group</th><th>Candidate Name</th><th>Examination</th><th>Grade</th></tr>
+<tr><td>μμ考试时间μμ</td><td>ψψ申请人编号ψψ</td><td>ψψ组别编号ψψ</td><td>φφ考生姓名φφ</td><td>μμ专业名称μμ</td><td>μμ级别名称μμ</td></tr>
+<tr style="color:#aaa;font-size:11px;"><td colspan="6" style="text-align:center;">⋯ 按实际考生行数生成 ⋯</td></tr></table>`,
+};
+
+function getRefKey(type) {
+  if (type === 'admission') return 'admission';
+  if (type.startsWith('daysheet')) return 'daysheet';
+  return 'marksheet';
+}
+function getContentKey(type) {
+  if (type === 'admission') return 'admission';
+  if (type.startsWith('daysheet')) return 'daysheet';
+  return 'marksheet';
+}
+
+function renderTmplRef(type) {
+  const sections = tmplRefSections[getRefKey(type)];
+  if (!sections) return;
+  document.getElementById('tmpl-ref-body').innerHTML = sections.map(sec => `
+    <div class="tmpl-ref-section">${sec.label}</div>
+    ${sec.fields.map(([name, code]) => `
+      <div class="tmpl-ref-row">
+        <span class="tmpl-ref-field">${name}</span>
+        <span class="tmpl-ref-code" title="点击复制" onclick="navigator.clipboard&&navigator.clipboard.writeText('${code}')">${code}</span>
+      </div>
+    `).join('')}
+  `).join('');
+}
+
+function openTmplEditor(type, label) {
+  currentTmplType = type;
+  document.getElementById('tmpl-editor-title').textContent = label + ' — 模板配置';
+  // Load content
+  const content = tmplDefaultContent[getContentKey(type)] || '<p>在此编辑模板内容……</p>';
+  document.getElementById('tmpl-editor-content').innerHTML = content;
+  // Load ref fields
+  renderTmplRef(type);
+  // Show editor, hide list
+  document.getElementById('page-templates').style.display = 'none';
+  const ed = document.getElementById('page-template-editor');
+  ed.style.display = 'flex';
+  ed.style.flexDirection = 'column';
+}
+
+function closeTmplEditor() {
+  document.getElementById('page-template-editor').style.display = 'none';
+  document.getElementById('page-templates').style.display = 'flex';
+}
+
+// ── Export modal ──
+const isMarksheet = t => t.startsWith('ms-');
+const isDaysheet  = t => t.startsWith('daysheet');
+
+function openExportModal(type) {
+  const labels = {
+    admission:'准考证', 'daysheet-ex':'考官日程表', 'daysheet-sv':'监考员日程表',
+    'ms-ballroom':'业余标准舞评分表','ms-latin':'业余拉丁舞评分表',
+    'ms-country':'业余牛仔线舞评分表','ms-social':'业余流行社交舞评分表',
+    'ms-rainbow':'彩虹奖评分表','ms-pro-ballroom':'职业标准舞评分表','ms-pro-latin':'职业拉丁舞评分表',
+  };
+  document.getElementById('export-doc-title').innerHTML = `<i class="ti ti-printer"></i> 导出${labels[type]||''}`;
+
+  // admission, daysheet-ex, daysheet-sv and all marksheets all use subject/grade filter
+  const usedCodes = [...new Set(applicants.flatMap(a => a.candidates.map(c => c.examCode)))].sort();
+  const subjectOpts = usedCodes.map(code => {
+    const ex = exams.find(e => e.code === code);
+    return `<option value="${code}">${code}${ex?' — '+ex.name:''}</option>`;
+  }).join('');
+
+  const bodyHtml = `
+    <div class="form-group full">
+      <label class="form-label">考试专业</label>
+      <select id="exp-subject" style="width:100%;">
+        <option value="">全部专业</option>${subjectOpts || '<option disabled>（暂无考生数据）</option>'}
+      </select>
+    </div>
+    <div class="form-group full">
+      <label class="form-label">考试级别（可选）</label>
+      <select id="exp-grade" style="width:100%;">
+        <option value="">全部级别</option>
+      </select>
+    </div>
+    <div id="exp-count" style="font-size:12px;color:var(--text3);min-height:18px;"></div>`;
+
+  document.getElementById('export-doc-body').innerHTML = bodyHtml;
+  document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
+  openModal('modal-export-doc');
+
+  // Wire up subject/grade cascading selects
+  const subjEl  = document.getElementById('exp-subject');
+  const gradeEl = document.getElementById('exp-grade');
+
+  const updateCount = () => {
+    const code  = subjEl.value;
+    const grade = gradeEl.value;
+    let cands = applicants.flatMap(a => a.candidates);
+    if (code)  cands = cands.filter(c => c.examCode  === code);
+    if (grade) cands = cands.filter(c => c.gradeCode === grade);
+    document.getElementById('exp-count').textContent = `共 ${cands.length} 位考生`;
+  };
+
+  subjEl.onchange = function() {
+    const ex = exams.find(e => e.code === this.value);
+    gradeEl.innerHTML = '<option value="">全部级别</option>' +
+      (ex ? ex.grades.map(g => `<option value="${g.code}">${g.name}</option>`).join('') : '');
+    updateCount();
+  };
+  gradeEl.onchange = updateCount;
+  updateCount();
+}
+
+function saveTmpl() {
+  const title = document.getElementById('tmpl-editor-title').textContent.replace(' — 模板配置','');
+  document.getElementById('save-tmpl-msg').textContent = `保存${title}页面显示信息成功`;
+  openModal('modal-save-tmpl-ok');
+}
+
+
+function confirmExportDoc(type, label) {
+  closeModal('modal-export-doc');
+  alert(`${label} 导出完成。\n（实际导出功能需对接后端）`);
+}
+
+
+// ══════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════
+
+// ── Entry Statistics: render table in page ──
+function renderEntryReport() {
+  const agg = {};
+  applicants.forEach(a => a.candidates.forEach(c => {
+    const key = (c.examCode||'?') + '||' + (c.gradeCode||'?');
+    if (!agg[key]) agg[key] = { examCode: c.examCode||'', gradeCode: c.gradeCode||'', count: 0 };
+    agg[key].count++;
+  }));
+
+  const tbody = document.getElementById('report-entry-tbody');
+  const tfoot = document.getElementById('report-entry-tfoot');
+  const entries = Object.values(agg).sort((a,b) => (a.examCode+a.gradeCode).localeCompare(b.examCode+b.gradeCode));
+  const total = entries.reduce((s,r) => s + r.count, 0);
+
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:32px;">暂无资料</td></tr>';
+    tfoot.innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = entries.map(r => `<tr>
+    <td>${r.examCode}</td>
+    <td>${r.gradeCode}</td>
+    <td style="text-align:right;">${r.count}</td>
+  </tr>`).join('');
+
+  tfoot.innerHTML = `<tr style="font-weight:600;border-top:2px solid var(--border);">
+    <td colspan="2" style="text-align:right;padding:6px 8px;">Total:</td>
+    <td style="text-align:right;padding:6px 8px;">${total}</td>
+  </tr>`;
+}
+
+// ── Fee Statement: render per-applicant blocks in page ──
+function renderFeeReport() {
+  const container = document.getElementById('report-fee-container');
+  if (!applicants.length) {
+    container.innerHTML = '<div style="color:var(--text3);text-align:center;padding:32px;">暂无资料</div>';
+    return;
+  }
+
+  container.innerHTML = applicants.map(a => {
+    const agg = {};
+    a.candidates.forEach(c => {
+      const key = (c.examCode||'?') + '||' + (c.gradeCode||'?');
+      if (!agg[key]) agg[key] = { examCode:c.examCode||'', gradeCode:c.gradeCode||'', count:0 };
+      agg[key].count++;
+    });
+
+    let sysTotal = 0;
+    const rows = Object.values(agg).map(r => {
+      const ex        = exams.find(e => e.code === r.examCode);
+      const grade     = ex ? ex.grades.find(g => g.code === r.gradeCode) : null;
+      const examFee   = grade ? (grade.examFee   || 0) : 0;
+      const centreFee = grade ? (grade.centreFee || 0) : 0;
+      const examSub   = examFee   * r.count;
+      const centreSub = centreFee * r.count;
+      sysTotal += examSub + centreSub;
+      return `<tr>
+        <td>${r.examCode}</td>
+        <td>${r.gradeCode}</td>
+        <td style="text-align:right;">${r.count}</td>
+        <td style="text-align:right;">${examFee   ? '$'+examFee.toLocaleString()   : '—'}</td>
+        <td style="text-align:right;">${examSub   ? '$'+examSub.toLocaleString()   : '—'}</td>
+        <td style="text-align:right;">1</td>
+        <td style="text-align:right;">${centreFee ? '$'+centreFee.toLocaleString() : '—'}</td>
+        <td style="text-align:right;">${centreSub ? '$'+centreSub.toLocaleString() : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    const sysAmt   = sysTotal              ? '$'+sysTotal.toLocaleString()        : '—';
+    const entryAmt = a.paid && a.paid > 0  ? '$'+Number(a.paid).toLocaleString()  : '—';
+
+    return `<div class="card card-flush" style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px 0;">
+        <div style="font-size:13px;font-weight:600;">${a.id} — ${a.name}</div>
+        <div style="font-size:12px;color:var(--text2);text-align:right;line-height:1.8;">
+          Total Amount (Sys Gen): <b>${sysAmt}</b><br>
+          Total Amount (Entry Data): <b>${entryAmt}</b>
+        </div>
+      </div>
+      <div class="table-wrap" style="margin-top:8px;">
+        <table>
+          <thead><tr>
+            <th>Exam</th><th>Grade</th>
+            <th style="text-align:right;">No of Cand</th>
+            <th style="text-align:right;">Exam Fee</th>
+            <th style="text-align:right;">Sub-total</th>
+            <th style="text-align:right;">No of Group</th>
+            <th style="text-align:right;">Centre Fee</th>
+            <th style="text-align:right;">Sub-total</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr style="font-weight:600;border-top:2px solid var(--border);">
+            <td colspan="2" style="padding:6px 8px;text-align:right;">Total</td>
+            <td style="text-align:right;padding:6px 8px;">${a.candidates.length}</td>
+            <td></td>
+            <td style="text-align:right;padding:6px 8px;">${sysAmt}</td>
+            <td></td><td></td><td></td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── PDF export: open print window ──
+function exportReportPDF(type) {
+  // Build print-ready HTML from current data
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+  let bodyHTML = '';
+  const printStyles = `
+    body { font-family:Verdana,sans-serif; font-size:11px; color:#111; margin:32px 40px; }
+    .rpt-header { display:flex; justify-content:space-between; font-size:10px; margin-bottom:4px; border-bottom:1px solid #333; padding-bottom:4px; }
+    .rpt-title  { text-align:center; font-size:13px; font-weight:bold; margin:10px 0 16px; }
+    table { width:100%; border-collapse:collapse; font-size:11px; }
+    th { border-bottom:1px solid #333; padding:4px 8px; text-align:left; font-weight:600; }
+    td { padding:3px 8px; }
+    .num { text-align:right; }
+    .rpt-total-row td { border-top:2px solid #333; font-weight:600; padding-top:6px; }
+    .rpt-block { margin-bottom:28px; padding-bottom:16px; border-bottom:1px dashed #bbb; }
+    .rpt-block-header { display:flex; justify-content:space-between; margin-bottom:8px; font-size:11px; }
+  `;
+
+  if (type === 'entry') {
+    const agg = {};
+    applicants.forEach(a => a.candidates.forEach(c => {
+      const key = (c.examCode||'?') + '||' + (c.gradeCode||'?');
+      if (!agg[key]) agg[key] = { examCode:c.examCode||'', gradeCode:c.gradeCode||'', count:0 };
+      agg[key].count++;
+    }));
+    const entries = Object.values(agg).sort((a,b) => (a.examCode+a.gradeCode).localeCompare(b.examCode+b.gradeCode));
+    const total = entries.reduce((s,r) => s + r.count, 0);
+    const rows = entries.map(r =>
+      `<tr><td>${r.examCode}</td><td>${r.gradeCode}</td><td class="num">${r.count}</td></tr>`
+    ).join('');
+    bodyHTML = `
+      <div class="rpt-header"><span>NATD215R1</span><span>National Association of Teachers of Dancing</span><span>DATE: ${dateStr}</span></div>
+      <div class="rpt-title">Entry Statistics</div>
+      <table><thead><tr><th>Exam Code</th><th>Grade Code</th><th class="num">No of Candidates</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="3" style="text-align:center;">No data</td></tr>'}</tbody>
+      <tfoot><tr class="rpt-total-row"><td colspan="2" class="num">Total:</td><td class="num">${total}</td></tr></tfoot>
+      </table>`;
+  } else {
+    const blocks = applicants.map(a => {
+      const agg = {};
+      a.candidates.forEach(c => {
+        const key = (c.examCode||'?') + '||' + (c.gradeCode||'?');
+        if (!agg[key]) agg[key] = { examCode:c.examCode||'', gradeCode:c.gradeCode||'', count:0 };
+        agg[key].count++;
+      });
+      let sysTotal = 0;
+      const rows = Object.values(agg).map(r => {
+        const ex        = exams.find(e => e.code === r.examCode);
+        const grade     = ex ? ex.grades.find(g => g.code === r.gradeCode) : null;
+        const examFee   = grade ? (grade.examFee   || 0) : 0;
+        const centreFee = grade ? (grade.centreFee || 0) : 0;
+        const examSub   = examFee   * r.count;
+        const centreSub = centreFee * r.count;
+        sysTotal += examSub + centreSub;
+        return `<tr><td>${r.examCode}</td><td>${r.gradeCode}</td><td class="num">${r.count}</td>
+          <td class="num">${examFee?'$'+examFee.toLocaleString():'—'}</td>
+          <td class="num">${examSub?'$'+examSub.toLocaleString():'—'}</td>
+          <td class="num">1</td>
+          <td class="num">${centreFee?'$'+centreFee.toLocaleString():'—'}</td>
+          <td class="num">${centreSub?'$'+centreSub.toLocaleString():'—'}</td></tr>`;
+      }).join('');
+      const sysAmt   = sysTotal            ? '$'+sysTotal.toLocaleString()       : '—';
+      const entryAmt = a.paid && a.paid > 0 ? '$'+Number(a.paid).toLocaleString(): '—';
+      return `<div class="rpt-block">
+        <div class="rpt-block-header">
+          <span><b>Ref No: ${a.id}</b> &nbsp; ${a.name}</span>
+          <span>Total Amount (Sys Gen): <b>${sysAmt}</b> &nbsp;&nbsp; Total Amount (Entry Data): <b>${entryAmt}</b></span>
+        </div>
+        <table><thead><tr><th>Exam</th><th>Grade</th><th class="num">No of Cand</th><th class="num">Exam Fee</th><th class="num">Sub-total</th><th class="num">No of Group</th><th class="num">Centre Fee</th><th class="num">Sub-total</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr class="rpt-total-row"><td colspan="2" class="num">Total</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${sysAmt}</td><td></td><td></td><td></td></tr></tfoot>
+        </table></div>`;
+    }).join('');
+    bodyHTML = `
+      <div class="rpt-header"><span>NATD210R1</span><span>National Association of Teachers of Dancing</span><span>DATE: ${dateStr}</span></div>
+      <div class="rpt-title">Fee Statement Summary</div>
+      ${blocks || '<div style="text-align:center;padding:24px;color:#999;">No data</div>'}`;
+  }
+
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${type==='entry'?'Entry_Statistics':'Fee_Statement_Summary'}</title>
+    <style>${printStyles}</style></head><body>${bodyHTML}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 400);
+}
+
+// ══════════════════════════════════════
+// EXAM RESULTS
+// ══════════════════════════════════════
+let examResults = [];       // { refNo, groupNo, candNo, candName, examCode, gradeCode, centreCode, examDate, startTime, result }
+let filteredResults = [];
+let resultPage = 1;
+const resultPageSize = 20;
+
+const resultLabels = { HC:'Highly Commended', C:'Commended', P:'Pass', F:'Fail', ABS:'Absent' };
+
+// Build merged view: all candidates + schedule venue/date/time + overlay examResults
+function buildResultRows() {
+  buildScheduleData(); // populates arrangeData
+  const rows = applicants.flatMap(a =>
+    a.candidates.map(c => {
+      const sched = arrangeData.find(s => s.no === c.no) || {};
+      const res   = examResults.find(r => r.candNo === c.no && r.examCode === (c.examCode || ''));
+      return {
+        refNo:      a.id,
+        groupNo:    c.groupNo   || '',
+        candNo:     c.no,
+        candName:   c.name,
+        examCode:   c.examCode  || '',
+        gradeCode:  c.gradeCode || '',
+        centreCode: res?.centreCode || sched.venue || '',
+        examDate:   res?.examDate   || sched.date  || '',
+        startTime:  res?.startTime  || sched.time  || '',
+        result:     res?.result     || '',
+      };
+    })
+  );
+  return rows;
+}
+
+function initResultFilters() {
+  const allRows = buildResultRows();
+
+  const examSel = document.getElementById('result-filter-exam');
+  const usedExams = [...new Set(allRows.map(r => r.examCode).filter(Boolean))].sort();
+  examSel.innerHTML = '<option value="">全部专业</option>' +
+    usedExams.map(code => {
+      const ex = exams.find(e => e.code === code);
+      return `<option value="${code}">${code}${ex ? ' — ' + ex.name : ''}</option>`;
+    }).join('');
+
+  const gradeSel = document.getElementById('result-filter-grade');
+  const usedGrades = [...new Set(allRows.map(r => r.gradeCode).filter(Boolean))].sort();
+  gradeSel.innerHTML = '<option value="">全部级别</option>' +
+    usedGrades.map(code => {
+      let name = code;
+      exams.forEach(e => { const g = e.grades.find(g => g.code === code); if (g) name = g.name; });
+      return `<option value="${code}">${name}</option>`;
+    }).join('');
+
+  const centreSel = document.getElementById('result-filter-centre');
+  const usedCentres = [...new Set(allRows.map(r => r.centreCode).filter(Boolean))].sort();
+  centreSel.innerHTML = '<option value="">全部考场</option>' +
+    usedCentres.map(code => {
+      const c = centres.find(c => c.code === code);
+      return `<option value="${code}">${code}${c ? ' — ' + c.name : ''}</option>`;
+    }).join('');
+}
+
+function filterResults() {
+  const name    = document.getElementById('result-search-name').value.trim().toLowerCase();
+  const exam    = document.getElementById('result-filter-exam').value;
+  const grade   = document.getElementById('result-filter-grade').value;
+  const centre  = document.getElementById('result-filter-centre').value;
+  const result  = document.getElementById('result-filter-result').value;
+  resultPage = 1;
+  filteredResults = buildResultRows().filter(r => {
+    if (name   && !r.candName.toLowerCase().includes(name)) return false;
+    if (exam   && r.examCode   !== exam)   return false;
+    if (grade  && r.gradeCode  !== grade)  return false;
+    if (centre && r.centreCode !== centre) return false;
+    if (result && r.result     !== result) return false;
+    return true;
+  });
+  renderResults();
+}
+
+function renderResults() {
+  const total = filteredResults.length;
+  const start = (resultPage - 1) * resultPageSize;
+  const page  = filteredResults.slice(start, start + resultPageSize);
+  const tbody = document.getElementById('result-tbody');
+
+  if (!total) {
+    const hint = applicants.length ? '无符合条件的记录' : '暂无考生资料，请先在「申请人管理」导入数据';
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="ti ti-clipboard-off"></i>${hint}</div></td></tr>`;
+    document.getElementById('result-count-label').textContent = '';
+    document.getElementById('result-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = page.map(r => {
+    const ex    = exams.find(e => e.code === r.examCode);
+    const grade = ex ? ex.grades.find(g => g.code === r.gradeCode) : null;
+    const c     = centres.find(c => c.code === r.centreCode);
+    const rlabel = r.result ? (resultLabels[r.result] || r.result) : '—';
+    const rcolor = r.result === 'HC' ? 'var(--teal-text)' :
+                   r.result === 'C'  ? 'var(--info-text)' :
+                   r.result === 'P'  ? 'var(--text2)' :
+                   r.result === 'F'  ? 'var(--red-text)' :
+                   r.result === 'ABS'? 'var(--text3)' : 'var(--text3)';
+    return `<tr>
+      <td>${r.refNo}</td>
+      <td>${r.groupNo}</td>
+      <td>${r.candName}</td>
+      <td>${ex ? ex.name : r.examCode}</td>
+      <td>${grade ? grade.name : r.gradeCode}</td>
+      <td>${r.centreCode || '—'}</td>
+      <td>${r.examDate  || '—'}</td>
+      <td>${r.startTime || '—'}</td>
+      <td style="text-align:center;color:${rcolor};">${rlabel}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('result-count-label').textContent = `共 ${total} 位考生`;
+  renderPagination('result-pagination', total, resultPage, resultPageSize,
+    `function(p){resultPage=p;renderResults();}`);
+}
+
+function exportResultTemplate() {
+  if (!applicants.length) {
+    alert('暂无考生资料，请先在「申请人管理」页导入数据。');
+    return;
+  }
+  // Always rebuild schedule data so venue/date/time are up to date
+  buildScheduleData();
+
+  const header = 'REFNO,GROUPNO,CANDNO,CANDNAME,EXAMS_CODE,GRADE_CODE,CENTRE_CODE,EXAM_DATE (DD/MM/YYYY),START_TIME(HH:MI),RESULT';
+  const rows = applicants.flatMap(a =>
+    a.candidates.map(c => {
+      const sched = arrangeData.find(s => s.no === c.no) || {};
+      return [
+        a.id,
+        c.groupNo   || '',
+        c.no,
+        c.name,
+        c.examCode  || '',
+        c.gradeCode || '',
+        sched.venue || '',
+        sched.date  || '',
+        sched.time  || '',
+        ''
+      ].join(',');
+    })
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '考生成绩导入模板.csv';
+  a.click();
+}
+
+function handleResultImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
+    if (lines.length < 2) { alert('档案格式错误'); input.value = ''; return; }
+    let added = 0, updated = 0, skipped = 0, warns = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.trim());
+      if (cols.length < 9) { skipped++; warns.push(`第 ${i+1} 行：栏位不足`); continue; }
+      const [refNo, groupNo, candNo, candName, examCode, gradeCode, centreCode, examDate, startTime, result] = cols;
+      if (!candNo) { skipped++; warns.push(`第 ${i+1} 行：缺少考生编号`); continue; }
+      const exist = examResults.find(r => r.candNo === candNo && r.examCode === examCode && r.gradeCode === gradeCode);
+      if (exist) { exist.result = result; updated++; }
+      else { examResults.push({ refNo, groupNo, candNo, candName, examCode, gradeCode, centreCode, examDate, startTime, result }); added++; }
+    }
+    input.value = '';
+    initResultFilters();
+    filterResults();
+    let msg = `共处理 ${lines.length - 1} 行数据。\n\n新增 ${added} 条，更新 ${updated} 条成绩记录。`;
+    if (skipped) msg += `\n\n以下 ${skipped} 行已跳过：\n` + warns.map(w => `• ${w}`).join('\n');
+    document.getElementById('result-import-msg').textContent = msg;
+    openModal('modal-result-import');
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+
+// ══════════════════════════════════════
+// SHOW PAGE — update to support new pages
+// ══════════════════════════════════════
+function showPage(p, el) {
+  document.getElementById('page-exam').style.display              = (p === 'exam')         ? 'flex' : 'none';
+  document.getElementById('page-dance').style.display             = (p === 'dance')        ? 'flex' : 'none';
+  document.getElementById('page-centres').style.display           = (p === 'centres')      ? 'flex' : 'none';
+  document.getElementById('page-applicants').style.display        = (p === 'applicants')   ? 'flex' : 'none';
+  document.getElementById('page-applicant-detail').style.display  = 'none';
+  document.getElementById('page-arrange').style.display           = (p === 'arrange')      ? 'flex' : 'none';
+  document.getElementById('page-templates').style.display         = (p === 'templates')    ? 'flex' : 'none';
+  document.getElementById('page-template-editor').style.display   = 'none';
+  document.getElementById('page-results').style.display           = (p === 'results')      ? 'flex' : 'none';
+  document.getElementById('page-report-entry').style.display      = (p === 'report-entry') ? 'flex' : 'none';
+  document.getElementById('page-report-fee').style.display        = (p === 'report-fee')   ? 'flex' : 'none';
+  document.getElementById('dev-note-float').style.display         = (p === 'applicants')   ? 'block' : 'none';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (p === 'centres')      { filterCentres(); }
+  if (p === 'arrange')      { buildScheduleData(); arrangePage = 1; filterSchedule(); }
+  if (p === 'results')      { initResultFilters(); filterResults(); }
+  if (p === 'report-entry') { renderEntryReport(); }
+  if (p === 'report-fee')   { renderFeeReport(); }
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+renderExams(exams);
+renderDances(dances);
+renderApplicants(applicants);
+</script>
+<!-- Floating dev note -->
+<div id="dev-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:340px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
+  <div id="dev-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <i class="ti ti-code" style="color:#f0c060;font-size:13px;"></i>
+    <span style="font-weight:600;color:#f0c060;flex:1;font-size:12px;">导入逻辑（开发备注）</span>
+    <span onclick="toggleDevNote()" style="cursor:pointer;opacity:.5;font-size:16px;line-height:1;">×</span>
+  </div>
+  <ul style="margin:0;padding:10px 14px 12px 26px;">
+    <li>同一申请人编号多次出现：以首行申请人信息为准，考生逐行累加</li>
+    <li>申请人编号不存在于系统 → 新增</li>
+    <li>申请人编号已存在 → 逐字段更新申请人信息；考生按考生编号匹配，已有的更新，没有的追加</li>
+    <li>同一考生编号在文件中重复 → 跳过并在结果中提示</li>
+    <li>缺少必填字段（申请人编号或姓名）→ 跳过该行并提示</li>
+  </ul>
+</div>
+
+<script>
+function toggleDevNote() {
+  const el = document.getElementById('dev-note-float');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// Draggable
+(function() {
+  const el = document.getElementById('dev-note-float');
+  const handle = document.getElementById('dev-note-drag-handle');
+  let ox, oy, sx, sy;
+  handle.addEventListener('mousedown', function(e) {
+    if (e.target.tagName === 'SPAN' && e.target.textContent === '×') return;
+    sx = el.getBoundingClientRect().left;
+    sy = el.getBoundingClientRect().top;
+    ox = e.clientX; oy = e.clientY;
+    // Switch to absolute positioning for free drag
+    el.style.right  = 'auto';
+    el.style.bottom = 'auto';
+    el.style.left   = sx + 'px';
+    el.style.top    = sy + 'px';
+    function onMove(e) {
+      el.style.left = (sx + e.clientX - ox) + 'px';
+      el.style.top  = (sy + e.clientY - oy) + 'px';
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+})();
+</script>
+</body>
+</html>
