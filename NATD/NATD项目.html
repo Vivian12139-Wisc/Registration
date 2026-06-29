@@ -122,6 +122,7 @@
   .topbar-title { font-size: 14px; font-weight: 500; flex: 1; }
   .topbar-sub { font-size: 12px; color: var(--text2); }
 
+
   .page { padding: 20px; flex: 1; overflow-y: auto; }
   .page-hidden { display: none !important; }
 
@@ -1036,11 +1037,11 @@
           <!-- Filter: 成绩 -->
           <select id="result-filter-result" onchange="filterResults()" style="width:120px;">
             <option value="">全部成绩</option>
-            <option value="HC">Highly Commended</option>
-            <option value="C">Commended</option>
-            <option value="P">Pass</option>
-            <option value="F">Fail</option>
-            <option value="ABS">Absent</option>
+            <option value="HC">HC</option>
+            <option value="C">C</option>
+            <option value="P">P</option>
+            <option value="F">F</option>
+            <option value="ABS">ABS</option>
           </select>
           <div class="spacer"></div>
           <button onclick="exportResultTemplate()"><i class="ti ti-download"></i> 导出模板</button>
@@ -1107,11 +1108,9 @@
         <div class="tmpl-section-label">准考证</div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-id-badge-2"></i> 准考证</div>
-          <div class="tmpl-doc-desc">每位考生一张，含考试地点、日期及时间</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('admission','准考证')">模板配置</button>
-            <button class="primary" onclick="openExportModal('admission')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('admission','准考证')">模板配置</button>
+            <button class="primary" onclick="openExportModal('admission')">导出</button>
           </div>
         </div>
 
@@ -1119,20 +1118,16 @@
         <div class="tmpl-section-label" style="margin-top:20px;">日程表</div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-calendar-event"></i> 考官日程表</div>
-          <div class="tmpl-doc-desc">Day Sheet for Examiner，含成绩填写栏</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('daysheet-ex','考官日程表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('daysheet-ex')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('daysheet-ex','考官日程表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('daysheet-ex')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-calendar-event"></i> 监考员日程表</div>
-          <div class="tmpl-doc-desc">Day Sheet for Waiting Room Supervisor，含出席记录栏</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('daysheet-sv','监考员日程表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('daysheet-sv')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('daysheet-sv','监考员日程表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('daysheet-sv')">导出</button>
           </div>
         </div>
 
@@ -1140,65 +1135,51 @@
         <div class="tmpl-section-label" style="margin-top:20px;">评分表</div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余标准舞评分表</div>
-          <div class="tmpl-doc-desc">Amateur Ballroom — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-ballroom','业余标准舞评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-ballroom')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-ballroom','业余标准舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-ballroom')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余拉丁舞评分表</div>
-          <div class="tmpl-doc-desc">Amateur Latin — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-latin','业余拉丁舞评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-latin')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-latin','业余拉丁舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-latin')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余牛仔线舞评分表</div>
-          <div class="tmpl-doc-desc">Amateur Country &amp; Western Line Dancing — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-country','业余牛仔线舞评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-country')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-country','业余牛仔线舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-country')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 业余流行社交舞评分表</div>
-          <div class="tmpl-doc-desc">Amateur Popular Social Dance Test — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-social','业余流行社交舞评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-social')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-social','业余流行社交舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-social')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 彩虹奖评分表</div>
-          <div class="tmpl-doc-desc">Rainbow — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-rainbow','彩虹奖评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-rainbow')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-rainbow','彩虹奖评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-rainbow')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 职业标准舞评分表</div>
-          <div class="tmpl-doc-desc">Professional Ballroom — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-pro-ballroom','职业标准舞评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-pro-ballroom')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-pro-ballroom','职业标准舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-pro-ballroom')">导出</button>
           </div>
         </div>
         <div class="tmpl-doc-card">
           <div class="tmpl-doc-name"><i class="ti ti-file-text"></i> 职业拉丁舞评分表</div>
-          <div class="tmpl-doc-desc">Professional Latin — Examiner's Report Form</div>
-
           <div class="tmpl-doc-actions">
-            <button onclick="openTmplEditor('ms-pro-latin','职业拉丁舞评分表')">模板配置</button>
-            <button class="primary" onclick="openExportModal('ms-pro-latin')"><i class="ti ti-printer"></i> 导出</button>
+            <button class="primary" onclick="openTmplEditor('ms-pro-latin','职业拉丁舞评分表')">模板配置</button>
+            <button class="primary" onclick="openExportModal('ms-pro-latin')">导出</button>
           </div>
         </div>
 
@@ -1308,7 +1289,7 @@
         <div id="export-doc-body" style="display:flex;flex-direction:column;gap:14px;"></div>
         <div class="modal-footer">
           <button onclick="closeModal('modal-export-doc')">取消</button>
-          <button class="primary" id="export-doc-confirm-btn"><i class="ti ti-download"></i> 确认导出</button>
+          <button class="primary" id="export-doc-confirm-btn">确认导出</button>
         </div>
       </div>
     </div>
@@ -2888,53 +2869,75 @@ function openExportModal(type) {
   };
   document.getElementById('export-doc-title').innerHTML = `<i class="ti ti-printer"></i> 导出${labels[type]||''}`;
 
-  // admission, daysheet-ex, daysheet-sv and all marksheets all use subject/grade filter
-  const usedCodes = [...new Set(applicants.flatMap(a => a.candidates.map(c => c.examCode)))].sort();
-  const subjectOpts = usedCodes.map(code => {
-    const ex = exams.find(e => e.code === code);
-    return `<option value="${code}">${code}${ex?' — '+ex.name:''}</option>`;
-  }).join('');
+  let bodyHtml = '';
 
-  const bodyHtml = `
-    <div class="form-group full">
-      <label class="form-label">考试专业</label>
-      <select id="exp-subject" style="width:100%;">
-        <option value="">全部专业</option>${subjectOpts || '<option disabled>（暂无考生数据）</option>'}
-      </select>
-    </div>
-    <div class="form-group full">
-      <label class="form-label">考试级别（可选）</label>
-      <select id="exp-grade" style="width:100%;">
-        <option value="">全部级别</option>
-      </select>
-    </div>
-    <div id="exp-count" style="font-size:12px;color:var(--text3);min-height:18px;"></div>`;
+  if (type === 'admission') {
+    // Filter by applicant ID
+    const appOpts = applicants.map(a =>
+      `<option value="${a.id}">${a.id} — ${a.name}</option>`
+    ).join('');
+    bodyHtml = `
+      <div class="form-group full">
+        <label class="form-label">申请人编号</label>
+        <select id="exp-applicant" style="width:100%;">
+          <option value="">全部申请人</option>${appOpts || '<option disabled>（暂无申请人数据）</option>'}
+        </select>
+      </div>`;
 
-  document.getElementById('export-doc-body').innerHTML = bodyHtml;
-  document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
-  openModal('modal-export-doc');
+    document.getElementById('export-doc-body').innerHTML = bodyHtml;
+    document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
+    openModal('modal-export-doc');
 
-  // Wire up subject/grade cascading selects
-  const subjEl  = document.getElementById('exp-subject');
-  const gradeEl = document.getElementById('exp-grade');
+  } else if (isDaysheet(type)) {
+    // Filter by exam date from arrangeData
+    buildScheduleData();
+    const dates = [...new Set(arrangeData.map(s => s.date).filter(Boolean))].sort();
+    const dateOpts = dates.map(d => `<option value="${d}">${d}</option>`).join('');
+    bodyHtml = `
+      <div class="form-group full">
+        <label class="form-label">考试日期</label>
+        <select id="exp-date" style="width:100%;">
+          <option value="">全部日期</option>${dateOpts || '<option disabled>（暂无编排数据）</option>'}
+        </select>
+      </div>
+      `;
 
-  const updateCount = () => {
-    const code  = subjEl.value;
-    const grade = gradeEl.value;
-    let cands = applicants.flatMap(a => a.candidates);
-    if (code)  cands = cands.filter(c => c.examCode  === code);
-    if (grade) cands = cands.filter(c => c.gradeCode === grade);
-    document.getElementById('exp-count').textContent = `共 ${cands.length} 位考生`;
-  };
+    document.getElementById('export-doc-body').innerHTML = bodyHtml;
+    document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
+    openModal('modal-export-doc');
 
-  subjEl.onchange = function() {
-    const ex = exams.find(e => e.code === this.value);
-    gradeEl.innerHTML = '<option value="">全部级别</option>' +
-      (ex ? ex.grades.map(g => `<option value="${g.code}">${g.name}</option>`).join('') : '');
-    updateCount();
-  };
-  gradeEl.onchange = updateCount;
-  updateCount();
+  } else {
+    // Marksheets: filter by subject / grade (from exams master list)
+    const subjectOpts = exams.map(ex =>
+      `<option value="${ex.code}">${ex.code} — ${ex.name}</option>`
+    ).join('');
+    bodyHtml = `
+      <div class="form-group full">
+        <label class="form-label">考试专业</label>
+        <select id="exp-subject" style="width:100%;">
+          <option value="">全部专业</option>${subjectOpts}
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">考试级别</label>
+        <select id="exp-grade" style="width:100%;">
+          <option value="">全部级别</option>
+        </select>
+      </div>
+      `;
+
+    document.getElementById('export-doc-body').innerHTML = bodyHtml;
+    document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
+    openModal('modal-export-doc');
+
+    const subjEl  = document.getElementById('exp-subject');
+    const gradeEl = document.getElementById('exp-grade');
+    subjEl.onchange = function() {
+      const ex = exams.find(e => e.code === this.value);
+      gradeEl.innerHTML = '<option value="">全部级别</option>' +
+        (ex ? ex.grades.map(g => `<option value="${g.code}">${g.name}</option>`).join('') : '');
+    };
+  }
 }
 
 function saveTmpl() {
@@ -2981,7 +2984,8 @@ function renderEntryReport() {
   </tr>`).join('');
 
   tfoot.innerHTML = `<tr style="font-weight:600;border-top:2px solid var(--border);">
-    <td colspan="2" style="text-align:right;padding:6px 8px;">Total:</td>
+    <td style="padding:6px 8px;">Total:</td>
+    <td></td>
     <td style="text-align:right;padding:6px 8px;">${total}</td>
   </tr>`;
 }
@@ -3002,15 +3006,16 @@ function renderFeeReport() {
       agg[key].count++;
     });
 
-    let sysTotal = 0;
+    let examTotal = 0, centreTotal = 0;
     const rows = Object.values(agg).map(r => {
       const ex        = exams.find(e => e.code === r.examCode);
       const grade     = ex ? ex.grades.find(g => g.code === r.gradeCode) : null;
-      const examFee   = grade ? (grade.examFee   || 0) : 0;
-      const centreFee = grade ? (grade.centreFee || 0) : 0;
+      const examFee   = grade ? (grade.fee       || 0) : 0;
+      const centreFee = grade ? (grade.surcharge || 0) : 0;
       const examSub   = examFee   * r.count;
       const centreSub = centreFee * r.count;
-      sysTotal += examSub + centreSub;
+      examTotal   += examSub;
+      centreTotal += centreSub;
       return `<tr>
         <td>${r.examCode}</td>
         <td>${r.gradeCode}</td>
@@ -3023,15 +3028,18 @@ function renderFeeReport() {
       </tr>`;
     }).join('');
 
-    const sysAmt   = sysTotal              ? '$'+sysTotal.toLocaleString()        : '—';
-    const entryAmt = a.paid && a.paid > 0  ? '$'+Number(a.paid).toLocaleString()  : '—';
+    const sysTotal  = examTotal + centreTotal;
+    const sysAmt    = sysTotal    ? '$'+sysTotal.toLocaleString()    : '—';
+    const examAmt   = examTotal   ? '$'+examTotal.toLocaleString()   : '—';
+    const centreAmt = centreTotal ? '$'+centreTotal.toLocaleString() : '—';
+    const entryAmt  = a.paid && a.paid > 0 ? '$'+Number(a.paid).toLocaleString() : '—';
 
     return `<div class="card card-flush" style="margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px 0;">
         <div style="font-size:13px;font-weight:600;">${a.id} — ${a.name}</div>
         <div style="font-size:12px;color:var(--text2);text-align:right;line-height:1.8;">
-          Total Amount (Sys Gen): <b>${sysAmt}</b><br>
-          Total Amount (Entry Data): <b>${entryAmt}</b>
+          Total Amount (Sys Gen): <b style="color:var(--text);">${sysAmt}</b><br>
+          Total Amount (Entry Data): <b style="color:var(--text);">${entryAmt}</b>
         </div>
       </div>
       <div class="table-wrap" style="margin-top:8px;">
@@ -3047,11 +3055,14 @@ function renderFeeReport() {
           </tr></thead>
           <tbody>${rows}</tbody>
           <tfoot><tr style="font-weight:600;border-top:2px solid var(--border);">
-            <td colspan="2" style="padding:6px 8px;text-align:right;">Total</td>
+            <td style="padding:6px 8px;">Total</td>
+            <td></td>
             <td style="text-align:right;padding:6px 8px;">${a.candidates.length}</td>
             <td></td>
-            <td style="text-align:right;padding:6px 8px;">${sysAmt}</td>
-            <td></td><td></td><td></td>
+            <td style="text-align:right;padding:6px 8px;">${examAmt}</td>
+            <td style="text-align:right;padding:6px 8px;">${a.candidates.length}</td>
+            <td></td>
+            <td style="text-align:right;padding:6px 8px;">${centreAmt}</td>
           </tr></tfoot>
         </table>
       </div>
@@ -3106,15 +3117,16 @@ function exportReportPDF(type) {
         if (!agg[key]) agg[key] = { examCode:c.examCode||'', gradeCode:c.gradeCode||'', count:0 };
         agg[key].count++;
       });
-      let sysTotal = 0;
+      let examTotal = 0, centreTotal = 0;
       const rows = Object.values(agg).map(r => {
         const ex        = exams.find(e => e.code === r.examCode);
         const grade     = ex ? ex.grades.find(g => g.code === r.gradeCode) : null;
-        const examFee   = grade ? (grade.examFee   || 0) : 0;
-        const centreFee = grade ? (grade.centreFee || 0) : 0;
+        const examFee   = grade ? (grade.fee       || 0) : 0;
+        const centreFee = grade ? (grade.surcharge || 0) : 0;
         const examSub   = examFee   * r.count;
         const centreSub = centreFee * r.count;
-        sysTotal += examSub + centreSub;
+        examTotal   += examSub;
+        centreTotal += centreSub;
         return `<tr><td>${r.examCode}</td><td>${r.gradeCode}</td><td class="num">${r.count}</td>
           <td class="num">${examFee?'$'+examFee.toLocaleString():'—'}</td>
           <td class="num">${examSub?'$'+examSub.toLocaleString():'—'}</td>
@@ -3122,16 +3134,21 @@ function exportReportPDF(type) {
           <td class="num">${centreFee?'$'+centreFee.toLocaleString():'—'}</td>
           <td class="num">${centreSub?'$'+centreSub.toLocaleString():'—'}</td></tr>`;
       }).join('');
-      const sysAmt   = sysTotal            ? '$'+sysTotal.toLocaleString()       : '—';
-      const entryAmt = a.paid && a.paid > 0 ? '$'+Number(a.paid).toLocaleString(): '—';
+      const sysTotal  = examTotal + centreTotal;
+      const sysAmt    = sysTotal    ? '$'+sysTotal.toLocaleString()    : '—';
+      const examAmt   = examTotal   ? '$'+examTotal.toLocaleString()   : '—';
+      const centreAmt = centreTotal ? '$'+centreTotal.toLocaleString() : '—';
       return `<div class="rpt-block">
         <div class="rpt-block-header">
           <span><b>Ref No: ${a.id}</b> &nbsp; ${a.name}</span>
-          <span>Total Amount (Sys Gen): <b>${sysAmt}</b> &nbsp;&nbsp; Total Amount (Entry Data): <b>${entryAmt}</b></span>
+          <span>Total Amount (Sys Gen): <b>${sysAmt}</b></span>
         </div>
-        <table><thead><tr><th>Exam</th><th>Grade</th><th class="num">No of Cand</th><th class="num">Exam Fee</th><th class="num">Sub-total</th><th class="num">No of Group</th><th class="num">Centre Fee</th><th class="num">Sub-total</th></tr></thead>
+        <table><thead>
+          <tr><th colspan="5"></th><th colspan="3" style="text-align:center;font-size:10px;font-weight:normal;color:#555;padding-bottom:2px;">— Centre Arrangement —</th></tr>
+          <tr><th>Exam</th><th>Grade</th><th class="num">No of Cand</th><th class="num">Exam Fee</th><th class="num">Sub-total</th><th class="num">No of Group</th><th class="num">Centre Fee</th><th class="num">Sub-total</th></tr>
+        </thead>
         <tbody>${rows}</tbody>
-        <tfoot><tr class="rpt-total-row"><td colspan="2" class="num">Total</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${sysAmt}</td><td></td><td></td><td></td></tr></tfoot>
+        <tfoot><tr class="rpt-total-row"><td colspan="2" class="num">Total</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${examAmt}</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${centreAmt}</td></tr></tfoot>
         </table></div>`;
     }).join('');
     bodyHTML = `
@@ -3247,7 +3264,7 @@ function renderResults() {
     const ex    = exams.find(e => e.code === r.examCode);
     const grade = ex ? ex.grades.find(g => g.code === r.gradeCode) : null;
     const c     = centres.find(c => c.code === r.centreCode);
-    const rlabel = r.result ? (resultLabels[r.result] || r.result) : '—';
+    const rlabel = r.result || '—';
     const rcolor = r.result === 'HC' ? 'var(--teal-text)' :
                    r.result === 'C'  ? 'var(--info-text)' :
                    r.result === 'P'  ? 'var(--text2)' :
@@ -3350,6 +3367,7 @@ function showPage(p, el) {
   document.getElementById('page-report-entry').style.display      = (p === 'report-entry') ? 'flex' : 'none';
   document.getElementById('page-report-fee').style.display        = (p === 'report-fee')   ? 'flex' : 'none';
   document.getElementById('dev-note-float').style.display         = (p === 'applicants')   ? 'block' : 'none';
+  document.getElementById('fee-note-float').style.display         = (p === 'report-fee')   ? 'block' : 'none';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
   if (p === 'centres')      { filterCentres(); }
@@ -3366,6 +3384,19 @@ renderExams(exams);
 renderDances(dances);
 renderApplicants(applicants);
 </script>
+<!-- Floating fee note -->
+<div id="fee-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:300px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
+  <div id="fee-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <i class="ti ti-info-circle" style="color:#f0c060;font-size:13px;"></i>
+    <span style="font-weight:600;color:#f0c060;flex:1;font-size:12px;">金额说明</span>
+    <span onclick="document.getElementById('fee-note-float').style.display='none'" style="cursor:pointer;opacity:.5;font-size:16px;line-height:1;">×</span>
+  </div>
+  <ul style="margin:0;padding:10px 14px 12px 26px;">
+    <li><b style="color:#e8e6e0;">Total Amount (Sys Gen)</b>：由系统自动汇总，等于该申请人下所有考生的报名费（Exam Fee）与考场附加费（Centre Fee）小计之总和</li>
+    <li><b style="color:#e8e6e0;">Total Amount (Entry Data)</b>：导入申请人资料时的已付费用总额</li>
+  </ul>
+</div>
+
 <!-- Floating dev note -->
 <div id="dev-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:340px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
   <div id="dev-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -3388,21 +3419,19 @@ function toggleDevNote() {
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
-// Draggable
-(function() {
-  const el = document.getElementById('dev-note-float');
-  const handle = document.getElementById('dev-note-drag-handle');
+// Draggable helper
+function makeDraggable(elId, handleId) {
+  const el = document.getElementById(elId);
+  const handle = document.getElementById(handleId);
+  if (!el || !handle) return;
   let ox, oy, sx, sy;
   handle.addEventListener('mousedown', function(e) {
     if (e.target.tagName === 'SPAN' && e.target.textContent === '×') return;
     sx = el.getBoundingClientRect().left;
     sy = el.getBoundingClientRect().top;
     ox = e.clientX; oy = e.clientY;
-    // Switch to absolute positioning for free drag
-    el.style.right  = 'auto';
-    el.style.bottom = 'auto';
-    el.style.left   = sx + 'px';
-    el.style.top    = sy + 'px';
+    el.style.right = 'auto'; el.style.bottom = 'auto';
+    el.style.left = sx + 'px'; el.style.top = sy + 'px';
     function onMove(e) {
       el.style.left = (sx + e.clientX - ox) + 'px';
       el.style.top  = (sy + e.clientY - oy) + 'px';
@@ -3414,7 +3443,9 @@ function toggleDevNote() {
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   });
-})();
+}
+makeDraggable('dev-note-float', 'dev-note-drag-handle');
+makeDraggable('fee-note-float', 'fee-note-drag-handle');
 </script>
 </body>
 </html>
