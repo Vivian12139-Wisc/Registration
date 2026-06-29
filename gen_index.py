@@ -180,6 +180,15 @@ HTML_TEMPLATE = """\
     font-size: 14px;
     font-weight: 500;
   }}
+  .file-badge {{
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }}
   .file-arrow {{ font-size: 12px; color: var(--sub); }}
 
   /* ── 空状态 ── */
@@ -215,6 +224,13 @@ HTML_TEMPLATE = """\
 </html>
 """
 
+# ── 支持的文件类型配置 ──────────────────────────────────────────────
+FILE_TYPES = {
+    ".html": {"icon": "📄", "color": "#30b0c7", "shadow": "rgba(48,176,199,.25)", "label": "HTML", "new_tab": True,  "download": False},
+    ".pdf":  {"icon": "📕", "color": "#ff3b30", "shadow": "rgba(255,59,48,.25)",  "label": "PDF",  "new_tab": True,  "download": True},
+    ".csv":  {"icon": "📊", "color": "#34c759", "shadow": "rgba(52,199,89,.25)",  "label": "CSV",  "new_tab": False, "download": True},
+}
+
 def build_breadcrumb(rel_dir: str) -> str:
     root_a = '<a href="{depth}index.html">🏠 根目录</a>'
     sep = ' <span class="sep">/</span> '
@@ -243,7 +259,7 @@ def build_body(dirpath: str, rel_dir: str) -> str:
     subdirs = [i for i in items
                if os.path.isdir(os.path.join(dirpath, i)) and not i.startswith(".")]
     files   = [i for i in items
-               if i.endswith(".html") and i != "index.html"]
+               if os.path.splitext(i)[1].lower() in FILE_TYPES and i != "index.html"]
 
     parts = []
 
@@ -264,17 +280,27 @@ def build_body(dirpath: str, rel_dir: str) -> str:
 
     # ── 文件列表 ──
     if files:
-        rows = "\n".join(
-            f'<a href="{f}" class="file-row">'
-            f'  <div class="file-icon-wrap">📄</div>'
-            f'  <span class="file-name">{f}</span>'
-            f'  <span class="file-arrow">↗</span>'
-            f'</a>'
-            for f in files
-        )
+        rows = []
+        for f in files:
+            ext = os.path.splitext(f)[1].lower()
+            cfg = FILE_TYPES.get(ext, FILE_TYPES[".html"])
+            icon    = cfg["icon"]
+            color   = cfg["color"]
+            shadow  = cfg["shadow"]
+            label   = cfg["label"]
+            target  = 'target="_blank"' if cfg["new_tab"] else ""
+            dl_attr = f'download="{f}"' if cfg["download"] else ""
+            rows.append(
+                f'<a href="{f}" class="file-row" {target} {dl_attr}>'
+                f'  <div class="file-icon-wrap" style="background:linear-gradient(145deg,{color}cc,{color});box-shadow:0 2px 6px {shadow}">{icon}</div>'
+                f'  <span class="file-name">{f}</span>'
+                f'  <span class="file-badge" style="background:{color}22;color:{color}">{label}</span>'
+                f'  <span class="file-arrow">{"⬇" if cfg["download"] else "↗"}</span>'
+                f'</a>'
+            )
         parts.append(
             f'<p class="section-hd">文档</p>'
-            f'<div class="file-card">{rows}</div>'
+            f'<div class="file-card">{"".join(rows)}</div>'
         )
 
     if not subdirs and not files:
@@ -293,7 +319,8 @@ def gen_index_for_dir(dirpath: str, root: str = ".") -> None:
     try:
         children = [i for i in os.listdir(dirpath) if not i.startswith(".")]
         subdirs  = sum(1 for i in children if os.path.isdir(os.path.join(dirpath, i)))
-        files    = sum(1 for i in children if i.endswith(".html") and i != "index.html")
+        files    = sum(1 for i in children
+                       if os.path.splitext(i)[1].lower() in FILE_TYPES and i != "index.html")
         if subdirs and files:
             subtitle = f"{subdirs} 个文件夹 · {files} 个文档"
         elif subdirs:

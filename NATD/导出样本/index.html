@@ -177,6 +177,15 @@
     font-size: 14px;
     font-weight: 500;
   }
+  .file-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }
   .file-arrow { font-size: 12px; color: var(--sub); }
 
   /* ── 空状态 ── */
@@ -204,8 +213,10 @@
 <body>
 <div class="wrap">
   <nav class="crumbs"><a href="../../index.html">🏠 根目录</a> <span class="sep">/</span> <a href="../index.html">NATD</a> <span class="sep">/</span> <span class="now">导出样本</span></nav>
-  <div class="page-title">导出样本<small>1 个文件夹</small></div>
+  <div class="page-title">导出样本<small>1 个文件夹 · 5 个文档</small></div>
   <p class="section-hd">文件夹</p><div class="folder-grid"><a href="評分表範本/index.html" class="folder-card">  <div class="folder-icon">📁</div>  <div class="folder-name">評分表範本</div>  <div class="folder-arrow">打开 ›</div></a></div>
+
+<p class="section-hd">文档</p><div class="file-card"><a href="准考证.pdf" class="file-row" target="_blank" download="准考证.pdf">  <div class="file-icon-wrap" style="background:linear-gradient(145deg,#ff3b30cc,#ff3b30);box-shadow:0 2px 6px rgba(255,59,48,.25)">📕</div>  <span class="file-name">准考证.pdf</span>  <span class="file-badge" style="background:#ff3b3022;color:#ff3b30">PDF</span>  <span class="file-arrow">⬇</span></a><a href="报名统计.pdf" class="file-row" target="_blank" download="报名统计.pdf">  <div class="file-icon-wrap" style="background:linear-gradient(145deg,#ff3b30cc,#ff3b30);box-shadow:0 2px 6px rgba(255,59,48,.25)">📕</div>  <span class="file-name">报名统计.pdf</span>  <span class="file-badge" style="background:#ff3b3022;color:#ff3b30">PDF</span>  <span class="file-arrow">⬇</span></a><a href="申请人缴费统计.pdf" class="file-row" target="_blank" download="申请人缴费统计.pdf">  <div class="file-icon-wrap" style="background:linear-gradient(145deg,#ff3b30cc,#ff3b30);box-shadow:0 2px 6px rgba(255,59,48,.25)">📕</div>  <span class="file-name">申请人缴费统计.pdf</span>  <span class="file-badge" style="background:#ff3b3022;color:#ff3b30">PDF</span>  <span class="file-arrow">⬇</span></a><a href="监考员日程表.pdf" class="file-row" target="_blank" download="监考员日程表.pdf">  <div class="file-icon-wrap" style="background:linear-gradient(145deg,#ff3b30cc,#ff3b30);box-shadow:0 2px 6px rgba(255,59,48,.25)">📕</div>  <span class="file-name">监考员日程表.pdf</span>  <span class="file-badge" style="background:#ff3b3022;color:#ff3b30">PDF</span>  <span class="file-arrow">⬇</span></a><a href="考官日程表.pdf" class="file-row" target="_blank" download="考官日程表.pdf">  <div class="file-icon-wrap" style="background:linear-gradient(145deg,#ff3b30cc,#ff3b30);box-shadow:0 2px 6px rgba(255,59,48,.25)">📕</div>  <span class="file-name">考官日程表.pdf</span>  <span class="file-badge" style="background:#ff3b3022;color:#ff3b30">PDF</span>  <span class="file-arrow">⬇</span></a></div>
   <footer>gen_index.py</footer>
 </div>
 </body>
