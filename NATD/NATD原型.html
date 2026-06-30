@@ -3131,24 +3131,34 @@ function exportReportPDF(type) {
           <td class="num">${examFee?'$'+examFee.toLocaleString():'—'}</td>
           <td class="num">${examSub?'$'+examSub.toLocaleString():'—'}</td>
           <td class="num">1</td>
+          <td class="num">${r.count}</td>
           <td class="num">${centreFee?'$'+centreFee.toLocaleString():'—'}</td>
           <td class="num">${centreSub?'$'+centreSub.toLocaleString():'—'}</td></tr>`;
       }).join('');
       const sysTotal  = examTotal + centreTotal;
-      const sysAmt    = sysTotal    ? '$'+sysTotal.toLocaleString()    : '—';
+      const sysAmt    = sysTotal    ? '$'+sysTotal.toLocaleString()    : '';
       const examAmt   = examTotal   ? '$'+examTotal.toLocaleString()   : '—';
       const centreAmt = centreTotal ? '$'+centreTotal.toLocaleString() : '—';
+      const entryAmt  = a.paid && a.paid > 0 ? '$'+Number(a.paid).toLocaleString() : '';
       return `<div class="rpt-block">
         <div class="rpt-block-header">
-          <span><b>Ref No: ${a.id}</b> &nbsp; ${a.name}</span>
-          <span>Total Amount (Sys Gen): <b>${sysAmt}</b></span>
+          <span><b>Ref No: ${a.id}</b> &nbsp;&nbsp; Name: ${a.name} &nbsp;&nbsp; HKDNO:</span>
+          <span style="text-align:right;line-height:1.8;">Total Amount (Sys Gen): ${sysAmt}<br>Total Amount (Entry Data): ${entryAmt}</span>
         </div>
         <table><thead>
-          <tr><th colspan="5"></th><th colspan="3" style="text-align:center;font-size:10px;font-weight:normal;color:#555;padding-bottom:2px;">— Centre Arrangement —</th></tr>
-          <tr><th>Exam</th><th>Grade</th><th class="num">No of Cand</th><th class="num">Exam Fee</th><th class="num">Sub-total</th><th class="num">No of Group</th><th class="num">Centre Fee</th><th class="num">Sub-total</th></tr>
+          <tr>
+            <th colspan="6" style="border:none;padding:0;"></th>
+            <th colspan="3" style="text-align:center;font-size:9px;font-weight:normal;color:#555;border-bottom:1px dashed #999;padding:2px 4px;">——— Centre Arrangement ———</th>
+          </tr>
+          <tr><th>Exam</th><th>Grade</th><th class="num">No of Cand</th><th class="num">Exam Fee</th><th class="num">Sub-total</th><th class="num">No of Group</th><th class="num">No of Cand</th><th class="num">Centre Fee</th><th class="num">Sub-total</th></tr>
         </thead>
         <tbody>${rows}</tbody>
-        <tfoot><tr class="rpt-total-row"><td colspan="2" class="num">Total</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${examAmt}</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${centreAmt}</td></tr></tfoot>
+        <tfoot>
+          <tr class="rpt-total-row">
+            <td colspan="2">Total :</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${examAmt}</td>
+            <td class="num">${a.candidates.length}</td><td class="num">${a.candidates.length}</td><td></td><td class="num">${centreAmt}</td>
+          </tr>
+        </tfoot>
         </table></div>`;
     }).join('');
     bodyHTML = `
