@@ -230,6 +230,7 @@ FILE_TYPES = {
     ".pdf":  {"icon": "📕", "color": "#ff3b30", "shadow": "rgba(255,59,48,.25)",  "label": "PDF",  "new_tab": True,  "download": True},
     ".csv":  {"icon": "📊", "color": "#34c759", "shadow": "rgba(52,199,89,.25)",  "label": "CSV",  "new_tab": False, "download": True},
     ".xlsx": {"icon": "📗", "color": "#1d6f42", "shadow": "rgba(29,111,66,.25)",  "label": "XLSX", "new_tab": False, "download": True},
+    ".png":  {"icon": "🖼️", "color": "#bf5af2", "shadow": "rgba(191,90,242,.25)", "label": "PNG",  "new_tab": True,  "download": False},
 }
 
 def build_breadcrumb(rel_dir: str) -> str:
