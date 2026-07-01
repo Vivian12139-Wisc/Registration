@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NATD 考试管理系统 — 项目说明文档</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f6f2;
+    --surface: #ffffff;
+    --border: #e2ddd6;
+    --accent: #2d5a8e;
+    --accent-light: #e8f0f9;
+    --accent-muted: #6b8fb5;
+    --text: #1a1a1a;
+    --text-muted: #6b6458;
+    --step-bg: #f0ece5;
+    --tag-green: #e6f4ea;
+    --tag-green-text: #1e6c3a;
+    --tag-blue: #e8f0f9;
+    --tag-blue-text: #1d4e8a;
+    --warning-bg: #fff8e6;
+    --warning-border: #e6a817;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* Header */
+  .site-header {
+    background: var(--accent);
+    color: #fff;
+    padding: 36px 40px 28px;
+  }
+  .site-header h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+  }
+  .site-header p {
+    font-size: 13px;
+    opacity: 0.78;
+    max-width: 600px;
+  }
+  .updated-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 11px;
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 24px 60px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* Sidebar TOC */
+  .toc {
+    position: sticky;
+    top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 16px;
+  }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .toc a {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 4px 0;
+    border-left: 2px solid transparent;
+    padding-left: 8px;
+    transition: all 0.15s;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .toc .toc-section { margin-top: 8px; }
+  .toc .toc-section-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.6;
+    padding: 2px 0 2px 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Main content */
+  .main { min-width: 0; }
+
+  /* Section */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-num {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .section-body { padding: 18px 24px 20px; }
+
+  /* Step cards */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .step-header {
+    background: var(--step-bg);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .step-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .step-body { padding: 16px 20px 18px; }
+
+  p { margin-bottom: 10px; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 10px;
+  }
+  ul li {
+    padding: 3px 0 3px 16px;
+    position: relative;
+    color: var(--text);
+    font-size: 13.5px;
+  }
+  ul li::before {
+    content: '–';
+    position: absolute; left: 0;
+    color: var(--accent-muted);
+  }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin: 12px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr { background: var(--accent-light); }
+  th {
+    text-align: left;
+    padding: 9px 14px;
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 12.5px;
+    border-bottom: 2px solid var(--accent-light);
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fbfaf7; }
+
+  code {
+    background: #f0ece5;
+    color: #7a4f2e;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+  }
+
+  /* Warning box */
+  .warning {
+    background: var(--warning-bg);
+    border-left: 3px solid var(--warning-border);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #5a4010;
+  }
+  .warning::before { content: '⚠️ '; }
+
+  /* Note box */
+  .note {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent-muted);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* Tag chips */
+  .tag {
+    display: inline-block;
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    font-weight: 500;
+  }
+  .tag-must { background: #fde8e8; color: #b01c1c; }
+  .tag-func { background: #e8edf9; color: #1d3a8a; font-family: monospace; font-size: 11px; }
+
+  /* Role grid */
+  .role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .role-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    background: var(--step-bg);
+  }
+  .role-card .role-name {
+    font-weight: 600;
+    font-size: 13.5px;
+    margin-bottom: 6px;
+    color: var(--accent);
+  }
+  .role-card .role-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+
+  /* Overview types */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .type-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .type-card .type-label {
+    font-weight: 600; font-size: 13px; margin-bottom: 4px; color: var(--accent);
+  }
+  .type-card .type-desc { font-size: 12.5px; color: var(--text-muted); }
+
+  /* Sub-section label */
+  .sub-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 14px 0 6px;
+  }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+  @media (max-width: 720px) {
+    .container { grid-template-columns: 1fr; }
+    .toc { display: none; }
+    .role-grid { grid-template-columns: 1fr; }
+    .type-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>NATD 考试管理系统 — 项目说明文档</h1>
+  <p>舞蹈考试全周期管理：从报名配置、考生编排，到准考证生成、成绩录入与财务报告。</p>
+  <span class="updated-tag">最后更新：2026 年 5 月</span>
+</header>
+
+<div class="container">
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-title">目录</div>
+    <a href="#overview">1. 系统概览</a>
+    <a href="#workflow">2. 完整业务流程</a>
+    <div class="toc-section">
+      <div class="toc-section-title">各步骤</div>
+      <a href="#step1">Step 1 配置基本资料</a>
+      <a href="#step2">Step 2 导入申请人</a>
+      <a href="#step3">Step 3 考试费总表</a>
+      <a href="#step4">Step 4 考试时间表</a>
+      <a href="#step5">Step 5 准考证</a>
+      <a href="#step6">Step 6 评分表</a>
+      <a href="#step7">Step 7 日程表</a>
+      <a href="#step8">Step 8 输入成绩</a>
+      <a href="#step9">Step 9 统计报告</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- 1. 系统概览 -->
+    <div class="section" id="overview">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">系统概览</div>
+      </div>
+      <div class="section-body">
+        <p>NATD 考试管理系统负责处理舞蹈考试从报名到出成绩的<strong>全周期管理</strong>，包括考试配置、考生资料导入、准考证及评分表生成、成绩录入及财务报表输出。</p>
+        <p>考生报名流程通过外部 <strong>MIP 报名系统</strong>完成，报名数据以 TXT 文件形式导出后导入本系统。</p>
+      </div>
+    </div>
+
+    <!-- 2. 完整业务流程 -->
+    <div class="section" id="workflow">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">完整业务流程</div>
+      </div>
+      <div class="section-body">
+
+        <!-- Step 1 -->
+        <div class="step-card" id="step1">
+          <div class="step-header">
+            <span class="step-badge">Step 1</span>
+            <span class="step-title">配置考试基本资料</span>
+          </div>
+          <div class="step-body">
+
+            <p>管理员在系统中输入或更新本次考试所需的基础配置资料，包括考试专业及级别、考试场地，以及舞蹈种类。</p>
+
+            <div class="sub-label">NATD010 — 考试专业及级别（List of Exams / Grade）</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>英文名</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td>考试专业代码</td><td><code>Exam Code</code></td><td>专业唯一标识，如 <code>JNB</code>、<code>ADB</code></td></tr>
+                  <tr><td>考试专业名称</td><td><code>Exam Name</code></td><td>专业全称，如 Juniors - Ballroom Branch</td></tr>
+                  <tr><td>考试级别代码</td><td><code>Grade Code</code></td><td>级别唯一标识，如 <code>JNBGO</code></td></tr>
+                  <tr><td>考试级别名称</td><td><code>Grade Name</code></td><td>级别全称，如 Gold</td></tr>
+                  <tr><td>考试费</td><td><code>Exam Fee</code></td><td>该级别的考试费，单位：港币</td></tr>
+                  <tr><td>场地附加费</td><td><code>Studio Surcharge</code></td><td>考场附加费，单位：港币；费用统计中对应 Centre Fee</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sub-label">NATD015 — 考试场地（Maintain Centre）</div>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">每次考试的考场均可能不同，须由管理员自行输入。</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>英文名</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td>考场代码</td><td><code>Centre Code</code></td><td>考场唯一标识，如 <code>001</code>；考试编排及成绩导入文件中以此字段关联</td></tr>
+                  <tr><td>考场名称</td><td><code>Centre Name</code></td><td>考场全称，准考证中显示</td></tr>
+                  <tr><td>考场电话</td><td><code>Telephone no.</code></td><td>联络电话</td></tr>
+                  <tr><td>考场地址</td><td><code>Address</code></td><td>考场地址，准考证中显示</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sub-label">NATD030 — 舞蹈种类（List of Dance Types）</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>英文名</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td>舞蹈分枝</td><td><code>Branch Type</code></td><td>所属分枝，如 BALLROOM、LATIN</td></tr>
+                  <tr><td>舞蹈种类代码</td><td><code>Dance Code</code></td><td>两位数字代码，如 <code>01</code>（Waltz）；申请人导入文件中以此字段关联</td></tr>
+                  <tr><td>舞蹈种类名称</td><td><code>Dance Desc</code></td><td>舞蹈名称，如 Waltz、Tango、Rumba</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" id="step2">
+          <div class="step-header">
+            <span class="step-badge">Step 2</span>
+            <span class="step-title">导入申请人及考生资料</span>
+          </div>
+          <div class="step-body">
+
+
+            <p>管理员将由 MIP 报名系统导出的 <strong>TXT 文件</strong>上传至本系统，系统自动读取并生成申请人及考生数据。</p>
+            <p>功能：<code>NATD105</code> — Load and Validate Entry Data</p>
+            <div class="sub-label">TXT 文件字段</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>字段</th><th>英文名</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>申请人编号</td><td><code>Reference No.</code>（<code>REFNO</code>）</td></tr>
+                  <tr><td>2</td><td>申请人姓名</td><td><code>Name of Teacher / School</code></td></tr>
+                  <tr><td>3</td><td>申请人联络电话</td><td><code>Contact Phone</code></td></tr>
+                  <tr><td>4</td><td>申请人联络电邮</td><td><code>Contact Email</code></td></tr>
+                  <tr><td>5</td><td>申请人联络地址</td><td><code>Contact Address</code></td></tr>
+                  <tr><td>6</td><td>各考生姓名、性别、身份证明文件号码及出生日期</td><td><code>CANDNAME</code>、<code>Sex</code>、<code>ID Number</code>、<code>Date of Birth</code></td></tr>
+                  <tr><td>7</td><td>各考生组别编号</td><td><code>Group No.</code>（<code>GROUPNO</code>）</td></tr>
+                  <tr><td>8</td><td>各考生考生编号</td><td><code>Candidate No.</code>（<code>CANDNO</code>）</td></tr>
+                  <tr><td>9</td><td>各考生报考专业、级别及舞蹈种类</td><td><code>EXAMS_CODE</code>、<code>GRADE_CODE</code>、<code>Dance Code</code></td></tr>
+                  <tr><td>10</td><td>申请人已付费用总额</td><td><code>Total Amount (Entry Data)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card" id="step3">
+          <div class="step-header">
+            <span class="step-badge">Step 3</span>
+            <span class="step-title">生成考试费总表</span>
+          </div>
+          <div class="step-body">
+
+            <p>系统根据 Step 1–2 的数据，自动计算并生成<strong>考试费总表</strong>，供管理员查阅及下载。</p>
+            <p>功能：<code>NATD210</code> — Print Fee Statement Summary</p>
+            <div class="sub-label">报表字段说明</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>报表字段</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td>申请人编号</td><td><code>Ref No</code></td><td>Step 2 TXT 文件 → 申请人编号</td></tr>
+                  <tr><td>申请人姓名</td><td><code>Name</code></td><td>Step 2 TXT 文件 → 申请人姓名</td></tr>
+                  <tr><td>证件号码</td><td><code>HKIDNO</code></td><td>Step 2 TXT 文件 → 身份证明文件号码</td></tr>
+                  <tr><td>考试专业代码</td><td><code>Exam</code></td><td>Step 2 TXT 文件 → 报考专业代码（<code>EXAMS_CODE</code>）</td></tr>
+                  <tr><td>考试级别代码</td><td><code>Grade</code></td><td>Step 2 TXT 文件 → 报考级别代码（<code>GRADE_CODE</code>）</td></tr>
+                  <tr><td>报考人数</td><td><code>No of Cand</code></td><td>Step 2 TXT 文件 → 该申请人下同一专业级别的考生数量（系统统计）</td></tr>
+                  <tr><td>考试费</td><td><code>Exam Fee</code></td><td>Step 1 NATD010 → <code>Exam Fee</code> 字段</td></tr>
+                  <tr><td>考试费小计</td><td><code>Sub-total</code></td><td>系统计算：No of Cand × Exam Fee</td></tr>
+                  <tr><td>组别数</td><td><code>No of Group</code></td><td>Step 2 TXT 文件 → 组别编号（<code>GROUPNO</code>）去重统计</td></tr>
+                  <tr><td>场地报考人数</td><td><code>No of Cand</code>（Centre）</td><td>同 No of Cand（考试人数与场地人数一致）</td></tr>
+                  <tr><td>场地附加费</td><td><code>Centre Fee</code></td><td>Step 1 NATD010 → <code>Studio Surcharge</code> 字段</td></tr>
+                  <tr><td>场地费小计</td><td><code>Sub-total</code>（Centre）</td><td>系统计算：No of Cand × Centre Fee</td></tr>
+                  <tr><td>系统汇总金额</td><td><code>Total Amount (Sys Gen)</code></td><td>系统计算：考试费小计合计 + 场地费小计合计</td></tr>
+                  <tr><td>已付费用总额</td><td><code>Total Amount (Entry Data)</code></td><td>Step 2 TXT 文件 → 已付费用总额（供核对）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card" id="step4">
+          <div class="step-header">
+            <span class="step-badge">Step 4</span>
+            <span class="step-title">编排考试时间表</span>
+          </div>
+          <div class="step-body">
+
+
+            <p>系统提供 <strong>Excel 模板</strong>，管理员在模板中填入每位考生的考试地点、日期及时间后上传，系统自动完成考生编排。</p>
+            <div class="warning">若申请人事后提出更改考试日期、时间或地点，管理员须重新编排所有考生。</div>
+            <div class="sub-label">Excel 模板字段说明</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>说明</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td><code>REFNO</code></td><td>申请人编号</td><td>Step 2 TXT 文件 → 申请人编号</td></tr>
+                  <tr><td><code>GROUPNO</code></td><td>组别编号</td><td>Step 2 TXT 文件 → 各考生组别编号</td></tr>
+                  <tr><td><code>CANDNO</code></td><td>考生编号</td><td>Step 2 TXT 文件 → 各考生考生编号</td></tr>
+                  <tr><td><code>CANDNAME</code></td><td>考生姓名</td><td>Step 2 TXT 文件 → 各考生姓名</td></tr>
+                  <tr><td><code>EXAMS_CODE</code></td><td>考试专业代码</td><td>Step 2 TXT 文件 → 报考专业代码</td></tr>
+                  <tr><td><code>GRADE_CODE</code></td><td>考试级别代码</td><td>Step 2 TXT 文件 → 报考级别代码</td></tr>
+                  <tr><td><code>CENTRE_CODE</code></td><td>考试场地代码</td><td>手动填写（参照 Step 1 NATD015 考场代码）</td></tr>
+                  <tr><td><code>EXAM_DATE</code></td><td>考试日期（DD/MM/YYYY）</td><td>手动填写</td></tr>
+                  <tr><td><code>START_TIME</code></td><td>考试开始时间（HH:MI）</td><td>手动填写</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-card" id="step5">
+          <div class="step-header">
+            <span class="step-badge">Step 5</span>
+            <span class="step-title">生成准考证</span>
+          </div>
+          <div class="step-body">
+
+
+            <p>管理员上传<strong>准考证模板文件</strong>，系统自动将考生资料导入模板对应位置，以<strong>申请人为维度</strong>批量生成准考证（每位申请人下的所有考生各生成一张）。</p>
+            <div class="sub-label">准考证字段说明</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>准考证字段</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td>考试名称</td><td>（标题）</td><td>准考证模板预设内容</td></tr>
+                  <tr><td>申请人编号</td><td><code>Reference No.</code></td><td>Step 2 TXT 文件 → 申请人编号</td></tr>
+                  <tr><td>申请人姓名</td><td><code>Name of Teacher / School</code></td><td>Step 2 TXT 文件 → 申请人姓名</td></tr>
+                  <tr><td>考生姓名</td><td><code>Name of Candidate</code></td><td>Step 2 TXT 文件 → 各考生姓名</td></tr>
+                  <tr><td>考生出生日期</td><td><code>Date of Birth</code></td><td>Step 2 TXT 文件 → 各考生出生日期</td></tr>
+                  <tr><td>考生证件号码前4码</td><td><code>First 4 digits of identification number</code></td><td>Step 2 TXT 文件 → 各考生身份证明文件号码（取前4位）</td></tr>
+                  <tr><td>考生组别</td><td><code>Group No.</code></td><td>Step 2 TXT 文件 → 各考生组别编号（<code>GROUPNO</code>）</td></tr>
+                  <tr><td>考生编号</td><td><code>Candidate Number</code></td><td>Step 2 TXT 文件 → 各考生考生编号（<code>CANDNO</code>）</td></tr>
+                  <tr><td>考试专业</td><td><code>Examination</code></td><td>Step 2 TXT 文件 → 报考专业代码 + Step 1 NATD010 → <code>Exam Name</code></td></tr>
+                  <tr><td>考试级别</td><td><code>Grade</code></td><td>Step 2 TXT 文件 → 报考级别代码 + Step 1 NATD010 → <code>Grade Name</code></td></tr>
+                  <tr><td>舞蹈种类</td><td><code>Dances</code></td><td>Step 2 TXT 文件 → 舞蹈种类代码 + Step 1 NATD030 → <code>Dance Desc</code></td></tr>
+                  <tr><td>考试日期</td><td><code>Examination Date</code></td><td>Step 4 Excel 模板 → <code>EXAM_DATE</code></td></tr>
+                  <tr><td>考试时间</td><td><code>Examination Time</code></td><td>Step 4 Excel 模板 → <code>START_TIME</code></td></tr>
+                  <tr><td>考场名称及地址</td><td><code>Examination Venue and Address</code></td><td>Step 4 Excel 模板 → <code>CENTRE_CODE</code> → Step 1 NATD015 → <code>Centre Name</code> + <code>Address</code></td></tr>
+                  <tr><td>考生注意事项</td><td>（注意事项及二维码）</td><td>准考证模板预设内容</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step-card" id="step6">
+          <div class="step-header">
+            <span class="step-badge">Step 6</span>
+            <span class="step-title">生成考生评分表</span>
+          </div>
+          <div class="step-body">
+
+
+            <p>评分表分两种，管理员上传模板时须指定所属考试专业，系统自动将对应考生资料导入模板。</p>
+
+            <div class="sub-label">业余组评分表字段（Amateur — Ballroom / Latin / Rainbow 等）</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>评分表字段</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td>考场名称</td><td><code>Name of Centre</code>（格式：Centre Name (Centre Code)）</td><td>Step 4 Excel → <code>CENTRE_CODE</code> → Step 1 NATD015 → <code>Centre Name</code> + <code>Centre Code</code></td></tr>
+                  <tr><td>考生编号组合</td><td><code>Candidate Number</code>（格式：Reference No.-Group No.-Candidate No.）</td><td>Step 2 TXT 文件 → 申请人编号（<code>REFNO</code>）+ 组别编号（<code>GROUPNO</code>）+ 考生编号（<code>CANDNO</code>）</td></tr>
+                  <tr><td>考生姓名</td><td><code>Name in Full</code></td><td>Step 2 TXT 文件 → 各考生姓名</td></tr>
+                  <tr><td>考生出生日期</td><td><code>Date of Birth</code></td><td>Step 2 TXT 文件 → 各考生出生日期</td></tr>
+                  <tr><td>考试级别</td><td><code>Grade of Exam</code></td><td>Step 2 TXT 文件 → 报考级别代码 + Step 1 NATD010 → <code>Grade Name</code></td></tr>
+                  <tr><td>考试日期</td><td><code>Date of Examination</code></td><td>Step 4 Excel → <code>EXAM_DATE</code></td></tr>
+                  <tr><td>评分舞种行</td><td>（如 RUMBA、SAMBA、CHA CHA CHA 等）</td><td>评分表模板预设（写死于模板中，非系统动态填入）</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sub-label">专业组评分表字段（Professional — Pro Ballroom / Pro Latin）</div>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">与业余组基本相同，以下为差异字段：</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>评分表字段</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td>考生性别</td><td><code>Sex</code></td><td>Step 2 TXT 文件 → 各考生性别</td></tr>
+                  <tr><td>评分栏</td><td><code>Demonstration / Theory</code>（两列）</td><td>评分表模板预设（考官手动填写）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="step-card" id="step7">
+          <div class="step-header">
+            <span class="step-badge">Step 7</span>
+            <span class="step-title">生成考试日程表</span>
+          </div>
+          <div class="step-body">
+
+            <p>考试日程表分为<strong>两个版本</strong>，格式由系统写死，管理员<strong>无需上传模板</strong>，按<strong>考试日期</strong>筛选后直接导出。</p>
+
+            <div class="sub-label">监考员日程表字段（Day Sheet for Waiting Room Supervisor）</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>日程表字段</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td>考试日期</td><td><code>Examination Date</code></td><td>Step 4 Excel → <code>EXAM_DATE</code></td></tr>
+                  <tr><td>考试时间</td><td><code>Exam Time</code></td><td>Step 4 Excel → <code>START_TIME</code></td></tr>
+                  <tr><td>申请人编号</td><td><code>Teacher Code</code>（<code>REFNO</code>）</td><td>Step 2 TXT 文件 → 申请人编号（Reference No.）</td></tr>
+                  <tr><td>考生组别</td><td><code>Group No.</code>（<code>GROUPNO</code>）</td><td>Step 2 TXT 文件 → 各考生组别编号</td></tr>
+                  <tr><td>考生姓名</td><td><code>Name of Candidate</code>（<code>CANDNAME</code>）</td><td>Step 2 TXT 文件 → 各考生姓名</td></tr>
+                  <tr><td>考生出生日期</td><td><code>Date of Birth</code></td><td>Step 2 TXT 文件 → 各考生出生日期</td></tr>
+                  <tr><td>考生证件号码</td><td><code>Candidate ID No.</code></td><td>Step 2 TXT 文件 → 各考生身份证明文件号码</td></tr>
+                  <tr><td>考试专业</td><td><code>Examination</code>（仅显示 Exam Name）</td><td>Step 2 TXT 文件 → <code>EXAMS_CODE</code> → Step 1 NATD010 → <code>Exam Name</code></td></tr>
+                  <tr><td>考试级别</td><td><code>Grade</code>（仅显示 Grade Name）</td><td>Step 2 TXT 文件 → <code>GRADE_CODE</code> → Step 1 NATD010 → <code>Grade Name</code></td></tr>
+                  <tr><td>舞蹈种类</td><td>（列于专业下方，仅显示 Dance Desc）</td><td>Step 2 TXT 文件 → <code>Dance Code</code> → Step 1 NATD030 → <code>Dance Desc</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sub-label">考官日程表字段（Day Sheet for Examiner）</div>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">与监考员版基本相同，以下为差异字段：</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>日程表字段</th><th>英文名</th><th>数据来源 / 说明</th></tr></thead>
+                <tbody>
+                  <tr><td>成绩栏</td><td><code>Result</code></td><td>考官手动填写（空白栏位）</td></tr>
+                  <tr><td>（无考生出生日期）</td><td>—</td><td>考官版不显示 Date of Birth 及 Candidate ID No.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 8 -->
+        <div class="step-card" id="step8">
+          <div class="step-header">
+            <span class="step-badge">Step 8</span>
+            <span class="step-title">输入考生成绩</span>
+          </div>
+          <div class="step-body">
+
+
+            <p>考试完结后，系统提供 <strong>Excel 模板</strong>，管理员填入每位考生的成绩后上传，系统自动完成登分。</p>
+            <div class="sub-label">Excel 模板字段说明（考生成绩导入）</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>说明</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td><code>REFNO</code></td><td>申请人编号</td><td><code>Reference No.</code></td><td>Step 2 TXT 文件 → 申请人编号</td></tr>
+                  <tr><td><code>GROUPNO</code></td><td>组别编号</td><td><code>Group No.</code></td><td>Step 2 TXT 文件 → 各考生组别编号</td></tr>
+                  <tr><td><code>CANDNO</code></td><td>考生编号</td><td><code>Candidate No.</code></td><td>Step 2 TXT 文件 → 各考生考生编号</td></tr>
+                  <tr><td><code>CANDNAME</code></td><td>考生姓名</td><td><code>Name of Candidate</code></td><td>Step 2 TXT 文件 → 各考生姓名</td></tr>
+                  <tr><td><code>EXAMS_CODE</code></td><td>考试专业代码</td><td><code>Exam Code</code></td><td>Step 2 TXT 文件 → 报考专业代码</td></tr>
+                  <tr><td><code>GRADE_CODE</code></td><td>考试级别代码</td><td><code>Grade Code</code></td><td>Step 2 TXT 文件 → 报考级别代码</td></tr>
+                  <tr><td><code>CENTRE_CODE</code></td><td>考场代码</td><td><code>Centre Code</code></td><td>Step 4 Excel → <code>CENTRE_CODE</code></td></tr>
+                  <tr><td><code>EXAM_DATE</code></td><td>考试日期（DD/MM/YYYY）</td><td><code>Exam Date</code></td><td>Step 4 Excel → <code>EXAM_DATE</code></td></tr>
+                  <tr><td><code>START_TIME</code></td><td>考试开始时间（HH:MI）</td><td><code>Start Time</code></td><td>Step 4 Excel → <code>START_TIME</code></td></tr>
+                  <tr><td><code>RESULT</code></td><td>成绩代码（如 <code>HC</code> = Honours with Credit）</td><td><code>Result</code></td><td>手动填写</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 9 -->
+        <div class="step-card" id="step9">
+          <div class="step-header">
+            <span class="step-badge">Step 9</span>
+            <span class="step-title">生成统计及财务报告</span>
+          </div>
+          <div class="step-body">
+
+            <p>考试结束后，系统自动生成以下两份报告：</p>
+
+            <div class="sub-label">报告一：Entry Statistics（NATD215）— 报名统计</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>报表字段</th><th>英文名</th><th>数据来源</th></tr></thead>
+                <tbody>
+                  <tr><td>考试专业代码</td><td><code>Exam Code</code></td><td>Step 2 TXT 文件 → 报考专业代码</td></tr>
+                  <tr><td>考试级别代码</td><td><code>Grade Code</code></td><td>Step 2 TXT 文件 → 报考级别代码</td></tr>
+                  <tr><td>报考人数</td><td><code>No of Candidates</code></td><td>系统统计：该专业级别下的考生总数</td></tr>
+                  <tr><td>总人数</td><td><code>Total</code></td><td>系统统计：所有专业级别报考人数合计</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <hr class="divider">
+            <div class="sub-label">报告二：Fee Statement Summary（NATD210）— 申请人费用汇总</div>
+            <p style="font-size:13px;color:var(--text-muted);">字段与 Step 3 考试费总表一致，详见 <a href="#step3" style="color:var(--accent);">Step 3 报表字段说明</a>。</p>
+          </div>
+        </div>
+
+      </div><!-- /section-body -->
+    </div><!-- /section workflow -->
+
+  </main>
+</div>
+
+</body>
+</html>

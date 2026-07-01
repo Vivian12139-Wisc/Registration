@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>考试基本资料 — NATD</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -969,7 +970,7 @@
           <button onclick="exportScheduleTemplate()">
             <i class="ti ti-download"></i> 导出模板
           </button>
-          <input type="file" id="arrange-file-input" accept=".csv" style="display:none;" onchange="handleScheduleImport(this)">
+          <input type="file" id="arrange-file-input" accept=".xlsx" style="display:none;" onchange="handleScheduleImport(this)">
           <button class="primary" onclick="document.getElementById('arrange-file-input').click()">
             <i class="ti ti-upload"></i> 上传编排
           </button>
@@ -1045,7 +1046,7 @@
           </select>
           <div class="spacer"></div>
           <button onclick="exportResultTemplate()"><i class="ti ti-download"></i> 导出模板</button>
-          <input type="file" id="result-file-input" accept=".xlsx,.csv" style="display:none;" onchange="handleResultImport(this)">
+          <input type="file" id="result-file-input" accept=".xlsx" style="display:none;" onchange="handleResultImport(this)">
           <button class="primary" onclick="document.getElementById('result-file-input').click()">
             <i class="ti ti-upload"></i> 导入成绩
           </button>
@@ -2582,37 +2583,36 @@ function confirmEditSchedule() {
   filterSchedule();
 }
 
-// ── Export template ──
+// ── Export template (Excel) ──
 function exportScheduleTemplate() {
   buildScheduleData();
   if (!arrangeData.length) { alert('暂无考生资料，请先导入申请人数据。'); return; }
-  const header = '考生编号,考生姓名,申请人编号,申请人姓名,报考专业代码,报考级别代码,考场代码,考试日期,考试时间';
-  const rows = arrangeData.map(s =>
-    [s.no, s.name, s.applicantId, s.applicantName, s.examCode, s.gradeCode,
-     s.venue, s.date, s.time].join(',')
-  );
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '考试编排模板.csv';
-  a.click();
+  const wsData = [
+    ['考生编号','考生姓名','申请人编号','申请人姓名','报考专业代码','报考级别代码','考场代码','考试日期','考试时间'],
+    ...arrangeData.map(s => [s.no, s.name, s.applicantId, s.applicantName, s.examCode, s.gradeCode, s.venue, s.date, s.time])
+  ];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  XLSX.utils.book_append_sheet(wb, ws, '考试编排');
+  XLSX.writeFile(wb, '考试编排模板.xlsx');
 }
 
-// ── Import arrange ──
+// ── Import arrange (Excel) ──
 function handleScheduleImport(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) { alert('档案内容为空或格式错误'); input.value=''; return; }
-    // Expected: 考生编号,考生姓名,申请人编号,申请人姓名,报考专业代码,报考级别代码,考场代码,考试日期,考试时间
+    const wb = XLSX.read(e.target.result, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (rows.length < 2) { alert('档案内容为空或格式错误'); input.value=''; return; }
+    // Col order: 考生编号(0), 考生姓名(1), 申请人编号(2), 申请人姓名(3), 报考专业代码(4), 报考级别代码(5), 考场代码(6), 考试日期(7), 考试时间(8)
     let updated = 0, skipped = 0;
-    for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(',').map(c => c.trim());
-      if (cols.length < 9) { skipped++; continue; }
-      const [no,,,,,,venue, date, time] = cols;
+    for (let i = 1; i < rows.length; i++) {
+      const cols = rows[i].map(c => String(c).trim());
+      if (cols.length < 9 || !cols[0]) { skipped++; continue; }
+      const [no,,,,,, venue, date, time] = cols;
       const s = arrangeData.find(x => x.no === no);
       if (s) { s.venue = venue; s.date = date; s.time = time; updated++; }
       else skipped++;
@@ -2621,7 +2621,7 @@ function handleScheduleImport(input) {
     filterSchedule();
     alert(`排程上传完成。\n\n已更新 ${updated} 位考生排程${skipped ? `，${skipped} 行已跳过（考生编号不存在或格式错误）` : '，无跳过行'}。`);
   };
-  reader.readAsText(file, 'UTF-8');
+  reader.readAsArrayBuffer(file);
 }
 
 // ══════════════════════════════════════
@@ -3303,33 +3303,20 @@ function exportResultTemplate() {
     alert('暂无考生资料，请先在「申请人管理」页导入数据。');
     return;
   }
-  // Always rebuild schedule data so venue/date/time are up to date
   buildScheduleData();
-
-  const header = 'REFNO,GROUPNO,CANDNO,CANDNAME,EXAMS_CODE,GRADE_CODE,CENTRE_CODE,EXAM_DATE (DD/MM/YYYY),START_TIME(HH:MI),RESULT';
-  const rows = applicants.flatMap(a =>
-    a.candidates.map(c => {
-      const sched = arrangeData.find(s => s.no === c.no) || {};
-      return [
-        a.id,
-        c.groupNo   || '',
-        c.no,
-        c.name,
-        c.examCode  || '',
-        c.gradeCode || '',
-        sched.venue || '',
-        sched.date  || '',
-        sched.time  || '',
-        ''
-      ].join(',');
-    })
-  );
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '考生成绩导入模板.csv';
-  a.click();
+  const wsData = [
+    ['REFNO','GROUPNO','CANDNO','CANDNAME','EXAMS_CODE','GRADE_CODE','CENTRE_CODE','EXAM_DATE (DD/MM/YYYY)','START_TIME(HH:MI)','RESULT'],
+    ...applicants.flatMap(a =>
+      a.candidates.map(c => {
+        const sched = arrangeData.find(s => s.no === c.no) || {};
+        return [a.id, c.groupNo||'', c.no, c.name, c.examCode||'', c.gradeCode||'', sched.venue||'', sched.date||'', sched.time||'', ''];
+      })
+    )
+  ];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  XLSX.utils.book_append_sheet(wb, ws, '考生成绩');
+  XLSX.writeFile(wb, '考生成绩导入模板.xlsx');
 }
 
 function handleResultImport(input) {
@@ -3337,11 +3324,13 @@ function handleResultImport(input) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) { alert('档案格式错误'); input.value = ''; return; }
+    const wb = XLSX.read(e.target.result, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (rows.length < 2) { alert('档案格式错误'); input.value = ''; return; }
     let added = 0, updated = 0, skipped = 0, warns = [];
-    for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(',').map(c => c.trim());
+    for (let i = 1; i < rows.length; i++) {
+      const cols = rows[i].map(c => String(c).trim());
       if (cols.length < 9) { skipped++; warns.push(`第 ${i+1} 行：栏位不足`); continue; }
       const [refNo, groupNo, candNo, candName, examCode, gradeCode, centreCode, examDate, startTime, result] = cols;
       if (!candNo) { skipped++; warns.push(`第 ${i+1} 行：缺少考生编号`); continue; }
@@ -3352,12 +3341,12 @@ function handleResultImport(input) {
     input.value = '';
     initResultFilters();
     filterResults();
-    let msg = `共处理 ${lines.length - 1} 行数据。\n\n新增 ${added} 条，更新 ${updated} 条成绩记录。`;
+    let msg = `共处理 ${rows.length - 1} 行数据。\n\n新增 ${added} 条，更新 ${updated} 条成绩记录。`;
     if (skipped) msg += `\n\n以下 ${skipped} 行已跳过：\n` + warns.map(w => `• ${w}`).join('\n');
     document.getElementById('result-import-msg').textContent = msg;
     openModal('modal-result-import');
   };
-  reader.readAsText(file, 'UTF-8');
+  reader.readAsArrayBuffer(file);
 }
 
 
