@@ -205,6 +205,7 @@
   }
   .card-flush { padding: 0; overflow: hidden; }
 
+
   .section-title { font-size: 13px; font-weight: 500; margin-bottom: 10px; }
 
   /* ── Pills ── */
@@ -967,11 +968,11 @@
             <option value="pending">待编排</option>
           </select>
           <div class="spacer"></div>
-          <button onclick="exportScheduleTemplate()">
+          <button id="arrange-export-btn" onclick="exportScheduleTemplate()">
             <i class="ti ti-download"></i> 导出模板
           </button>
           <input type="file" id="arrange-file-input" accept=".xlsx" style="display:none;" onchange="handleScheduleImport(this)">
-          <button class="primary" onclick="document.getElementById('arrange-file-input').click()">
+          <button id="arrange-upload-btn" class="primary" onclick="document.getElementById('arrange-file-input').click()">
             <i class="ti ti-upload"></i> 上传编排
           </button>
         </div>
@@ -1035,19 +1036,10 @@
           <select id="result-filter-centre" onchange="filterResults()" style="width:140px;">
             <option value="">全部考场</option>
           </select>
-          <!-- Filter: 成绩 -->
-          <select id="result-filter-result" onchange="filterResults()" style="width:120px;">
-            <option value="">全部成绩</option>
-            <option value="HC">HC</option>
-            <option value="C">C</option>
-            <option value="P">P</option>
-            <option value="F">F</option>
-            <option value="ABS">ABS</option>
-          </select>
           <div class="spacer"></div>
-          <button onclick="exportResultTemplate()"><i class="ti ti-download"></i> 导出模板</button>
+          <button id="result-export-btn" onclick="exportResultTemplate()"><i class="ti ti-download"></i> 导出模板</button>
           <input type="file" id="result-file-input" accept=".xlsx" style="display:none;" onchange="handleResultImport(this)">
-          <button class="primary" onclick="document.getElementById('result-file-input').click()">
+          <button id="result-import-btn" class="primary" onclick="document.getElementById('result-file-input').click()">
             <i class="ti ti-upload"></i> 导入成绩
           </button>
         </div>
@@ -1067,6 +1059,7 @@
                   <th>考试日期</th>
                   <th>考试时间</th>
                   <th style="text-align:center;">成绩</th>
+                  <th style="width:88px;"></th>
                 </tr>
               </thead>
               <tbody id="result-tbody"></tbody>
@@ -1091,6 +1084,36 @@
         <div id="result-import-msg" style="font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;"></div>
         <div class="modal-footer">
           <button class="primary" onclick="closeModal('modal-result-import')">确定</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+         MODAL: 编辑成绩
+    ══════════════════════════════════════ -->
+    <div class="modal-overlay" id="modal-result-edit">
+      <div class="modal-box" style="max-width:400px;">
+        <div class="modal-title"><i class="ti ti-pencil"></i> 编辑成绩</div>
+        <input type="hidden" id="result-edit-key">
+        <div class="form-grid" style="display:grid;grid-template-columns:80px 1fr;gap:10px 12px;align-items:center;font-size:13px;">
+          <label style="color:var(--text2);">考生编号</label>
+          <span id="result-edit-candno" style="color:var(--text1);"></span>
+          <label style="color:var(--text2);">考生姓名</label>
+          <span id="result-edit-candname" style="color:var(--text1);"></span>
+          <label style="color:var(--text2);">成绩</label>
+          <select id="result-edit-result" style="width:100%;">
+            <option value="">— 未填 —</option>
+            <option value="HC">HC — Highly Commended</option>
+            <option value="C">C — Commended</option>
+            <option value="P">P — Pass</option>
+            <option value="F">F — Fail</option>
+            <option value="ABS">ABS — Absent</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal('modal-result-edit')">取消</button>
+          <button class="primary" onclick="saveResultEdit()"><i class="ti ti-check"></i> 保存</button>
         </div>
       </div>
     </div>
@@ -1364,10 +1387,11 @@
             <input type="text" placeholder="申请人编号 / 姓名 / 电话" id="applicant-search" oninput="filterApplicants()">
           </div>
           <div class="spacer"></div>
-          <input type="file" id="csv-file-input" accept=".csv,.xlsx" style="display:none;" onchange="handleCsvImport(this)">
+          <input type="file" id="csv-file-input" accept=".xlsx" style="display:none;" onchange="handleCsvImport(this)">
           <button class="primary" onclick="document.getElementById('csv-file-input').click()">
-            <i class="ti ti-upload"></i> 导入 CSV / Excel
+            <i class="ti ti-upload"></i> 导入 Excel
           </button>
+          <button title="导入逻辑（开发备注）" style="padding:5px 9px;font-size:13px;" onclick="toggleDevNote()"><i class="ti ti-code"></i></button>
         </div>
 
         <!-- Table -->
@@ -2037,9 +2061,7 @@ function renderDances(list) {
       <td>${d.name}</td>
       <td>${d.branch}</td>
       <td style="text-align:right;">
-        <button class="danger" onclick="deleteDance('${d.code}')" style="padding:3px 6px;font-size:11px;">
-          <i class="ti ti-trash"></i>
-        </button>
+        <span style="color:var(--red-text);cursor:pointer;font-size:13px;" onclick="deleteDance('${d.code}')">删除</span>
       </td>
     </tr>
   `).join('');
@@ -2293,6 +2315,7 @@ function openApplicantDetail(id) {
   document.getElementById('page-applicants').style.display       = 'none';
   document.getElementById('page-applicant-detail').style.display = 'flex';
   document.getElementById('dev-note-float').style.display        = 'none';
+  document.getElementById('biz-note-float').style.display        = 'none';
 }
 
 function renderCandidates(list) {
@@ -2312,7 +2335,8 @@ function renderCandidates(list) {
   tbody.innerHTML = page.map(c => {
     const exam  = exams.find(e => e.code === c.examCode);
     const grade = exam ? exam.grades.find(g => g.code === c.gradeCode) : null;
-    const dance = dances.find(d => d.code === c.dance);
+    const danceCodes = c.dances || (c.dance ? [c.dance] : []);
+    const danceLabel = danceCodes.map(code => { const d = dances.find(x => x.code === code); return d ? d.name : code; }).join('、') || '—';
     const genderText = c.gender === 'M' ? '男' : c.gender === 'F' ? '女' : c.gender;
     return `
       <tr>
@@ -2324,7 +2348,7 @@ function renderCandidates(list) {
         <td>${c.group}</td>
         <td>${exam ? exam.name : c.examCode}</td>
         <td>${grade ? grade.name : c.gradeCode}</td>
-        <td>${dance ? dance.name : c.dance}</td>
+        <td>${danceLabel}</td>
         <td style="text-align:right;">
           <span onclick="deleteCandidate('${c.no}')" style="color:var(--red-text);cursor:pointer;font-size:13px;">删除</span>
         </td>
@@ -2360,9 +2384,10 @@ function handleCsvImport(input) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    const text = e.target.result;
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) {
+    const wb = XLSX.read(e.target.result, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (rows.length < 2) {
       showImportResult(0, 0, 0, 0, ['档案内容为空或格式错误'], 0);
       input.value = ''; return;
     }
@@ -2371,11 +2396,11 @@ function handleCsvImport(input) {
     const warnings = [];
     let rowSuccess = 0;
 
-    for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(',').map(c => c.trim());
+    for (let i = 1; i < rows.length; i++) {
+      const cols = rows[i].map(c => String(c).trim());
       if (cols.length < 15) { warnings.push(`第 ${i+1} 行：列数不足，已跳过`); continue; }
       const [aid, aname, phone, email, address, paidStr,
-             cno, group, cname, gender, idno, dob, examCode, gradeCode, dance] = cols;
+             cno, group, cname, gender, idno, dob, examCode, gradeCode, danceRaw] = cols;
       if (!aid || !aname) { warnings.push(`第 ${i+1} 行：申请人编号或姓名为空，已跳过`); continue; }
 
       // 首次出现该申请人编号 → 初始化
@@ -2387,14 +2412,16 @@ function handleCsvImport(input) {
         };
       }
 
-      // 考生行
+      // 考生行：同一考生编号在同一档案中视为重复
       if (cno && cname) {
         if (newMap[aid].candidateNos.has(cno)) {
           warnings.push(`第 ${i+1} 行：考生编号 ${cno} 在档案中重复，已跳过`);
           continue;
         }
+        // 舞蹈种类代码：逗号分隔，支持多个（如 01,02,03）
+        const dances = danceRaw ? danceRaw.split(',').map(d => d.trim()).filter(Boolean) : [];
         newMap[aid].candidateNos.add(cno);
-        newMap[aid].applicant.candidates.push({ no: cno, group, name: cname, gender, idno, dob, examCode, gradeCode, dance });
+        newMap[aid].applicant.candidates.push({ no: cno, group, name: cname, gender, idno, dob, examCode, gradeCode, dances });
       }
       rowSuccess++;
     }
@@ -2411,6 +2438,7 @@ function handleCsvImport(input) {
         na.candidates.forEach(nc => {
           const ec = existing.candidates.find(c => c.no === nc.no);
           if (ec) {
+            // 更新基本信息及舞蹈种类（整体替换）
             Object.assign(ec, nc);
             updatedCandidates++;
           } else {
@@ -2430,7 +2458,7 @@ function handleCsvImport(input) {
     renderApplicants(applicants);
     showImportResult(added, updated, addedCandidates, updatedCandidates, warnings, rowSuccess);
   };
-  reader.readAsText(file, 'UTF-8');
+  reader.readAsArrayBuffer(file);
 }
 
 function showImportResult(added, updated, addedCandidates, updatedCandidates, warnings, rowSuccess) {
@@ -2450,6 +2478,24 @@ function showImportResult(added, updated, addedCandidates, updatedCandidates, wa
     lines.push('');
     lines.push(`以下 ${warnings.length} 行已跳过：`);
     warnings.forEach(w => lines.push(`• ${w}`));
+  } else {
+    lines.push('');
+    lines.push('无跳过或错误行。');
+  }
+  body.innerHTML = `<p style="font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;">${lines.join('\n')}</p>`;
+  openModal('modal-import-result');
+}
+
+function showScheduleImportResult(applied, skipped) {
+  const body = document.getElementById('import-result-body');
+  const lines = [];
+  lines.push(`共处理 ${applied + skipped} 行数据。`);
+  lines.push('');
+  lines.push(`已导入 ${applied} 位考生排程。`);
+  lines.push('原有成绩数据已同步清除。');
+  if (skipped) {
+    lines.push('');
+    lines.push(`${skipped} 行已跳过（考生编号不存在或格式错误）。`);
   } else {
     lines.push('');
     lines.push('无跳过或错误行。');
@@ -2545,6 +2591,10 @@ function renderSchedule(list) {
 }
 
 function filterSchedule() {
+  const hasApplicants = applicants.length > 0;
+  document.getElementById('arrange-export-btn').disabled = !hasApplicants;
+  document.getElementById('arrange-upload-btn').disabled = !hasApplicants;
+
   const q      = document.getElementById('arrange-search').value.trim().toLowerCase();
   const venue  = document.getElementById('arrange-venue-filter').value;
   const status = document.getElementById('arrange-status-filter').value;
@@ -2606,20 +2656,31 @@ function handleScheduleImport(input) {
     const wb = XLSX.read(e.target.result, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-    if (rows.length < 2) { alert('档案内容为空或格式错误'); input.value=''; return; }
+    if (rows.length < 2) {
+      const body = document.getElementById('import-result-body');
+      body.innerHTML = `<p style="font-size:13px;line-height:1.9;color:var(--text);">档案内容为空或格式错误。</p>`;
+      openModal('modal-import-result');
+      input.value = ''; return;
+    }
+
+    // ── 全量重排：清除既有编排及成绩数据 ──
+    buildScheduleData();                      // ensure arrangeData is current
+    arrangeData.forEach(s => { s.venue = ''; s.date = ''; s.time = ''; });
+    examResults = [];
+
     // Col order: 考生编号(0), 考生姓名(1), 申请人编号(2), 申请人姓名(3), 报考专业代码(4), 报考级别代码(5), 考场代码(6), 考试日期(7), 考试时间(8)
-    let updated = 0, skipped = 0;
+    let applied = 0, skipped = 0;
     for (let i = 1; i < rows.length; i++) {
       const cols = rows[i].map(c => String(c).trim());
       if (cols.length < 9 || !cols[0]) { skipped++; continue; }
       const [no,,,,,, venue, date, time] = cols;
       const s = arrangeData.find(x => x.no === no);
-      if (s) { s.venue = venue; s.date = date; s.time = time; updated++; }
+      if (s) { s.venue = venue; s.date = date; s.time = time; applied++; }
       else skipped++;
     }
     input.value = '';
     filterSchedule();
-    alert(`排程上传完成。\n\n已更新 ${updated} 位考生排程${skipped ? `，${skipped} 行已跳过（考生编号不存在或格式错误）` : '，无跳过行'}。`);
+    showScheduleImportResult(applied, skipped);
   };
   reader.readAsArrayBuffer(file);
 }
@@ -2845,6 +2906,7 @@ function openTmplEditor(type, label) {
   // Load ref fields
   renderTmplRef(type);
   // Show editor, hide list
+  document.getElementById('tmpl-note-float').style.display = 'none';
   document.getElementById('page-templates').style.display = 'none';
   const ed = document.getElementById('page-template-editor');
   ed.style.display = 'flex';
@@ -2854,6 +2916,7 @@ function openTmplEditor(type, label) {
 function closeTmplEditor() {
   document.getElementById('page-template-editor').style.display = 'none';
   document.getElementById('page-templates').style.display = 'flex';
+  document.getElementById('tmpl-note-float').style.display = 'block';
 }
 
 // ── Export modal ──
@@ -2872,19 +2935,45 @@ function openExportModal(type) {
   let bodyHtml = '';
 
   if (type === 'admission') {
-    // Filter by applicant ID
-    const appOpts = applicants.map(a =>
-      `<option value="${a.id}">${a.id} — ${a.name}</option>`
-    ).join('');
-    bodyHtml = `
-      <div class="form-group full">
-        <label class="form-label">申请人编号</label>
-        <select id="exp-applicant" style="width:100%;">
-          <option value="">全部申请人</option>${appOpts || '<option disabled>（暂无申请人数据）</option>'}
-        </select>
-      </div>`;
+    if (!applicants.length) {
+      bodyHtml = `<div style="color:var(--text3);font-size:13px;padding:8px 0;">暂无申请人数据，请先在「申请人管理」导入。</div>`;
+    } else {
+      const checkItems = applicants.map(a =>
+        `<label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;border-radius:4px;font-size:13px;">
+          <input type="checkbox" class="exp-applicant-cb" value="${a.id}" checked style="width:14px;height:14px;cursor:pointer;">
+          <span style="color:var(--text2);">${a.id}</span>
+          <span style="color:var(--text1);">${a.name}</span>
+        </label>`
+      ).join('');
+      bodyHtml = `
+        <div class="form-group full">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <label class="form-label" style="margin:0;">选择申请人</label>
+            <div style="display:flex;gap:4px;">
+              <button type="button" style="font-size:11px;padding:2px 8px;" onclick="document.querySelectorAll('.exp-applicant-cb').forEach(c=>c.checked=true)">全选</button>
+              <button type="button" style="font-size:11px;padding:2px 8px;" onclick="document.querySelectorAll('.exp-applicant-cb').forEach(c=>c.checked=false)">全不选</button>
+            </div>
+          </div>
+          <div id="exp-applicant-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:4px 6px;">
+            ${checkItems}
+          </div>
+          <div id="exp-admission-hint" style="font-size:12px;color:var(--text3);margin-top:6px;"></div>
+        </div>`;
+    }
 
     document.getElementById('export-doc-body').innerHTML = bodyHtml;
+    // Update hint on change
+    if (applicants.length) {
+      const updateHint = () => {
+        const sel = document.querySelectorAll('.exp-applicant-cb:checked').length;
+        document.getElementById('exp-admission-hint').textContent =
+          sel === 0 ? '请至少选择一位申请人' :
+          sel === applicants.length ? `已选全部 ${sel} 位申请人` :
+          `已选 ${sel} / ${applicants.length} 位申请人`;
+      };
+      updateHint();
+      document.getElementById('exp-applicant-list').addEventListener('change', updateHint);
+    }
     document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
     openModal('modal-export-doc');
 
@@ -2948,8 +3037,23 @@ function saveTmpl() {
 
 
 function confirmExportDoc(type, label) {
-  closeModal('modal-export-doc');
-  alert(`${label} 导出完成。\n（实际导出功能需对接后端）`);
+  if (type === 'admission') {
+    const selected = [...document.querySelectorAll('.exp-applicant-cb:checked')].map(c => c.value);
+    if (!selected.length) {
+      document.getElementById('exp-admission-hint').textContent = '请至少选择一位申请人';
+      document.getElementById('exp-admission-hint').style.color = 'var(--red-text)';
+      return;
+    }
+    closeModal('modal-export-doc');
+    const names = selected.map(id => {
+      const a = applicants.find(x => x.id === id);
+      return a ? `${id} ${a.name}` : id;
+    });
+    alert(`准考证导出完成。\n已选申请人（${selected.length} 位）：\n${names.join('\n')}\n\n（实际导出功能需对接后端）`);
+  } else {
+    closeModal('modal-export-doc');
+    alert(`${label} 导出完成。\n（实际导出功能需对接后端）`);
+  }
 }
 
 
@@ -3239,18 +3343,21 @@ function initResultFilters() {
 }
 
 function filterResults() {
+  buildScheduleData();
+  const hasArranged = arrangeData.some(s => s.venue && s.date && s.time);
+  document.getElementById('result-export-btn').disabled = !hasArranged;
+  document.getElementById('result-import-btn').disabled = !hasArranged;
+
   const name    = document.getElementById('result-search-name').value.trim().toLowerCase();
   const exam    = document.getElementById('result-filter-exam').value;
   const grade   = document.getElementById('result-filter-grade').value;
   const centre  = document.getElementById('result-filter-centre').value;
-  const result  = document.getElementById('result-filter-result').value;
   resultPage = 1;
   filteredResults = buildResultRows().filter(r => {
     if (name   && !r.candName.toLowerCase().includes(name)) return false;
     if (exam   && r.examCode   !== exam)   return false;
     if (grade  && r.gradeCode  !== grade)  return false;
     if (centre && r.centreCode !== centre) return false;
-    if (result && r.result     !== result) return false;
     return true;
   });
   renderResults();
@@ -3264,11 +3371,14 @@ function renderResults() {
 
   if (!total) {
     const hint = applicants.length ? '无符合条件的记录' : '暂无考生资料，请先在「申请人管理」导入数据';
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="ti ti-clipboard-off"></i>${hint}</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i class="ti ti-clipboard-off"></i>${hint}</div></td></tr>`;
     document.getElementById('result-count-label').textContent = '';
     document.getElementById('result-pagination').innerHTML = '';
     return;
   }
+
+  buildScheduleData();
+  const hasArranged = arrangeData.some(s => s.venue && s.date && s.time);
 
   tbody.innerHTML = page.map(r => {
     const ex    = exams.find(e => e.code === r.examCode);
@@ -3280,6 +3390,8 @@ function renderResults() {
                    r.result === 'P'  ? 'var(--text2)' :
                    r.result === 'F'  ? 'var(--red-text)' :
                    r.result === 'ABS'? 'var(--text3)' : 'var(--text3)';
+    const hasImported = examResults.some(x => x.candNo === r.candNo && x.examCode === r.examCode && x.gradeCode === r.gradeCode);
+    const cn = r.candNo, ec = r.examCode, gc = r.gradeCode;
     return `<tr>
       <td>${r.refNo}</td>
       <td>${r.groupNo}</td>
@@ -3290,6 +3402,10 @@ function renderResults() {
       <td>${r.examDate  || '—'}</td>
       <td>${r.startTime || '—'}</td>
       <td style="text-align:center;color:${rcolor};">${rlabel}</td>
+      <td style="text-align:right;white-space:nowrap;">
+        ${hasArranged ? `<span style="color:var(--teal-text);cursor:pointer;font-size:13px;" onclick="editResult('${cn}','${ec}','${gc}')">编辑</span>` : ''}
+        ${hasImported ? `　<span style="color:var(--red-text);cursor:pointer;font-size:13px;" onclick="deleteResult('${cn}','${ec}','${gc}')">删除</span>` : ''}
+      </td>
     </tr>`;
   }).join('');
 
@@ -3351,6 +3467,53 @@ function handleResultImport(input) {
 
 
 // ══════════════════════════════════════
+// EDIT / DELETE RESULT
+// ══════════════════════════════════════
+function editResult(candNo, examCode, gradeCode) {
+  const row = filteredResults.find(r => r.candNo === candNo && r.examCode === examCode && r.gradeCode === gradeCode);
+  if (!row) return;
+  document.getElementById('result-edit-key').value            = `${candNo}|||${examCode}|||${gradeCode}`;
+  document.getElementById('result-edit-candno').textContent   = candNo;
+  document.getElementById('result-edit-candname').textContent = row.candName;
+  document.getElementById('result-edit-result').value         = row.result || '';
+  openModal('modal-result-edit');
+}
+
+function saveResultEdit() {
+  const [candNo, examCode, gradeCode] = document.getElementById('result-edit-key').value.split('|||');
+  let r = examResults.find(x => x.candNo === candNo && x.examCode === examCode && x.gradeCode === gradeCode);
+  if (!r) {
+    // First manual edit — create entry from schedule data
+    let candName = '', refNo = '', groupNo = '';
+    const sched = arrangeData.find(s => s.no === candNo) || {};
+    for (const a of applicants) {
+      const c = a.candidates.find(c => c.no === candNo && (c.examCode||'') === examCode && (c.gradeCode||'') === gradeCode);
+      if (c) { candName = c.name; refNo = a.id; groupNo = c.groupNo || c.group || ''; break; }
+    }
+    r = { refNo, groupNo, candNo, candName, examCode, gradeCode,
+          centreCode: sched.venue||'', examDate: sched.date||'', startTime: sched.time||'', result:'' };
+    examResults.push(r);
+  }
+  r.result = document.getElementById('result-edit-result').value;
+  closeModal('modal-result-edit');
+  filterResults();
+}
+
+function deleteResult(candNo, examCode, gradeCode) {
+  const r = examResults.find(x => x.candNo === candNo && x.examCode === examCode && x.gradeCode === gradeCode);
+  if (!r) return;
+  document.getElementById('delete-confirm-text').innerHTML =
+    `确定要删除考生 <strong>${r.candName}（${r.candNo}）</strong> 的成绩记录？`;
+  document.getElementById('delete-confirm-btn').onclick = () => {
+    const idx = examResults.findIndex(x => x.candNo === candNo && x.examCode === examCode && x.gradeCode === gradeCode);
+    if (idx !== -1) examResults.splice(idx, 1);
+    closeModal('modal-confirm-delete');
+    filterResults();
+  };
+  openModal('modal-confirm-delete');
+}
+
+// ══════════════════════════════════════
 // SHOW PAGE — update to support new pages
 // ══════════════════════════════════════
 function showPage(p, el) {
@@ -3365,8 +3528,11 @@ function showPage(p, el) {
   document.getElementById('page-results').style.display           = (p === 'results')      ? 'flex' : 'none';
   document.getElementById('page-report-entry').style.display      = (p === 'report-entry') ? 'flex' : 'none';
   document.getElementById('page-report-fee').style.display        = (p === 'report-fee')   ? 'flex' : 'none';
-  document.getElementById('dev-note-float').style.display         = (p === 'applicants')   ? 'block' : 'none';
-  document.getElementById('fee-note-float').style.display         = (p === 'report-fee')   ? 'block' : 'none';
+  document.getElementById('dev-note-float').style.display         = (p === 'applicants') ? 'block' : 'none';
+  document.getElementById('biz-note-float').style.display         = (p === 'applicants') ? 'block' : 'none';
+  document.getElementById('arrange-note-float').style.display     = (p === 'arrange')    ? 'block' : 'none';
+  document.getElementById('tmpl-note-float').style.display        = (p === 'templates')  ? 'block' : 'none';
+  document.getElementById('fee-note-float').style.display         = (p === 'report-fee') ? 'block' : 'none';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
   if (p === 'centres')      { filterCentres(); }
@@ -3383,6 +3549,19 @@ renderExams(exams);
 renderDances(dances);
 renderApplicants(applicants);
 </script>
+<!-- Floating templates note -->
+<div id="tmpl-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:360px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
+  <div id="tmpl-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <i class="ti ti-code" style="color:#f0c060;font-size:13px;"></i>
+    <span style="font-weight:600;color:#f0c060;flex:1;font-size:12px;">导出逻辑（开发备注）</span>
+    <span onclick="document.getElementById('tmpl-note-float').style.display='none'" style="cursor:pointer;opacity:.5;font-size:16px;line-height:1;">×</span>
+  </div>
+  <ul style="margin:0;padding:10px 14px 12px 26px;">
+    <li>准考证导出：以申请人为单位，每位申请人下的所有考生合并为 1 个 PDF（每页 1 位考生），无论导出 1 位还是多位申请人，均打包成 zip 下载</li>
+    <li>日程表日期范围：根据导入的考生编排资料中的考试日期范围自动确定</li>
+  </ul>
+</div>
+
 <!-- Floating fee note -->
 <div id="fee-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:300px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
   <div id="fee-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -3396,6 +3575,36 @@ renderApplicants(applicants);
   </ul>
 </div>
 
+<!-- Floating arrange note -->
+<div id="arrange-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:340px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
+  <div id="arrange-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <i class="ti ti-code" style="color:#f0c060;font-size:13px;"></i>
+    <span style="font-weight:600;color:#f0c060;flex:1;font-size:12px;">导入逻辑（开发备注）</span>
+    <span onclick="toggleArrangeNote()" style="cursor:pointer;opacity:.5;font-size:16px;line-height:1;">×</span>
+  </div>
+  <ul style="margin:0;padding:10px 14px 12px 26px;">
+    <li>每次上传均视为全量重排，不做增量合并</li>
+    <li>上传前自动清除所有既有编排（venue / date / time）</li>
+    <li>同步清空考生成绩数据</li>
+    <li>以档案内容逐行写入：按考生编号匹配，匹配不到则跳过</li>
+    <li>缺少考生编号或列数不足 → 跳过该行</li>
+  </ul>
+</div>
+
+<!-- Floating biz rules note (申请人管理) -->
+<div id="biz-note-float" style="display:none;position:fixed;bottom:80px;right:384px;z-index:200;width:340px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
+  <div id="biz-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <i class="ti ti-info-circle" style="color:#f0c060;font-size:13px;"></i>
+    <span style="font-weight:600;color:#f0c060;flex:1;font-size:12px;">导入文件说明</span>
+    <span onclick="document.getElementById('biz-note-float').style.display='none'" style="cursor:pointer;opacity:.5;font-size:16px;line-height:1;">×</span>
+  </div>
+  <ul style="margin:0;padding:10px 14px 12px 26px;">
+    <li>同一考生可报考多个专业及级别，数量不限</li>
+    <li>Excel 按专业级别填写，每行一个考生的专业级别</li>
+    <li>舞蹈种类：指该专业级别需跳的舞蹈（1–5 支不等），一行内可填多个种类代码，以英文逗号分隔，如 01,02,03</li>
+  </ul>
+</div>
+
 <!-- Floating dev note -->
 <div id="dev-note-float" style="display:none;position:fixed;bottom:80px;right:24px;z-index:200;width:340px;background:#1a1a18;color:#c8c6c0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);font-size:12px;line-height:1.7;user-select:none;">
   <div id="dev-note-drag-handle" style="padding:10px 14px 8px;display:flex;align-items:center;gap:6px;cursor:move;border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -3404,9 +3613,10 @@ renderApplicants(applicants);
     <span onclick="toggleDevNote()" style="cursor:pointer;opacity:.5;font-size:16px;line-height:1;">×</span>
   </div>
   <ul style="margin:0;padding:10px 14px 12px 26px;">
+    <li>舞蹈种类代码支持逗号分隔多个，如 01,02,03</li>
     <li>同一申请人编号多次出现：以首行申请人信息为准，考生逐行累加</li>
     <li>申请人编号不存在于系统 → 新增</li>
-    <li>申请人编号已存在 → 逐字段更新申请人信息；考生按考生编号匹配，已有的更新，没有的追加</li>
+    <li>申请人编号已存在 → 整行覆盖更新（含舞蹈种类）</li>
     <li>同一考生编号在文件中重复 → 跳过并在结果中提示</li>
     <li>缺少必填字段（申请人编号或姓名）→ 跳过该行并提示</li>
   </ul>
@@ -3415,6 +3625,10 @@ renderApplicants(applicants);
 <script>
 function toggleDevNote() {
   const el = document.getElementById('dev-note-float');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function toggleArrangeNote() {
+  const el = document.getElementById('arrange-note-float');
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -3443,7 +3657,10 @@ function makeDraggable(elId, handleId) {
     document.addEventListener('mouseup', onUp);
   });
 }
+makeDraggable('arrange-note-float', 'arrange-note-drag-handle');
 makeDraggable('dev-note-float', 'dev-note-drag-handle');
+makeDraggable('biz-note-float', 'biz-note-drag-handle');
+makeDraggable('tmpl-note-float', 'tmpl-note-drag-handle');
 makeDraggable('fee-note-float', 'fee-note-drag-handle');
 </script>
 </body>
