@@ -2996,7 +2996,7 @@ function openExportModal(type) {
     openModal('modal-export-doc');
 
   } else {
-    // Marksheets: filter by subject / grade (from exams master list)
+    // Marksheets: filter by subject only
     const subjectOpts = exams.map(ex =>
       `<option value="${ex.code}">${ex.code} — ${ex.name}</option>`
     ).join('');
@@ -3007,25 +3007,11 @@ function openExportModal(type) {
           <option value="">全部专业</option>${subjectOpts}
         </select>
       </div>
-      <div class="form-group full">
-        <label class="form-label">考试级别</label>
-        <select id="exp-grade" style="width:100%;">
-          <option value="">全部级别</option>
-        </select>
-      </div>
       `;
 
     document.getElementById('export-doc-body').innerHTML = bodyHtml;
     document.getElementById('export-doc-confirm-btn').onclick = () => confirmExportDoc(type, labels[type]||'');
     openModal('modal-export-doc');
-
-    const subjEl  = document.getElementById('exp-subject');
-    const gradeEl = document.getElementById('exp-grade');
-    subjEl.onchange = function() {
-      const ex = exams.find(e => e.code === this.value);
-      gradeEl.innerHTML = '<option value="">全部级别</option>' +
-        (ex ? ex.grades.map(g => `<option value="${g.code}">${g.name}</option>`).join('') : '');
-    };
   }
 }
 
