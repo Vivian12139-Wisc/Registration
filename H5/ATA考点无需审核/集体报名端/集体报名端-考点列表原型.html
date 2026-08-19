@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>基金行业专场考试网上报名 - 考点管理</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Microsoft YaHei","PingFang SC",Arial,sans-serif; background: #f4f4f4; color: #333; }
+  a { text-decoration: none; cursor: pointer; }
+
+  /* 顶部导航 */
+  .topnav { background: #5c0a12; color: #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 46px; font-size: 14px; }
+  .topnav .left { display: flex; gap: 28px; }
+  .topnav .left span { color: #fff; cursor: pointer; }
+  .topnav .left span:first-child { font-weight: bold; }
+  .topnav .right { color: #eee; }
+  .topnav .right b { color: #fff; }
+
+  /* 顶部横幅 */
+  .banner { background: linear-gradient(135deg,#8a1620,#5c0a12 60%); height: 210px; position: relative; overflow: hidden; display: flex; align-items: center; padding-left: 60px; }
+  .banner .logo-mark { color: #fff; font-size: 60px; margin-right: 24px; }
+  .banner .title { color: #fff; font-size: 46px; font-weight: bold; letter-spacing: 2px; }
+
+  .servline { background: #f0f0f0; text-align: center; padding: 10px 0; font-size: 14px; font-weight: bold; color: #333; }
+
+  .main { max-width: 1560px; margin: 0 auto; padding: 24px 30px 60px; }
+
+  .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .panel-head h1 { font-size: 20px; margin: 0; }
+  hr.sep { border: none; border-top: 1px solid #e2e2e2; margin: 10px 0 18px; }
+
+  .toolbar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 16px; }
+  .btn { padding: 8px 18px; border-radius: 4px; font-size: 14px; border: 1px solid #ccc; background: #fff; color: #333; cursor: pointer; }
+  .btn-blue { background: #2f7fd1; color: #fff; border-color: #2f7fd1; }
+  .btn-blue-light { background: #6fb3e8; color: #fff; border-color: #6fb3e8; }
+  .btn-outline { background: #fff; color: #333; border: 1px solid #ccc; }
+
+  table { width: 100%; border-collapse: collapse; background: #fff; }
+  thead th { background: #f4f4f4; text-align: center; padding: 12px 10px; font-size: 14px; color: #333; border-bottom: 1px solid #e5e5e5; }
+  tbody td { text-align: center; padding: 12px 10px; font-size: 14px; border-bottom: 1px solid #eee; color: #333; }
+  tbody tr:hover { background: #fafafa; }
+  .op-link { color: #2f7fd1; margin: 0 4px; }
+
+  /* 弹窗 */
+  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 50; }
+  .mask.open { display: flex; }
+  .dialog { background: #fff; width: 640px; max-width: 92vw; border-radius: 4px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+  .dialog .dhead { background: #ddeefb; color: #1f5f96; font-weight: bold; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; }
+  .dialog .dhead .x { cursor: pointer; color: #7ba7c9; font-size: 18px; }
+  .dialog .dbody { padding: 24px 30px; text-align: center; }
+  .dialog .cur-batch { font-weight: bold; margin-bottom: 6px; }
+  .dialog .batch-name { color: #555; margin-bottom: 18px; }
+  .dialog .hint { color: #333; font-weight: bold; font-size: 14px; text-align: left; margin-bottom: 14px; line-height: 1.7; }
+  .dialog .hint .cond { color: #d33; font-weight: bold; }
+  .dialog table { border: 1px solid #eee; }
+  .dialog thead th { background: #fafafa; }
+  .switch { position: relative; display: inline-block; width: 56px; height: 26px; }
+  .switch input { display:none; }
+  .switch .slider { position: absolute; inset: 0; background: #ddd; border-radius: 13px; transition: .2s; }
+  .switch .slider:before { content: "OFF"; position: absolute; right: 6px; top: 3px; font-size: 11px; color: #888; }
+  .switch input:checked + .slider { background: #4caf72; }
+  .switch input:checked + .slider:before { content: "ON"; left: 6px; right: auto; color: #fff; }
+  .dialog .dfoot { padding: 16px 0 26px; display: flex; justify-content: center; gap: 14px; }
+
+  .empty-note { color: #999; font-size: 13px; }
+
+  .pf-row { display: flex; align-items: center; margin-bottom: 18px; }
+  .pf-row label { width: 130px; text-align: right; font-weight: bold; font-size: 14px; margin-right: 10px; }
+  .pf-row input, .pf-row select { flex: 1; padding: 9px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: #fff; }
+  .pf-warn { color: #d33; font-weight: bold; text-align: center; margin: 4px 0 22px; }
+  .photo-row { display: flex; gap: 12px; min-height: 90px; flex-wrap: wrap; }
+  .photo-row .ph { width: 130px; height: 90px; background: #f0f0f0; border: 1px solid #e2e2e2; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 12px; }
+</style>
+</head>
+<body>
+
+  <div class="topnav">
+    <div class="left">
+      <span onclick="showList()">主页</span>
+      <span>集体中心</span>
+      <span>我要报考</span>
+      <span>已报考科目</span>
+      <span>报名须知</span>
+      <span>考试介绍</span>
+      <span>考生须知</span>
+      <span>帮助</span>
+    </div>
+    <div class="right">欢迎您，<b>JAMC00178501</b> ⌄</div>
+  </div>
+
+  <div class="banner">
+    <div class="logo-mark">☖</div>
+    <div class="title">基金行业专场考试网上报名</div>
+  </div>
+
+  <div class="servline">基金行业专场考试网上报名客服专线：021-61948893</div>
+
+  <div class="main">
+
+    <!-- 考点列表 -->
+    <div id="listView">
+      <div class="panel-head"><h1>考点列表</h1></div>
+      <hr class="sep">
+      <div class="toolbar">
+        <button class="btn btn-blue">新建考点</button>
+        <button class="btn btn-blue-light" onclick="openAssign()">配置使用批次</button>
+        <button class="btn btn-outline">更新验收结果</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>考点名称</th>
+            <th>考点代码</th>
+            <th>考点类别</th>
+            <th>验收通过数量/总考场</th>
+            <th>照片审核通过考场/总考场</th>
+            <th>区域</th>
+            <th>地址</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ATA</td>
+            <td>T50000027</td>
+            <td>机构申请</td>
+            <td>1/4</td>
+            <td>1/4</td>
+            <td>北京北京市东城区</td>
+            <td>1111111</td>
+            <td><a class="op-link" onclick="showDetail('org')">考场信息</a></td>
+          </tr>
+          <tr>
+            <td>ATA33</td>
+            <td>T50001007</td>
+            <td>机构申请</td>
+            <td>0/0</td>
+            <td>0/0</td>
+            <td>山西省太原市小店区</td>
+            <td>府东街66号科技园2号楼</td>
+            <td><a class="op-link">编辑</a><a class="op-link" onclick="showDetail('org')">考场信息</a><a class="op-link">删除</a></td>
+          </tr>
+          <tr>
+            <td>第一考场</td>
+            <td>T50001010</td>
+            <td>机构申请</td>
+            <td>0/0</td>
+            <td>0/0</td>
+            <td>上海上海市浦东新区</td>
+            <td>浦东川沙镇川沙路5715弄航校路</td>
+            <td><a class="op-link">编辑</a><a class="op-link" onclick="showDetail('org')">考场信息</a><a class="op-link">删除</a></td>
+          </tr>
+          <tr>
+            <td>666市工会职业技术学校（工行666分行）</td>
+            <td>Z166010888</td>
+            <td>ATA考点</td>
+            <td>2/2</td>
+            <td>—</td>
+            <td>上海上海市黄浦区</td>
+            <td>中山南路100号</td>
+            <td><a class="op-link" onclick="showDetail('ata')">考场信息</a></td>
+          </tr>
+          <tr>
+            <td>777市工会职业技术学校（工行777分行）</td>
+            <td>Z199010888</td>
+            <td>ATA考点</td>
+            <td>1/3</td>
+            <td>—</td>
+            <td>上海上海市静安区</td>
+            <td>南京西路288号</td>
+            <td><a class="op-link" onclick="showDetail('ata')">考场信息</a></td>
+          </tr>
+          <tr>
+            <td>协会测试考点1</td>
+            <td>T50001011</td>
+            <td>机构申请</td>
+            <td>0/0</td>
+            <td>0/0</td>
+            <td>上海上海市宝山区</td>
+            <td>工业大学302教室</td>
+            <td><a class="op-link">编辑</a><a class="op-link" onclick="showDetail('org')">考场信息</a><a class="op-link">删除</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 考点详情：机构申请类 -->
+    <div id="orgDetailView" style="display:none;">
+      <div class="steps" style="display:flex; gap:14px; margin-bottom:22px;">
+        <div style="flex:1; background:#2f7fd1; color:#fff; border-radius:4px; padding:14px 16px;">
+          <div style="font-weight:bold; margin-bottom:6px;">01 填写工作人员</div>
+          <div style="font-size:12.5px; opacity:.9; margin-bottom:10px;">添加考场的工作人员及其联系信息</div>
+          <button class="btn" style="background:#fff; color:#2f7fd1; border:none;" onclick="openStaff('org')">添加工作人员</button>
+        </div>
+        <div style="flex:1; background:#3d8fdb; color:#fff; border-radius:4px; padding:14px 16px;">
+          <div style="font-weight:bold; margin-bottom:6px;">02 填写考场信息</div>
+          <div style="font-size:12.5px; opacity:.9; margin-bottom:10px;">输入考场机位数、位置等考场基本信息</div>
+          <button class="btn" style="background:#fff; color:#2f7fd1; border:none;">添加考场</button>
+        </div>
+        <div style="flex:1; background:#bcd6ef; color:#3a597a; border-radius:4px; padding:14px 16px;">
+          <div style="font-weight:bold; margin-bottom:6px;">03 提交考点信息至悦考</div>
+          <div style="font-size:12.5px; opacity:.9; margin-bottom:10px;">将申报的考场信息提交至悦考系统验收</div>
+          <button class="btn" style="background:#fff; color:#3a597a; border:none;">提交审核考点</button>
+          <button class="btn" style="background:#f0a63a; color:#fff; border:none;">查看考点二维码</button>
+        </div>
+        <div style="flex:1; background:#e2e2e2; color:#888; border-radius:4px; padding:14px 16px;">
+          <div style="font-weight:bold; margin-bottom:6px;">04 获取验收结果</div>
+          <div style="font-size:12.5px; opacity:.9; margin-bottom:10px;">从悦考系统同步数据，查看验收结果</div>
+          <button class="btn" style="background:#fff; color:#888; border:none;">更新验收结果</button>
+          <button class="btn" style="background:#fff; color:#888; border:none;">下载考生名单</button>
+        </div>
+      </div>
+
+      <h2 style="font-size:16px;">考点信息</h2>
+      <div style="background:#fafafa; border:1px solid #eee; border-radius:4px; padding:16px 22px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px 18px; margin-bottom:22px; font-size:14px;">
+        <div><b>考点名称：</b>ATA</div>
+        <div><b>考点区域：</b>北京北京市东城区</div>
+        <div><b>考点地址：</b>1111111</div>
+        <div><b>考点代码：</b>T50000027</div>
+        <div><b>考点性质：</b>机构申请</div>
+        <div><b>考场数量：</b>4</div>
+        <div><b>可用机位：</b>100</div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:16px;">工作人员信息</h2>
+        <div><span class="empty-note" style="margin-right:12px;">考点至少排督考、技术人员各一位</span><button class="btn btn-blue" onclick="openStaff('org')">添加工作人员</button></div>
+      </div>
+      <table style="margin-bottom:26px;">
+        <thead><tr><th>工作人员角色</th><th>工作人员姓名</th><th>手机号码</th><th>邮箱</th><th>证件号</th><th>更新时间</th><th>操作</th></tr></thead>
+        <tbody id="orgStaffBody">
+          <tr><td>督考</td><td>沈岩11</td><td>13800138000</td><td>1@1.com</td><td>—</td><td>2025-03-28 14:23:32</td><td><a class="op-link">编辑</a><a class="op-link" href="#" onclick="deleteStaff(event,this)">删除</a></td></tr>
+          <tr><td>技术人员</td><td>ATA080273</td><td>13111111111</td><td>11@11.com</td><td>—</td><td>2025-02-18 16:09:45</td><td><a class="op-link">编辑</a><a class="op-link" href="#" onclick="deleteStaff(event,this)">删除</a></td></tr>
+        </tbody>
+      </table>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:16px;">考场信息</h2>
+        <button class="btn btn-blue">添加考场</button>
+      </div>
+      <table>
+        <thead><tr><th>考场号</th><th>考场名称</th><th>考场地址</th><th>考场照片审核状态</th><th>悦考系统验收状态</th><th>启用状态</th><th>SN号</th><th>机位</th><th>更新时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>考场1</td><td>1111111</td><td>●审核通过</td><td>●验收通过</td><td>未启用</td><td>TH50-YFVU-4RLF-9VQW-XJC3</td><td>100</td><td>2024-12-03 17:02:54</td><td><a class="op-link" href="#" onclick="openProctor(event,'org-1')">监考信息</a><a class="op-link">作废</a><a class="op-link" href="#" onclick="openPhotos(event)">查看照片</a></td></tr>
+          <tr><td>2</td><td>考场4</td><td>304教室</td><td>○未提交</td><td>○未提交</td><td>未启用</td><td>TH50-AX7C-7TWF-OOMA-8MX3</td><td>4</td><td>2026-01-28 09:54:06</td><td><a class="op-link" href="#" onclick="openProctor(event,'org-2')">监考信息</a><a class="op-link">编辑</a><a class="op-link">删除</a><a class="op-link">提交</a></td></tr>
+          <tr><td>3</td><td>考场2</td><td>财经大学302…</td><td>●审核中</td><td>●验收中</td><td>未启用</td><td>TH50-P4GO-E12N-YEN1-Y1DY</td><td>50</td><td>2025-03-10 14:54:30</td><td><a class="op-link" href="#" onclick="openProctor(event,'org-3')">监考信息</a><a class="op-link">作废</a><a class="op-link" href="#" onclick="openPhotos(event)">查看照片</a></td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+        <button class="btn btn-outline">验收操作说明</button>
+        <button class="btn" style="background:#4caf72; color:#fff; border:none;" onclick="showList()">返回考点列表</button>
+      </div>
+      <div style="background:#fdeeee; color:#c0392b; font-size:13px; padding:12px 16px; margin-top:16px; border-radius:4px; line-height:1.7;">
+        在提交完考场信息后，请至 https://joytest.org/home/joy_download/manage 下载并安装 悦考管理，请至 https://joytest.org/home/joy_download/client 下载并安装悦考考试端，并按要求完成验收流程。验收通过后，请点击「更新验收进度」按钮，获取验收结果
+      </div>
+    </div>
+
+    <!-- 考点详情：ATA考点（简化） -->
+    <div id="ataDetailView" style="display:none;">
+      <h2 style="font-size:16px;">操作流程</h2>
+      <div class="steps" style="display:flex; gap:14px; margin-bottom:22px;">
+        <div style="flex:1; background:#2f7fd1; color:#fff; border-radius:4px; padding:14px 16px;">
+          <div style="font-weight:bold; margin-bottom:6px;">01 填写工作人员</div>
+          <div style="font-size:12.5px; opacity:.9; margin-bottom:10px;">考点、考场信息与照片已由考试机构提供，无需再次审核或提交；机构仅需添加考场的工作人员及其联系信息</div>
+          <button class="btn" style="background:#fff; color:#2f7fd1; border:none;" onclick="openStaff('ata')">添加工作人员</button>
+        </div>
+      </div>
+
+      <h2 style="font-size:16px;">考点信息</h2>
+      <div style="background:#fafafa; border:1px solid #eee; border-radius:4px; padding:16px 22px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px 18px; margin-bottom:22px; font-size:14px;">
+        <div><b>考点名称：</b>666市工会职业技术学校（工行666分行）</div>
+        <div><b>考点区域：</b>上海上海市黄浦区</div>
+        <div><b>考点地址：</b>中山南路100号</div>
+        <div><b>考点代码：</b>Z166010888</div>
+        <div><b>考点性质：</b>ATA考点</div>
+        <div><b>考场数量：</b>2</div>
+        <div><b>可用机位：</b>80</div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:16px;">工作人员信息</h2>
+        <div><span class="empty-note" style="margin-right:12px;">考点至少排督考、技术人员各一位</span><button class="btn btn-blue" onclick="openStaff('ata')">添加工作人员</button></div>
+      </div>
+      <table style="margin-bottom:26px;">
+        <thead><tr><th>工作人员角色</th><th>工作人员姓名</th><th>手机号码</th><th>邮箱</th><th>证件号</th><th>更新时间</th><th>操作</th></tr></thead>
+        <tbody id="ataStaffBody">
+          <tr id="ataStaffEmptyRow"><td colspan="7" class="empty-note" style="padding:20px 0;">暂未添加工作人员，请点击右上角「添加工作人员」</td></tr>
+        </tbody>
+      </table>
+
+      <h2 style="font-size:16px;">考场信息</h2>
+      <table>
+        <thead><tr><th>考场号</th><th>考场名称</th><th>考场地址</th><th>考场照片审核状态</th><th>悦考系统验收状态</th><th>SN号</th><th>机位</th><th>更新时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>考场1</td><td>中山南路100号1楼101室</td><td>●审核通过</td><td>●验收通过</td><td>TH50-ZS6C-101R-0001-A1B2</td><td>40</td><td>2026-08-10 10:20:00</td><td><a class="op-link" href="#" onclick="openProctor(event,'ata-1')">监考信息</a></td></tr>
+          <tr><td>2</td><td>考场2</td><td>中山南路100号1楼102室</td><td>●审核通过</td><td>●验收通过</td><td>TH50-ZS6C-102R-0002-C3D4</td><td>40</td><td>2026-08-10 10:21:00</td><td><a class="op-link" href="#" onclick="openProctor(event,'ata-2')">监考信息</a></td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+        <button class="btn" style="background:#4caf72; color:#fff; border:none;" onclick="showList()">返回考点列表</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 配置使用批次弹窗 -->
+  <div class="mask" id="assignMask">
+    <div class="dialog">
+      <div class="dhead"><span>设置启用考场</span><span class="x" onclick="closeAssign()">✕</span></div>
+      <div class="dbody">
+        <div class="cur-batch">当前批次：基金应知应会3</div>
+        <div class="batch-name">基金应知应会3</div>
+        <div class="hint">
+          考场配置：<br>
+          <span class="cond">（机构申请考点：需同时通过考场照片审核、自行完成考场考试系统（悦考系统）验收，才可启用考场为考生报考；）</span><br>
+          <span class="cond">（ATA考点：无需照片审核、无需悦考系统验收，考点至少添加1名督考、1名技术人员，且考场已填写监考信息，才可启用考场为考生报考。）</span>
+        </div>
+        <table>
+          <thead><tr><th>考点名称</th><th>考点类别</th><th>考场号</th><th>考场地址</th><th>可用机位</th><th>是否启用</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>ATA</td>
+              <td>机构申请</td>
+              <td>1</td>
+              <td>1111111</td>
+              <td>100</td>
+              <td><label class="switch"><input type="checkbox" onchange="toggleEnabled(this,'org-1')"><span class="slider"></span></label></td>
+            </tr>
+            <tr>
+              <td>666市工会职业技术学校（工行666分行）</td>
+              <td>ATA考点</td>
+              <td>1</td>
+              <td>中山南路100号1楼101室</td>
+              <td>40</td>
+              <td><label class="switch"><input type="checkbox" onchange="handleAtaEnable(this,'ata-1')"><span class="slider"></span></label></td>
+            </tr>
+            <tr>
+              <td>666市工会职业技术学校（工行666分行）</td>
+              <td>ATA考点</td>
+              <td>2</td>
+              <td>中山南路100号1楼102室</td>
+              <td>40</td>
+              <td><label class="switch"><input type="checkbox" onchange="handleAtaEnable(this,'ata-2')"><span class="slider"></span></label></td>
+            </tr>
+            <tr>
+              <td>777市工会职业技术学校（工行777分行）</td>
+              <td>ATA考点</td>
+              <td>1</td>
+              <td>南京西路288号3楼301室</td>
+              <td>35</td>
+              <td><label class="switch"><input type="checkbox" onchange="handleAtaEnable(this,'ata-3')"><span class="slider"></span></label></td>
+            </tr>
+            <tr>
+              <td>777市工会职业技术学校（工行777分行）</td>
+              <td>ATA考点</td>
+              <td>2</td>
+              <td>南京西路288号3楼302室</td>
+              <td>35</td>
+              <td><label class="switch"><input type="checkbox" onchange="handleAtaEnable(this,'ata-4')"><span class="slider"></span></label></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="dfoot">
+          <button class="btn btn-blue" style="min-width:90px;">保 存</button>
+          <button class="btn btn-outline" style="min-width:90px;" onclick="closeAssign()">取 消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加考点工作人员弹窗 -->
+  <div class="mask" id="staffMask">
+    <div class="dialog" style="width:720px;">
+      <div class="dhead"><span>添加考点工作人员</span><span class="x" onclick="closeStaff()">✕</span></div>
+      <div class="dbody" style="text-align:left; padding:30px 40px;">
+        <div class="pf-row">
+          <label>工作人员角色：</label>
+          <select id="sf-role">
+            <option value="">--请选择类型--</option>
+            <option>督考</option>
+            <option>技术人员</option>
+          </select>
+        </div>
+        <div class="pf-row"><label>姓名：</label><input type="text" id="sf-name" placeholder="请输入姓名"></div>
+        <div class="pf-row"><label>手机：</label><input type="text" id="sf-phone" placeholder="请输入手机"></div>
+        <div class="pf-row">
+          <label>证件类型：</label>
+          <select id="sf-idtype">
+            <option value="">请选择证件类型</option>
+            <option>身份证</option>
+            <option>护照</option>
+            <option>港澳台通行证</option>
+          </select>
+        </div>
+        <div class="pf-row"><label>证件号码：</label><input type="text" id="sf-idno" placeholder="请输入证件号码"></div>
+        <div class="pf-row"><label>电子信箱：</label><input type="text" id="sf-email" placeholder="请输入电子信箱"></div>
+        <div class="pf-warn">考场工作人员不可提交同一个手机、邮箱</div>
+        <div class="dfoot">
+          <button class="btn btn-blue" style="min-width:90px;" onclick="saveStaff()">保 存</button>
+          <button class="btn btn-outline" style="min-width:90px;" onclick="closeStaff()">取 消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 监考信息弹窗 -->
+  <div class="mask" id="proctorMask">
+    <div class="dialog" style="width:720px;">
+      <div class="dhead"><span>监考信息</span><span class="x" onclick="closeProctor()">✕</span></div>
+      <div class="dbody" style="text-align:left; padding:30px 40px;">
+        <div class="pf-row"><label>监考1姓名：</label><input type="text" id="pf-n1" placeholder="请输入监考1姓名"></div>
+        <div class="pf-row"><label>监考1证件号：</label><input type="text" id="pf-i1" placeholder="请输入监考1证件号"></div>
+        <div class="pf-row"><label>监考1手机：</label><input type="text" id="pf-p1" placeholder="请输入监考1手机"></div>
+        <div class="pf-row"><label>监考2姓名：</label><input type="text" id="pf-n2" placeholder="请输入监考2姓名"></div>
+        <div class="pf-row"><label>监考2证件号：</label><input type="text" id="pf-i2" placeholder="请输入监考2证件号"></div>
+        <div class="pf-row"><label>监考2手机：</label><input type="text" id="pf-p2" placeholder="请输入监考2手机"></div>
+        <div class="pf-warn">监考人员须由本单位工作人员担任</div>
+        <div class="dfoot">
+          <button class="btn btn-blue" style="min-width:90px;" onclick="saveProctor()">保 存</button>
+          <button class="btn btn-outline" style="min-width:90px;" onclick="closeProctor()">取 消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看照片弹窗 -->
+  <div class="mask" id="photoMask">
+    <div class="dialog" style="width:760px;">
+      <div class="dhead"><span>查看照片</span><span class="x" onclick="closePhotos()">✕</span></div>
+      <div class="dbody" style="text-align:left; padding:30px 40px;">
+        <div style="font-weight:bold; margin-bottom:10px;">考场整体环境照片：</div>
+        <div class="photo-row" id="photo-env"></div>
+        <div style="font-weight:bold; margin:22px 0 10px;">监控摄像头视角照片：</div>
+        <div class="photo-row" id="photo-mon"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function hideAllViews() {
+  ['listView','orgDetailView','ataDetailView'].forEach(function(id){
+    document.getElementById(id).style.display = 'none';
+  });
+}
+function showList() {
+  hideAllViews();
+  document.getElementById('listView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function showDetail(type) {
+  hideAllViews();
+  if (type === 'ata') {
+    document.getElementById('ataDetailView').style.display = 'block';
+  } else {
+    document.getElementById('orgDetailView').style.display = 'block';
+  }
+  window.scrollTo(0,0);
+}
+function openAssign() {
+  document.getElementById('assignMask').classList.add('open');
+}
+function closeAssign() {
+  document.getElementById('assignMask').classList.remove('open');
+}
+var enabledState = {
+  'org-1': false,
+  'org-2': false,
+  'org-3': false,
+  'ata-1': false,
+  'ata-2': false,
+  'ata-3': false,
+  'ata-4': false
+};
+function toggleEnabled(cb, key) {
+  enabledState[key] = cb.checked;
+}
+function handleAtaEnable(cb, key) {
+  if (!cb.checked) { enabledState[key] = false; return; } // 关闭无需校验
+  var missing = [];
+  var hasSupervisor = false, hasTech = false;
+  Array.prototype.forEach.call(document.querySelectorAll('#ataStaffBody tr'), function(r){
+    var role = r.children[0] && r.children[0].textContent.trim();
+    if (role === '督考') hasSupervisor = true;
+    if (role === '技术人员') hasTech = true;
+  });
+  if (!hasSupervisor || !hasTech) missing.push('考点工作人员需至少包含1名督考、1名技术人员');
+  var d = proctorData[key];
+  if (!d || !d.n1 || !d.p1) missing.push('该考场需填写监考信息');
+  if (missing.length) {
+    cb.checked = false;
+    enabledState[key] = false;
+    alert('该考场暂不满足启用条件：\n' + missing.map(function(m,i){ return (i+1) + '. ' + m; }).join('\n') + '\n请补齐后重新启用。');
+  } else {
+    enabledState[key] = true;
+  }
+}
+var proctorEnabled = false;
+var proctorCurrentKey = null;
+var proctorData = {
+  'org-1': { n1:'监考1', i1:'310101199001011234', p1:'13800000001', n2:'监考2', i2:'310101199001011235', p2:'13800000002' },
+  'org-2': { n1:'', i1:'', p1:'', n2:'', i2:'', p2:'' },
+  'org-3': { n1:'', i1:'', p1:'', n2:'', i2:'', p2:'' },
+  'ata-1': { n1:'', i1:'', p1:'', n2:'', i2:'', p2:'' },
+  'ata-2': { n1:'张监考', i1:'310101199001011234', p1:'13800000001', n2:'', i2:'', p2:'' },
+  'ata-3': { n1:'', i1:'', p1:'', n2:'', i2:'', p2:'' },
+  'ata-4': { n1:'', i1:'', p1:'', n2:'', i2:'', p2:'' }
+};
+function openProctor(e, key) {
+  if (e) e.preventDefault();
+  var d = proctorData[key] || { n1:'', i1:'', p1:'', n2:'', i2:'', p2:'' };
+  document.getElementById('pf-n1').value = d.n1;
+  document.getElementById('pf-i1').value = d.i1;
+  document.getElementById('pf-p1').value = d.p1;
+  document.getElementById('pf-n2').value = d.n2;
+  document.getElementById('pf-i2').value = d.i2;
+  document.getElementById('pf-p2').value = d.p2;
+  proctorCurrentKey = key;
+  proctorEnabled = !!enabledState[key];
+  document.getElementById('proctorMask').classList.add('open');
+}
+function closeProctor() {
+  document.getElementById('proctorMask').classList.remove('open');
+}
+function saveProctor() {
+  var n1 = document.getElementById('pf-n1').value.trim();
+  var i1 = document.getElementById('pf-i1').value.trim();
+  var p1 = document.getElementById('pf-p1').value.trim();
+  var n2 = document.getElementById('pf-n2').value.trim();
+  var i2 = document.getElementById('pf-i2').value.trim();
+  var p2 = document.getElementById('pf-p2').value.trim();
+  // 监考1为必填，监考2为选填（视考场机位/规则要求配置第二名监考）
+  if (proctorEnabled && (!n1 || !p1)) {
+    alert('该考场已启用，监考信息不允许清空或删除，如需调整监考人员，请先在「设置启用考场」中停用该考场，或直接修改为其他有效的监考信息后再保存。');
+    return;
+  }
+  if (proctorCurrentKey) {
+    proctorData[proctorCurrentKey] = { n1:n1, i1:i1, p1:p1, n2:n2, i2:i2, p2:p2 };
+  }
+  closeProctor();
+}
+function openPhotos(e) {
+  if (e) e.preventDefault();
+  var envHtml = '', monHtml = '';
+  for (var i = 1; i <= 4; i++) { envHtml += '<div class="ph">环境照片' + i + '</div>'; }
+  for (var i = 1; i <= 2; i++) { monHtml += '<div class="ph">监控照片' + i + '</div>'; }
+  document.getElementById('photo-env').innerHTML = envHtml;
+  document.getElementById('photo-mon').innerHTML = monHtml;
+  document.getElementById('photoMask').classList.add('open');
+}
+function closePhotos() {
+  document.getElementById('photoMask').classList.remove('open');
+}
+var staffTarget = null;
+function openStaff(target) {
+  staffTarget = target || 'org';
+  document.getElementById('sf-role').value = '';
+  document.getElementById('sf-name').value = '';
+  document.getElementById('sf-phone').value = '';
+  document.getElementById('sf-idtype').value = '';
+  document.getElementById('sf-idno').value = '';
+  document.getElementById('sf-email').value = '';
+  document.getElementById('staffMask').classList.add('open');
+}
+function closeStaff() {
+  document.getElementById('staffMask').classList.remove('open');
+}
+function saveStaff() {
+  var role = document.getElementById('sf-role').value;
+  var name = document.getElementById('sf-name').value.trim();
+  var phone = document.getElementById('sf-phone').value.trim();
+  var idtype = document.getElementById('sf-idtype').value;
+  var idno = document.getElementById('sf-idno').value.trim();
+  var email = document.getElementById('sf-email').value.trim();
+  if (!role) { alert('请选择工作人员角色'); return; }
+  if (!name) { alert('请输入姓名'); return; }
+  if (!phone) { alert('请输入手机'); return; }
+  var bodyId = staffTarget === 'ata' ? 'ataStaffBody' : 'orgStaffBody';
+  var body = document.getElementById(bodyId);
+  if (staffTarget === 'ata') {
+    var emptyRow = document.getElementById('ataStaffEmptyRow');
+    if (emptyRow) emptyRow.remove();
+  }
+  var now = '2026-08-19 10:00:00';
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td>' + role + '</td><td>' + name + '</td><td>' + phone + '</td><td>' + (email || '—') + '</td><td>' + (idtype ? (idtype + ' ' + (idno || '')) : (idno || '—')) + '</td><td>' + now + '</td><td><a class="op-link">编辑</a><a class="op-link" href="#" onclick="deleteStaff(event,this)">删除</a></td>';
+  body.appendChild(tr);
+  closeStaff();
+}
+function deleteStaff(e, link) {
+  if (e) e.preventDefault();
+  var tr = link.closest('tr');
+  var role = tr.children[0].textContent.trim();
+  var tbody = tr.parentElement;
+  if (role === '督考' || role === '技术人员') {
+    var count = 0;
+    Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function(r){
+      if (r.children[0] && r.children[0].textContent.trim() === role) count++;
+    });
+    if (count <= 1) {
+      alert('考点至少需保留1名' + role + '，无法删除，请先添加其他' + role + '后再删除该条记录。');
+      return;
+    }
+  }
+  tr.remove();
+}
+</script>
+</body>
+</html>

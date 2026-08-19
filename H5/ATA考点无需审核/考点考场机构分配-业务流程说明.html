@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考点 / 考场 / 机构 / 批次 — 业务流程说明</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f6f2;
+    --surface: #ffffff;
+    --border: #e2ddd6;
+    --accent: #2d5a8e;
+    --accent-light: #e8f0f9;
+    --accent-muted: #6b8fb5;
+    --text: #1a1a1a;
+    --text-muted: #6b6458;
+    --step-bg: #f0ece5;
+    --warning-bg: #fff8e6;
+    --warning-border: #e6a817;
+    --org: #2d5a8e;
+    --ata: #b5772f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* Header */
+  .site-header {
+    background: var(--accent);
+    color: #fff;
+    padding: 36px 40px 28px;
+  }
+  .site-header h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+  }
+  .site-header p {
+    font-size: 13px;
+    opacity: 0.78;
+    max-width: 640px;
+  }
+  .updated-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 11px;
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 24px 60px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* Sidebar TOC */
+  .toc {
+    position: sticky;
+    top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 16px;
+  }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .toc a {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 4px 0;
+    border-left: 2px solid transparent;
+    padding-left: 8px;
+    transition: all 0.15s;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .toc .toc-section { margin-top: 8px; }
+  .toc .toc-section-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.6;
+    padding: 2px 0 2px 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Main content */
+  .main { min-width: 0; }
+
+  /* Section */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-num {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .section-body { padding: 18px 24px 20px; }
+
+  /* Step cards */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .step-card:last-child { margin-bottom: 0; }
+  .step-header {
+    background: var(--step-bg);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .step-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .step-body { padding: 16px 20px 18px; }
+
+  p { margin-bottom: 10px; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 10px;
+  }
+  ul li {
+    padding: 3px 0 3px 16px;
+    position: relative;
+    color: var(--text);
+    font-size: 13.5px;
+  }
+  ul li::before {
+    content: '–';
+    position: absolute; left: 0;
+    color: var(--accent-muted);
+  }
+
+  code {
+    background: #f0ece5;
+    color: #7a4f2e;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+  }
+
+  /* Warning / note box */
+  .warning {
+    background: var(--warning-bg);
+    border-left: 3px solid var(--warning-border);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #5a4010;
+  }
+  .warning::before { content: '⚠️ '; }
+
+  .note {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent-muted);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* Tag chips */
+  .tag {
+    display: inline-block;
+    font-size: 11.5px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    margin: 0 4px 0 0;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .tag-org { background: var(--accent-light); color: var(--org); }
+  .tag-ata { background: #fbeee0; color: var(--ata); }
+
+  /* Overview types */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .type-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .type-card.org { border-top: 3px solid var(--org); }
+  .type-card.ata { border-top: 3px solid var(--ata); }
+  .type-card .type-label {
+    font-weight: 700; font-size: 13.5px; margin-bottom: 6px;
+  }
+  .type-card.org .type-label { color: var(--org); }
+  .type-card.ata .type-label { color: var(--ata); }
+  .type-card .type-desc { font-size: 12.5px; color: var(--text-muted); }
+
+  /* 简易流程条 */
+  .flow-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 4px;
+  }
+  .flow-bar .fnode {
+    background: var(--step-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  .flow-bar .farrow { color: var(--accent-muted); font-size: 14px; }
+
+  .sub-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 14px 0 6px;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+  @media (max-width: 720px) {
+    .container { grid-template-columns: 1fr; }
+    .toc { display: none; }
+    .type-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>考点 / 考场 / 机构 / 批次 — 业务流程说明</h1>
+  <p>说明「机构申请类考点」与「ATA考点」两条业务线，从产生、审核到按批次启用的完整流程，帮助开发同学理清两条线的差异点。</p>
+  <span class="updated-tag">配合考点管理原型 / 导入模板一起看</span>
+</header>
+
+<div class="container">
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-title">目录</div>
+    <a href="#overview">1. 系统概览</a>
+    <a href="#workflow">2. 业务流程</a>
+    <div class="toc-section">
+      <div class="toc-section-title">流程步骤</div>
+      <a href="#step1">Step 1 考点产生</a>
+      <a href="#step2">Step 2 照片与审核</a>
+      <a href="#step3">Step 3 机构归属</a>
+      <a href="#step4">Step 4 按批次启用</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- 1. 系统概览 -->
+    <div class="section" id="overview">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">系统概览</div>
+      </div>
+      <div class="section-body">
+        <p>系统中的「考点」分两种业务来源，字段结构相同，但产生方式、归属机构的确定方式、以及是否需要人工审核完全不同。</p>
+        <div class="type-grid">
+          <div class="type-card org">
+            <div class="type-label">机构申请类考点</div>
+            <div class="type-desc">机构在报名端在线申请、上传考场照片，人工审核通过后，归属机构永久固定，仅按批次决定「用不用」。</div>
+          </div>
+          <div class="type-card ata">
+            <div class="type-label">ATA考点</div>
+            <div class="type-desc">由后台管理员批量导入，不走在线申请，照片仅留档不需审核；归属机构按批次单独分配，下一批次自动清空。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 业务流程 -->
+    <div class="section" id="workflow">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">业务流程</div>
+      </div>
+      <div class="section-body">
+
+        <!-- Step 1 -->
+        <div class="step-card" id="step1">
+          <div class="step-header">
+            <span class="step-badge">Step 1</span>
+            <span class="step-title">考点 / 考场如何产生</span>
+          </div>
+          <div class="step-body">
+            <p><span class="tag tag-org">机构申请</span>机构在报名端「添加考场」在线填写考场名称、地址、机位数，随申请一并提交照片。</p>
+            <p><span class="tag tag-ata">ATA考点</span>由后台管理员在「考点管理」页面批量导入 Excel（考点 + 考场结构化数据），此时不填所属机构；照片如有，另附压缩包一并导入，系统按考场代码自动关联。</p>
+            <div class="flow-bar">
+              <span class="fnode">机构在线申请</span><span class="farrow">或</span><span class="fnode">后台批量导入</span><span class="farrow">→</span><span class="fnode">生成考点 / 考场记录</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" id="step2">
+          <div class="step-header">
+            <span class="step-badge">Step 2</span>
+            <span class="step-title">照片与审核</span>
+          </div>
+          <div class="step-body">
+            <p><span class="tag tag-org">机构申请</span>提交后进入「考场审核」队列，审核人查看照片、工作人员信息，做「审核通过 / 不通过」判定；只有审核通过才能进入下一步启用。</p>
+            <p><span class="tag tag-ata">ATA考点</span>不需要考场审核，照片也不需要人工审核，导入后仅作为资料留档；<strong>考场验收状态导入后默认直接置为「验收通过」</strong>，不经过人工判定。照片命名与考场代码不匹配的，压缩包将直接导入失败，需按命名规则修正后重新上传。</p>
+            <p>在机构报名端的考点详情页里，ATA考场的「考场照片审核状态」「悦考系统验收状态」也统一默认展示为「审核通过」「验收通过」，与机构申请类考场的展示样式保持一致，避免机构误以为需要自行提交审核；操作列仅提供「监考信息」一项，不提供「查看照片」「编辑 / 删除 / 提交 / 作废」这类仅机构申请类考场才需要的操作。</p>
+            <div class="warning">这是两条线最大的差异点：机构申请类必须审核通过才能往下走，ATA考点全程不经过审核。</div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card" id="step3">
+          <div class="step-header">
+            <span class="step-badge">Step 3</span>
+            <span class="step-title">机构归属如何确定</span>
+          </div>
+          <div class="step-body">
+            <p><span class="tag tag-org">机构申请</span>归属机构在申请时就已确定，是考点的固定属性，长期有效，不随批次变化。</p>
+            <p><span class="tag tag-ata">ATA考点</span>归属机构由管理员在「批次配置 → ATA考点机构分配」页面按批次导入分配，<strong>仅当前批次生效</strong>，进入下一批次自动清空，需要重新导入分配。</p>
+            <div class="note">考点列表页面看到的 ATA 考点所属机构，是按「当前生效批次」实时查出来的展示值，不是考点自身存储的固定数据。</div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card" id="step4">
+          <div class="step-header">
+            <span class="step-badge">Step 4</span>
+            <span class="step-title">机构按批次启用考场</span>
+          </div>
+          <div class="step-body">
+            <p>机构在「设置启用考场」里能操作的考场范围 = <strong>自己申请且审核通过的机构申请类考场</strong> + <strong>本批次被分配到自己名下的全部 ATA 考场</strong>，机构逐个考场用开关决定本批次是否启用给考生报考。</p>
+
+            <p><strong>① 候选列表怎么来的（两条线不一样）</strong></p>
+            <p><span class="tag tag-org">机构申请</span>列表只展示「验收通过」的考场，没通过验收的考场直接不出现在列表里，机构看不到、也无从误操作。</p>
+            <p><span class="tag tag-ata">ATA考点</span>列表展示该考点下<strong>全部考场</strong>，不管有没有满足启用条件都会出现——过滤动作发生在「点击开关」那一步，不是在列表加载时。</p>
+
+            <p><strong>② 点击开关时校验什么</strong></p>
+            <p><span class="tag tag-org">机构申请</span>需要「照片审核通过」+「悦考系统验收完成」同时满足，否则开关本身不会出现在列表里（见①），无需额外报错。</p>
+            <p><span class="tag tag-ata">ATA考点</span>需要同时满足三点：考点下至少有1名督考、1名技术人员；<strong>该考场自己</strong>已填写监考信息（按考场维度校验，不要求同一考点下其他考场也填完）；本批次已经分配给该机构。三点里任意一点不满足，点击开关时前端拦截并弹出报错提示，告诉机构具体缺什么。</p>
+            <p>ATA考点的考点/考场基础信息和照片，都是考试机构统一导入好的，机构这边不用再审核或重新上传，只需要在这个基础上把工作人员和监考信息补齐，就能满足②里的启用条件。</p>
+
+            <p><strong>③ 已启用之后的限制</strong></p>
+            <p>考场一旦已启用，<strong>不允许把监考信息清空或删除</strong>——要换监考人员，只能直接填新的有效信息覆盖，或者先把考场开关关掉再改。</p>
+            <p>工作人员列表任何时候都要<strong>至少保留1名督考、1名技术人员</strong>，删除某条记录会导致某个角色数量归零时，删除操作会被拦截。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

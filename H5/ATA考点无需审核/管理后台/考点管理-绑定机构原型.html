@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>考点管理 - 绑定机构原型</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; background: #f5f6f8; color: #333; font-size: 14px; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; background: #2b3542; color: #cfd6de; flex-shrink: 0; }
+  .sidebar .logo { display: flex; align-items: center; gap: 10px; padding: 18px 20px; font-size: 18px; font-weight: bold; color: #fff; background: #2f8ae0; }
+  .sidebar nav { padding: 8px 0; }
+  .sidebar .item { padding: 12px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .sidebar .item:hover { background: #364150; }
+  .sidebar .item.active-group { background: #23303d; color: #fff; }
+  .sidebar .sub { padding: 10px 20px 10px 46px; font-size: 13.5px; color: #aeb8c2; cursor: pointer; }
+  .sidebar .sub.current { color: #4da3ff; background: #1f2a35; border-left: 3px solid #2f8ae0; padding-left: 43px; }
+  .sidebar .sub:hover { color: #fff; }
+
+  /* Topbar */
+  .topbar { height: 56px; background: #2f8ae0; display: flex; align-items: center; justify-content: flex-end; padding: 0 24px; color: #fff; }
+
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .content { padding: 24px 28px; }
+  .content h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .breadcrumb { text-align: right; font-size: 12.5px; color: #8a94a3; margin-top: -22px; margin-bottom: 10px; }
+  .breadcrumb .cur { color: #2f8ae0; }
+  hr.sep { border: none; border-top: 1px solid #e5e8ec; margin: 10px 0 18px; }
+
+  .panel { background: #fff; border-radius: 4px; padding: 20px 22px 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+
+  .filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+  .filters input[type=text], .filters select {
+    height: 34px; border: 1px solid #d9dde3; border-radius: 3px; padding: 0 10px; font-size: 13.5px; color: #333; outline: none;
+  }
+  .filters input[type=text]:focus, .filters select:focus { border-color: #2f8ae0; }
+  .filters .btn { height: 34px; padding: 0 18px; border: none; border-radius: 3px; background: #2f8ae0; color: #fff; font-size: 13.5px; cursor: pointer; }
+  .filters .btn:hover { background: #2678c9; }
+
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .toolbar .label { font-weight: 600; }
+  .toolbar .link { color: #2f8ae0; text-decoration: none; font-size: 13px; }
+  .toolbar .btn-outline { height: 32px; padding: 0 14px; border: 1px solid #2f8ae0; color: #2f8ae0; background: #fff; border-radius: 3px; font-size: 13px; cursor: pointer; display:flex; align-items:center; gap:6px;}
+  .toolbar .btn-green { height: 32px; padding: 0 14px; border: none; background: #52c17d; color: #fff; border-radius: 3px; font-size: 13px; cursor: pointer; display:flex; align-items:center; gap:6px;}
+  .toolbar .zip-hint { font-size: 12px; color: #9aa3ad; margin-left: 4px; }
+  .file-picked { font-size: 12.5px; color: #666; margin-right: 4px; }
+  .file-picked.has-file { color: #2f8ae0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #eceff2; color: #555; font-weight: 600; white-space: nowrap; }
+  tbody td { padding: 12px 8px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+  tbody tr:hover { background: #f8fbff; }
+
+  .org-cell { color: #333; }
+  .org-cell.unbound { color: #b3b8bf; }
+
+  .btn-view { height: 30px; padding: 0 14px; background: #2f8ae0; color: #fff; border: none; border-radius: 3px; font-size: 12.5px; cursor: pointer; }
+  .btn-view:hover { background: #2678c9; }
+
+  .foot { display: flex; align-items: center; justify-content: space-between; padding: 16px 4px 4px; }
+  .foot .count { color: #52c17d; font-size: 13px; }
+  .pager { display: flex; align-items: center; gap: 6px; }
+  .pager button, .pager .num {
+    min-width: 32px; height: 30px; border: 1px solid #d9dde3; background: #fff; border-radius: 3px; cursor: pointer; font-size: 13px; color: #555;
+  }
+  .pager .num.active { background: #2f8ae0; color: #fff; border-color: #2f8ae0; }
+  .pager input { width: 46px; height: 30px; border: 1px solid #d9dde3; border-radius: 3px; text-align: center; }
+
+  .note-box { background: #fff8ec; border: 1px solid #f5e0ad; color: #9a7a2b; font-size: 12.5px; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; }
+
+  /* 考点详细信息 */
+  .detail-breadcrumb { text-align: right; font-size: 12.5px; color: #8a94a3; margin-bottom: 18px; }
+  .detail-breadcrumb .cur { color: #2f8ae0; }
+  .detail-breadcrumb a { color: #8a94a3; text-decoration: none; cursor: pointer; }
+  .detail-breadcrumb a:hover { color: #2f8ae0; }
+  .detail-section { margin-bottom: 32px; }
+  .detail-section h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+  .info-box { background: #f0f0f0; border-radius: 3px; padding: 18px 24px; display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 14px; }
+  .info-box .field { font-size: 14px; color: #222; }
+  .info-box .field b { font-weight: 700; }
+  .dtable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .dtable thead th { text-align: center; background: #f0f0f0; padding: 12px 10px; font-weight: 700; color: #222; }
+  .dtable tbody td { text-align: center; padding: 14px 10px; border-bottom: 1px solid #eee; color: #333; }
+  .dtable tbody tr:last-child td { border-bottom: none; }
+  .dtable .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .dtable .status-dot.ok { background: #4caf50; }
+  .dtable .status-dot.pending { background: #f0ad4e; }
+  .dtable a.op-link { color: #2f8ae0; text-decoration: none; }
+  .dtable a.op-link:hover { text-decoration: underline; }
+  .dtable a.op-link.muted { color: #b3b8bf; }
+  .dtable .op-sep { color: #dcdfe3; margin: 0 6px; }
+
+  /* 照片查看 Modal */
+  .photo-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: flex-start; justify-content: center; z-index: 60; overflow-y: auto; }
+  .photo-mask.open { display: flex; }
+  .photo-modal { width: 720px; background: #fff; border-radius: 4px; margin: 6vh 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+  .photo-header { background: #29b6e8; color: #fff; padding: 18px 24px; font-size: 17px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .photo-header .x { cursor: pointer; font-size: 18px; color: rgba(255,255,255,0.85); }
+  .photo-body { padding: 26px 32px 8px; }
+  .photo-group-title { font-size: 13.5px; font-weight: 700; color: #333; margin: 4px 0 12px; }
+  .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .photo-thumb { aspect-ratio: 4/3; border-radius: 4px; border: 1px solid #e2e2e2; background: #eef3f8; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #6b93b8; font-size: 12px; gap: 4px; }
+  .photo-thumb .icon { font-size: 22px; }
+  .photo-empty { text-align: center; color: #aeb2b7; font-size: 13.5px; padding: 40px 0 30px; }
+  .photo-footer { display: flex; justify-content: center; padding: 6px 0 32px; }
+  .photo-close { min-width: 130px; height: 42px; border: none; background: #2f6fb0; color: #fff; font-size: 14px; letter-spacing: 4px; border-radius: 3px; cursor: pointer; }
+  .photo-close:hover { background: #2678c9; }
+
+  /* 监考信息 Modal */
+  .proc-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: flex-start; justify-content: center; z-index: 60; overflow-y: auto; }
+  .proc-mask.open { display: flex; }
+  .proc-modal { width: 620px; background: #fff; border-radius: 4px; margin: 6vh 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+  .proc-header { background: #29b6e8; color: #fff; padding: 18px 24px; font-size: 17px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .proc-header .x { cursor: pointer; font-size: 18px; color: rgba(255,255,255,0.85); }
+  .proc-body { padding: 34px 40px 10px; }
+  .proc-row { display: flex; align-items: center; margin-bottom: 22px; }
+  .proc-row label { width: 150px; text-align: right; font-weight: 700; font-size: 14px; color: #222; padding-right: 14px; flex-shrink: 0; }
+  .proc-row input { flex: 1; height: 40px; border: 1px solid #e2e2e2; background: #efefef; border-radius: 3px; padding: 0 14px; font-size: 14px; color: #333; outline: none; }
+  .proc-row input::placeholder { color: #aeb2b7; }
+  .proc-row input[readonly] { cursor: default; color: #555; }
+  .proc-row input[readonly]:focus { border-color: #e2e2e2; background: #efefef; }
+  .proc-readonly-tag { text-align: center; font-size: 12px; color: #9aa3ad; padding: 12px 24px 0; }
+  .proc-footer { display: flex; justify-content: center; padding: 6px 0 32px; }
+  .proc-cancel { min-width: 130px; height: 42px; border: none; background: #2f6fb0; color: #fff; font-size: 14px; letter-spacing: 4px; border-radius: 3px; cursor: pointer; }
+  .proc-cancel:hover { background: #2678c9; }
+
+  /* 命名规则 Modal */
+  .rule-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 60; }
+  .rule-mask.open { display: flex; }
+  .rule-modal { width: 520px; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+  .rule-header { background: #2f8ae0; color: #fff; padding: 14px 20px; font-size: 15px; display:flex; justify-content:space-between; align-items:center; }
+  .rule-header .x { cursor: pointer; font-size: 16px; }
+  .rule-body { padding: 22px 26px; }
+  .rule-body p { font-size: 13.5px; color: #444; line-height: 1.8; margin-bottom: 10px; }
+  .rule-code { display: inline-block; background: #f0f3f7; border: 1px solid #dfe4ea; border-radius: 3px; padding: 2px 8px; font-family: Consolas, Menlo, monospace; font-size: 13px; color: #2f6fb0; }
+  .rule-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
+  .rule-table th { background: #f5f7fa; text-align: left; padding: 8px 10px; color: #555; border: 1px solid #e5e8ec; }
+  .rule-table td { padding: 8px 10px; border: 1px solid #e5e8ec; color: #333; }
+  .rule-table td.code { font-family: Consolas, Menlo, monospace; color: #2f6fb0; }
+  .rule-warn { background: #fff8ec; border: 1px solid #f5e0ad; color: #9a7a2b; font-size: 12.5px; padding: 10px 14px; border-radius: 4px; margin-top: 6px; }
+  .rule-footer { padding: 6px 26px 22px; display: flex; justify-content: flex-end; }
+  .rule-close-btn { height: 34px; padding: 0 20px; border: none; background: #2f8ae0; color: #fff; border-radius: 3px; cursor: pointer; }
+
+  /* 批次配置页 */
+  .top-tabs { display: flex; gap: 0; margin-bottom: 14px; }
+  .top-tabs .tab { padding: 10px 22px; font-size: 14px; cursor: pointer; color: #555; background: #eef1f4; }
+  .top-tabs .tab.active { background: #52c17d; color: #fff; }
+  .sub-tabs { display: flex; gap: 4px; margin-bottom: 4px; }
+  .sub-tabs .stab { padding: 9px 18px; font-size: 13.5px; cursor: pointer; color: #4a5a6a; background: #eaf1f8; border-radius: 3px 3px 0 0; }
+  .sub-tabs .stab.active { background: #cfe0f0; color: #23415e; font-weight: 600; }
+  .batch-title { font-size: 17px; font-weight: 700; margin: 18px 0 14px; }
+  .btable { width: 100%; border-collapse: collapse; font-size: 13.5px; background: #fff; }
+  .btable thead th { text-align: left; padding: 12px 10px; border-bottom: 2px solid #eceff2; color: #555; font-weight: 600; }
+  .btable tbody td { padding: 14px 10px; border-bottom: 1px solid #f0f2f5; color: #333; }
+  .btable .op-links a { color: #2f8ae0; text-decoration: none; }
+  .btable .op-links a:hover { text-decoration: underline; }
+  .btable .op-links .sep { color: #d5dae0; margin: 0 6px; }
+  .btn-new-batch { height: 34px; padding: 0 16px; background: #2f8ae0; color: #fff; border: none; border-radius: 3px; font-size: 13.5px; cursor: pointer; float: right; margin-bottom: 14px; }
+
+  /* ATA考点机构分配 Modal */
+  .assign-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: flex-start; justify-content: center; z-index: 60; overflow-y: auto; }
+  .assign-mask.open { display: flex; }
+  .assign-modal { width: 900px; background: #fff; border-radius: 4px; margin: 5vh 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+  .assign-header { background: #cfe8f5; color: #1f4f66; padding: 16px 24px; font-size: 17px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .assign-header .x { cursor: pointer; font-size: 18px; color: #1f4f66; }
+  .assign-body { padding: 24px 30px 8px; }
+  .assign-batch-line { text-align: center; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .assign-batch-sub { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; }
+  .assign-note { font-size: 13.5px; font-weight: 700; margin-bottom: 10px; }
+  .assign-note .warn { color: #e0554f; }
+  .atable { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 8px; }
+  .atable thead th { background: #f0f0f0; text-align: center; padding: 11px 8px; color: #222; font-weight: 700; }
+  .atable tbody td { text-align: center; padding: 12px 8px; border-bottom: 1px solid #eee; color: #333; }
+  .atable select { height: 32px; border: 1px solid #d9dde3; border-radius: 3px; font-size: 13px; padding: 0 6px; min-width: 200px; }
+  .atable .unassigned-badge { color: #b3b8bf; font-size: 12.5px; }
+  .assign-footer { display: flex; justify-content: center; gap: 12px; padding: 18px 0 26px; }
+  .assign-save { min-width: 110px; height: 40px; border: none; background: #2f8ae0; color: #fff; font-size: 14px; border-radius: 3px; cursor: pointer; }
+  .assign-cancel { min-width: 110px; height: 40px; border: 1px solid #d9dde3; background: #eef0f2; color: #555; font-size: 14px; border-radius: 3px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="logo">☰&nbsp; 基金报名系统</div>
+    <nav>
+      <div class="item">🏠 主页</div>
+      <div class="item">👤 考生</div>
+      <div class="item">🏢 机构</div>
+      <div class="item">➕ 报考 ⌄</div>
+      <div class="item">🖥 机位 ⌄</div>
+      <div class="item">🧾 订单 ⌄</div>
+      <div class="item">🎫 准考证 ⌄</div>
+      <div class="item">🌐 成绩 ⌄</div>
+      <div class="item">📣 公告</div>
+      <div class="item">✅ 审核 ⌄</div>
+      <div class="item active-group" id="navGroupArrange">🗂 编排 ⌄</div>
+      <div class="sub" onclick="showList()">创建日程</div>
+      <div class="sub current" id="navSubKaodian" onclick="showList()">考点管理</div>
+      <div class="sub" onclick="showList()">场次列表</div>
+      <div class="sub" onclick="showList()">考生考场列表</div>
+      <div class="item" id="navItemBatch" onclick="showBatch()">⚙ 批次配置</div>
+      <div class="item">🖨 发票</div>
+      <div class="item">📝 日志</div>
+      <div class="item">🔒 权限 ⌄</div>
+      <div class="item">💾 缓存</div>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="topbar">欢迎您，Ata02 ⌄</div>
+    <div class="content" id="listView">
+      <h1>考点列表</h1>
+      <div class="breadcrumb">首页 &gt; 编排功能 &gt; <span class="cur">考点列表</span></div>
+      <hr class="sep">
+
+      <div class="panel">
+        <div class="filters">
+          <input type="text" placeholder="考点名称">
+          <input type="text" placeholder="考点编号">
+          <select>
+            <option>所属机构（全部）</option>
+            <option>浦东智慧产业园区管理有限公司</option>
+            <option>上海市南湖职业学校</option>
+            <option>上海石化工业学校</option>
+            <option>上海市ATA职业学校</option>
+            <option>集体名称集体名称ATA</option>
+          </select>
+          <button class="btn">搜索</button>
+        </div>
+
+        <div class="toolbar">
+          <span class="label">请选择考点文件</span>
+          <a class="link" id="tplDownloadExcel" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,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" download="考点考场导入模板.xlsx">[模板下载]</a>
+          <input type="file" id="fileInputExcel" accept=".xlsx,.xls,.csv" style="display:none" onchange="onFilePicked(this,'excel')">
+          <button class="btn-outline" onclick="document.getElementById('fileInputExcel').click()">📎 添加文件</button>
+          <span class="file-picked" id="fileNameExcel">未选择文件</span>
+          <button class="btn-green" onclick="fakeUpload('excel')">⊕ 上传</button>
+        </div>
+
+        <div class="toolbar" style="margin-top:-6px;">
+          <span class="label">请选择考场照片压缩包（ZIP）</span>
+          <a class="link" href="#" onclick="openNamingRule(event)">[命名规则说明]</a>
+          <input type="file" id="fileInputZip" accept=".zip" style="display:none" onchange="onFilePicked(this,'zip')">
+          <button class="btn-outline" onclick="document.getElementById('fileInputZip').click()">📎 添加文件</button>
+          <span class="file-picked" id="fileNameZip">未选择文件</span>
+          <button class="btn-green" onclick="fakeUpload('zip')">⊕ 上传</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>考点名称</th>
+              <th>考点类别</th>
+              <th>考点代码</th>
+              <th>所属机构</th>
+              <th>可用考场/总考场</th>
+              <th>考点区域</th>
+              <th>地址</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>浦东智慧产业园区3-第一考点</td>
+              <td>机构申请</td>
+              <td>T50003082</td>
+              <td class="org-cell">浦东智慧产业园区管理有限公司</td>
+              <td>1/4</td>
+              <td>上海上海市浦东新区</td>
+              <td>张江科学城数智天地智慧源4号楼11层</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>浦东智慧产业园区-AAA考点</td>
+              <td>机构申请</td>
+              <td>T50003080</td>
+              <td class="org-cell">浦东智慧产业园区管理有限公司</td>
+              <td>1/1</td>
+              <td>北京市密云区</td>
+              <td>12321321</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>浦东智慧产业园区1-ATA考点</td>
+              <td>机构申请</td>
+              <td>T50003078</td>
+              <td class="org-cell">上海市ATA职业学校</td>
+              <td>1/1</td>
+              <td>上海市崇明区</td>
+              <td>12321321</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>中金财富证券-单独的考点</td>
+              <td>机构申请</td>
+              <td>T50003075</td>
+              <td class="org-cell">中金财富证券有限公司</td>
+              <td>0/1</td>
+              <td>北京市密云区</td>
+              <td>1111111</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>ata（有限合伙）-富赢资产考点</td>
+              <td>机构申请</td>
+              <td>T50000025</td>
+              <td class="org-cell">集体名称集体名称ATA</td>
+              <td>0/2</td>
+              <td>广东省东莞市市区</td>
+              <td>AA</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>ata（有限合伙）-测试考点</td>
+              <td>机构申请</td>
+              <td>T50001005</td>
+              <td class="org-cell">ata（有限合伙）</td>
+              <td>0/1</td>
+              <td>江苏省连云港市灌南县</td>
+              <td>测试考点地址</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>666市工会职业技术学校（工行666分行）</td>
+              <td>ata考点</td>
+              <td>Z166010888</td>
+              <td class="org-cell">上海市南湖职业学校</td>
+              <td>1/1</td>
+              <td>广东省佛山市禅城区</td>
+              <td>轻工二路3号</td>
+              <td><button class="btn-view" onclick="showDetail('ata')">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>777市工会职业技术学校（工行777分行）</td>
+              <td>ata考点</td>
+              <td>Z199010888</td>
+              <td class="org-cell">上海石化工业学校</td>
+              <td>1/1</td>
+              <td>广东省佛山市禅城区</td>
+              <td>轻工二路3号</td>
+              <td><button class="btn-view" onclick="showDetail('ata')">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>安联基金管理有限公司1</td>
+              <td>ata考点</td>
+              <td>Z100010694</td>
+              <td class="org-cell unbound">&nbsp;</td>
+              <td>1/1</td>
+              <td>广东省佛山市禅城区</td>
+              <td>轻工二路3号</td>
+              <td><button class="btn-view" onclick="showDetail('ata')">查看考场信息</button></td>
+            </tr>
+            <tr>
+              <td>摩根大通证券（中国）有限公司-中国银行考点</td>
+              <td>机构申请</td>
+              <td>T50002119</td>
+              <td class="org-cell">上海市南湖职业学校</td>
+              <td>1/1</td>
+              <td>北京市密云区</td>
+              <td>人民路</td>
+              <td><button class="btn-view" onclick="showDetail()">查看考场信息</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="foot">
+          <span class="count">共86条记录，共9页</span>
+          <div class="pager">
+            <button>« 上一页</button>
+            <span class="num active">1</span>
+            <span class="num">2</span>
+            <span class="num">3</span>
+            <button>10</button><button>25</button><button>50</button><button>100</button>
+            <input type="text">
+            <button>跳转</button>
+            <button>下一页 »</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 考点详细信息 -->
+    <div class="content" id="detailView" style="display:none;">
+      <div class="detail-breadcrumb">首页 &gt; 编排功能 &gt; <a onclick="showList()">考点列表</a> &gt; <span class="cur">考点详细信息</span></div>
+
+      <div class="detail-section">
+        <h2>考点信息</h2>
+        <div class="info-box">
+          <div class="field"><b>考点名称：</b>浦东智慧产业园区3-第一考点</div>
+          <div class="field"><b>考点区域：</b>上海上海市浦东新区</div>
+          <div class="field"><b>考点地址：</b>张江科学城数智天地智慧源4号楼11层</div>
+          <div class="field"><b>考点代码：</b>T50003082</div>
+          <div class="field"><b>考场数量：</b>4</div>
+          <div class="field"><b>可用机位：</b><span id="availSeats">2</span></div>
+          <div class="field"><b>所属机构：</b>浦东智慧产业园区管理有限公司</div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h2>工作人员信息</h2>
+        <table class="dtable">
+          <thead>
+            <tr>
+              <th>工作人员角色</th>
+              <th>工作人员姓名</th>
+              <th>手机号码</th>
+              <th>邮箱</th>
+              <th>更新时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>技术人员</td>
+              <td>唐宋元</td>
+              <td>13120522544</td>
+              <td>1@1.com</td>
+              <td>2026-07-02 14:55:54</td>
+            </tr>
+            <tr>
+              <td>督考</td>
+              <td>唐雄伟</td>
+              <td>13120522544</td>
+              <td>1@1.com</td>
+              <td>2026-07-02 14:56:14</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="detail-section">
+        <h2>考场信息</h2>
+        <table class="dtable">
+          <thead>
+            <tr>
+              <th>考场号</th>
+              <th>考场地址</th>
+              <th>验收状态</th>
+              <th>考场ID</th>
+              <th>SN号</th>
+              <th>考场代码</th>
+              <th>机位</th>
+              <th>更新时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>张江科学城数智天地智慧源4号楼11层</td>
+              <td class="acc-status"><span class="status-dot ok"></span>验收通过</td>
+              <td>7672b7a5-03d1-4cea-bf42-833486e765ed</td>
+              <td>TH50-SREW-UZ6W-6I41-XOY1</td>
+              <td>T50003082R3203</td>
+              <td class="seat-cell">2</td>
+              <td>2026-07-02 15:38:28</td>
+              <td>
+                <a class="op-link" href="#" onclick="showProctor(event,'监考1','13120522544','','监考2','13111111111','')">监考信息</a>
+                <span class="op-sep">|</span>
+                <a class="op-link" href="#" onclick="showPhotos(event,'T50003082R3203',true)">查看照片</a>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>张江科学城数智天地智慧源4号楼11层</td>
+              <td class="acc-status"><span class="status-dot pending"></span>验收中</td>
+              <td>9de94db9-8eff-4b02-afed-70bd7310c14e</td>
+              <td>TH50-WZMY-SSGY-PIRO-YLQP</td>
+              <td>T50003082R3211</td>
+              <td class="seat-cell">50</td>
+              <td>2026-07-03 09:05:31</td>
+              <td>
+                <a class="op-link" href="#" onclick="showProctor(event,'','','','','','')">监考信息</a>
+                <span class="op-sep">|</span>
+                <a class="op-link" href="#" onclick="showPhotos(event,'T50003082R3211',true)">查看照片</a>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>张江科学城数智天地智慧源4号楼</td>
+              <td class="acc-status"><span class="status-dot pending"></span>验收中</td>
+              <td>e3e4db36-fa40-43ec-8b68-a21d0838fa0e</td>
+              <td>TH50-JMMU-4NUQ-Y04A-UY7B</td>
+              <td>T50003082R3213</td>
+              <td class="seat-cell">11</td>
+              <td>2026-07-03 14:20:30</td>
+              <td>
+                <a class="op-link" href="#" onclick="showProctor(event,'','','','','','')">监考信息</a>
+                <span class="op-sep">|</span>
+                <a class="op-link muted" href="#" onclick="showPhotos(event,'T50003082R3213',false)">查看照片</a>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>张江科学城数智天地智慧源4号楼11层</td>
+              <td class="acc-status"><span class="status-dot pending"></span>验收中</td>
+              <td>5478e02d-7478-4aca-b9d5-ec7d43cee4cd</td>
+              <td>TH50-20QO-5TYV-MNWB-AVWV</td>
+              <td>T50003082R3214</td>
+              <td class="seat-cell">21</td>
+              <td>2026-07-03 14:21:34</td>
+              <td>
+                <a class="op-link" href="#" onclick="showProctor(event,'','','','','','')">监考信息</a>
+                <span class="op-sep">|</span>
+                <a class="op-link" href="#" onclick="showPhotos(event,'T50003082R3214',true)">查看照片</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 批次配置 -->
+    <div class="content" id="batchView" style="display:none;">
+      <div class="top-tabs">
+        <div class="tab active">考试设置</div>
+        <div class="tab">系统规则管理</div>
+        <div class="tab">区域管理</div>
+        <div class="tab">科目管理</div>
+      </div>
+      <div class="batch-title">考试设置</div>
+      <div class="sub-tabs">
+        <div class="stab active">考试批次信息</div>
+        <div class="stab">考试批次历史信息</div>
+      </div>
+      <hr class="sep" style="margin-top:0;">
+
+      <button class="btn-new-batch">＋ 新增考试批次</button>
+      <div style="clear:both;"></div>
+
+      <table class="btable">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>批次编号</th>
+            <th>批次名称</th>
+            <th>批次描述</th>
+            <th>开始日期/结束日期</th>
+            <th>操作</th>
+            <th>是否可用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>20230317</td>
+            <td>基金测试报名</td>
+            <td>测试基金报名模式</td>
+            <td>2023-03-01至2030-01-01</td>
+            <td class="op-links">基本信息<span class="sep">|</span>批次规则<span class="sep">|</span>区域及科目<span class="sep">|</span>阶段控制<span class="sep">|</span><a href="#" onclick="showAssignList(event,'基金测试报名')">ATA考点分配</a></td>
+            <td>否</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>2024102101</td>
+            <td>基金应知应会</td>
+            <td>11月1日至12月31日</td>
+            <td>2024-10-20至2030-10-31</td>
+            <td class="op-links">基本信息<span class="sep">|</span>批次规则<span class="sep">|</span>区域及科目<span class="sep">|</span>阶段控制<span class="sep">|</span><a href="#" onclick="showAssignList(event,'基金应知应会')">ATA考点分配</a></td>
+            <td>否</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>2026070102</td>
+            <td>基金应知应会3</td>
+            <td>基金应知应会3</td>
+            <td>2026-07-02至2026-12-31</td>
+            <td class="op-links">基本信息<span class="sep">|</span>批次规则<span class="sep">|</span>区域及科目<span class="sep">|</span>阶段控制<span class="sep">|</span><a href="#" onclick="showAssignList(event,'基金应知应会3')">ATA考点分配</a></td>
+            <td>是</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="foot">
+        <span class="count">共3条记录，共1页</span>
+        <div class="pager">
+          <button>10</button><button>25</button><button>50</button><button>100</button>
+          <input type="text">
+          <button>跳转</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATA考点机构分配（列表页） -->
+    <div class="content" id="assignView" style="display:none;">
+      <h1>ATA考点机构分配</h1>
+      <div class="breadcrumb">首页 &gt; 批次配置 &gt; <a onclick="showBatch()">考试批次信息</a> &gt; <span class="cur">ATA考点机构分配</span></div>
+      <hr class="sep">
+
+      <div class="panel">
+        <div class="assign-batch-line" style="text-align:left; margin-bottom:16px;">当前批次：<span id="assignBatchName">基金应知应会3</span></div>
+
+        <div class="filters">
+          <input type="text" placeholder="考点名称">
+          <input type="text" placeholder="考点代码">
+          <input type="text" placeholder="机构名称">
+          <button class="btn">搜索</button>
+        </div>
+
+        <div class="toolbar">
+          <span class="label">请选择ATA考点分配文件</span>
+          <a class="link" id="tplDownloadAssign" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,UEsDBBQAAAAIALg4E11Gx01IlQAAAM0AAAAQAAAAZG9jUHJvcHMvYXBwLnhtbE3PTQvCMAwG4L9SdreZih6kDkQ9ip68zy51hbYpbYT67+0EP255ecgboi6JIia2mEXxLuRtMzLHDUDWI/o+y8qhiqHke64x3YGMsRoPpB8eA8OibdeAhTEMOMzit7Dp1C5GZ3XPlkJ3sjpRJsPiWDQ6sScfq9wcChDneiU+ixNLOZcrBf+LU8sVU57mym/8ZAW/B7oXUEsDBBQAAAAIALg4E1134N1p9wAAACsCAAARAAAAZG9jUHJvcHMvY29yZS54bWzNksFOwzAMhl8F5d467aDQqOsFxAkkJCaBuEWJt0U0aZQYtXt70rJ1IHgAjrH/fP4suVFeqD7gU+g9BjIYL0bbuSiUX7M9kRcAUe3RypinhEvNbR+spPQMO/BSvcsdQsl5BRZJakkSJmDmFyJrG62ECiipD0e8Vgvef4RuhmkF2KFFRxGKvADWThP9YewaOAMmGGGw8auAeiHO1T+xcwfYMTlGs6SGYciH1ZxLOxTw+vjwPK+bGRdJOoXpVzSCDh7X7DT5ZXV7t7lnbcnLKuM3WVFveCXKWvDybXL94XcWtr02W/NvjK8FvxKX9Tfjk2DbwK+7aD8BUEsDBBQAAAAIALg4E12ZXJwjEAYAAJwnAAATAAAAeGwvdGhlbWUvdGhlbWUxLnhtbO1aW3PaOBR+76/QeGf2bQvGNoG2tBNzaXbbtJmE7U4fhRFYjWx5ZJGEf79HNhDLlg3tkk26mzwELOn7zkVH5+g4efPuLmLohoiU8nhg2S/b1ru3L97gVzIkEUEwGaev8MAKpUxetVppAMM4fckTEsPcgosIS3gUy9Zc4FsaLyPW6rTb3VaEaWyhGEdkYH1eLGhA0FRRWm9fILTlHzP4FctUjWWjARNXQSa5iLTy+WzF/NrePmXP6TodMoFuMBtYIH/Ob6fkTlqI4VTCxMBqZz9Wa8fR0kiAgsl9lAW6Sfaj0xUIMg07Op1YznZ89sTtn4zK2nQ0bRrg4/F4OLbL0otwHATgUbuewp30bL+kQQm0o2nQZNj22q6RpqqNU0/T933f65tonAqNW0/Ta3fd046Jxq3QeA2+8U+Hw66JxqvQdOtpJif9rmuk6RZoQkbj63oSFbXlQNMgAFhwdtbM0gOWXin6dZQa2R273UFc8FjuOYkR/sbFBNZp0hmWNEZynZAFDgA3xNFMUHyvQbaK4MKS0lyQ1s8ptVAaCJrIgfVHgiHF3K/99Ze7yaQzep19Os5rlH9pqwGn7bubz5P8c+jkn6eT101CznC8LAnx+yNbYYcnbjsTcjocZ0J8z/b2kaUlMs/v+QrrTjxnH1aWsF3Pz+SejHIju932WH32T0duI9epwLMi15RGJEWfyC265BE4tUkNMhM/CJ2GmGpQHAKkCTGWoYb4tMasEeATfbe+CMjfjYj3q2+aPVehWEnahPgQRhrinHPmc9Fs+welRtH2Vbzco5dYFQGXGN80qjUsxdZ4lcDxrZw8HRMSzZQLBkGGlyQmEqk5fk1IE/4rpdr+nNNA8JQvJPpKkY9psyOndCbN6DMawUavG3WHaNI8ev4F+Zw1ChyRGx0CZxuzRiGEabvwHq8kjpqtwhErQj5iGTYacrUWgbZxqYRgWhLG0XhO0rQR/FmsNZM+YMjszZF1ztaRDhGSXjdCPmLOi5ARvx6GOEqa7aJxWAT9nl7DScHogstm/bh+htUzbCyO90fUF0rkDyanP+kyNAejmlkJvYRWap+qhzQ+qB4yCgXxuR4+5Xp4CjeWxrxQroJ7Af/R2jfCq/iCwDl/Ln3Ppe+59D2h0rc3I31nwdOLW95GblvE+64x2tc0LihjV3LNyMdUr5Mp2DmfwOz9aD6e8e362SSEr5pZLSMWkEuBs0EkuPyLyvAqxAnoZFslCctU02U3ihKeQhtu6VP1SpXX5a+5KLg8W+Tpr6F0PizP+Txf57TNCzNDt3JL6raUvrUmOEr0scxwTh7LDDtnPJIdtnegHTX79l125COlMFOXQ7gaQr4Dbbqd3Do4npiRuQrTUpBvw/npxXga4jnZBLl9mFdt59jR0fvnwVGwo+88lh3HiPKiIe6hhpjPw0OHeXtfmGeVxlA0FG1srCQsRrdguNfxLBTgZGAtoAeDr1EC8lJVYDFbxgMrkKJ8TIxF6HDnl1xf49GS49umZbVuryl3GW0iUjnCaZgTZ6vK3mWxwVUdz1Vb8rC+aj20FU7P/lmtyJ8MEU4WCxJIY5QXpkqi8xlTvucrScRVOL9FM7YSlxi84+bHcU5TuBJ2tg8CMrm7Oal6ZTFnpvLfLQwJLFuIWRLiTV3t1eebnK56Inb6l3fBYPL9cMlHD+U751/0XUOufvbd4/pukztITJx5xREBdEUCI5UcBhYXMuRQ7pKQBhMBzZTJRPACgmSmHICY+gu98gy5KRXOrT45f0Usg4ZOXtIlEhSKsAwFIRdy4+/vk2p3jNf6LIFthFQyZNUXykOJwT0zckPYVCXzrtomC4Xb4lTNuxq+JmBLw3punS0n/9te1D20Fz1G86OZ4B6zh3OberjCRaz/WNYe+TLfOXDbOt4DXuYTLEOkfsF9ioqAEativrqvT/klnDu0e/GBIJv81tuk9t3gDHzUq1qlZCsRP0sHfB+SBmOMW/Q0X48UYq2msa3G2jEMeYBY8wyhZjjfh0WaGjPVi6w5jQpvQdVA5T/b1A1o9g00HJEFXjGZtjaj5E4KPNz+7w2wwsSO4e2LvwFQSwMEFAAAAAgAuDgTXb246KsSAwAAAwsAABgAAAB4bC93b3Jrc2hlZXRzL3NoZWV0MS54bWy1lm1P2zAQx79KFCRe7AWJ7dhJ6IMEjfYkkCrQNmnvQuu2EUmcOWaFffqd7ZC2QONN0/qirs//O//uzlJvvBXyvt1wrrzHqqzbib9RqjkPgnax4VXenomG13CyErLKFWzlOmgbyfOlcarKAIchC6q8qP3p2NjmcjoWD6osaj6XXvtQVbl8uuSl2E585D8bbor1RmlDMB03+ZrfcvWlmUvYBX2UZVHxui1E7Um+mvgX6DxLtd4IvhZ82+799tqN2H6QxfIKLoY8Qt/Tud0Jca+PPy21Sd9Vc+/ptikLc7unRHPFV2rGyxJuwL6XL1Txk89BNvHvhFKi0ufArXIFppUUv3htKHjJQQt0zSuxDdIF1Un/6DLw+wQ11P7v51zem0pD5e7yls9E+a1Yqs3ET3xvyVf5Q6luxPYj76pHdbyFKFvz7W2tFjHfWzy0QNM5A0FV1HbNH7uq7zkQfMQBdw74hcPRG0jnQF444GMOUecQmcrYVEwdslzl07EUW08atc53F6WvALR0oRWmyrajE7+o9eu7VRJOCwiopqcnBMcxGp2e4CShsV5DlFJYSRhjNHo3DhTcr8XBogt5+dchEUV6JQgjBiujcGLsUYRHOz3YU2ztidajNE1MHMwI7fzS0RtEMxcRpoiayIRFmgCzCNuVhuEfJZ398xX/sQgBPIf+TeC+9dgg4yPI3xFjIQqTJHmrx9aXHPFljAFRFDKTYRQS+3IwDU0mSRRZ8lSvmNqMoSKImgqR1GTOmHkefSW6OCRKoAL2ijA1UmsaegHDuX6+uJ6F5kPTt5o77G1SiQ1iEmIy2ksdEdMUnGDT9FepH6Q60DTSN40cQdm1hhxpza4YzhjZkOIALOrBIidY5ARzxsiGFAdgtAejTjDqBHPGyIYUB2CsB2NOMOYEc8bIhhQHYHEPFjvBYieYM0Y2pDgAS3qwxAmWOMGcMbIhxQFY2oOlTrDUCeaMkQ0pLFiwNwPo8fA6l+uibr0SxisY5M5ieKbSjgB2A3Oc+deyU5idGGBK5VIL4HwlhHre6Emjn3unvwFQSwMEFAAAAAgAuDgTXa/Nr4vaAgAAUw0AAA0AAAB4bC9zdHlsZXMueG1s7VfdbpswFH4VxAOUJGwoTCFSh1Rp0jZVai926wQTLPmHGdORPv18bEJo6tNmu5xGVGGf73zn30bddObI6UNDqYkGwWVXxI0x7ack6fYNFaS7US2VFqmVFsTYrT4kXaspqTogCZ6sFossEYTJeLuRvbgTpov2qpemiBdxst3USp4laewFVpUIGj0RXsQl4WynmdMlgvGjF69AsFdc6cjYUGgRL0HSPXt46XcQ5WhHMKk0CBPv4dLPrWaEA74bLbw29x5z0l7cfJzpu1dneYzzKdVV7AXbTUuMoVre2Y3jOOErKBrXj8fW5nrQ5LhcjU6cqntZJzulK6pfuPGi7YbT2liCZocG3ka1kK0yRgm7qBg5KElcDCfGnBm5WShi07he+tLrw872cXxcNKA6+riS4XRdOFcSrOYp7isZXnmW2Liw9dpTzh/AyI96KtrSmhrqyI/rlwomNYIenpa20uPSm/EbcDS35m3PzH74K7NRy56U+dzbDKTb/+yVofea1mxw+6Ge/GPWl4h1Kydty4+3nB2koD73qx1uN+TEixql2bP1BuO/twKq4+iJasP2c8kvTdpHOpjxdCVDjce8+h/zOzHDUbs24mScxdnAvxj3SRrBvVbE3+FC5+cYol3PuGFy3DWsqqh8NfXWvCE7+8V4Yd/qV7QmPTePE1jE5/U3WrFe5JPWPdRl1Dqvv8I1scyma9/6YrKiA63KcWvPfRm+AC6RO/eEEYzjsTACGOYHiwDjeBbm51/KZ43m4zEstnUQWaOcNcrxrBBSuh/mJ8zJ7RPONM/TNMuwipZlMIISq1uWwV/YGhYbMDA/4OnPao13G5+Qt+cA6+lbE4Jlik8ililea0DCdQNGnoe7jfkBBtYFbHbAf9gPzFSYk6bQVSw27ATjSJ5jCMxieEazDKlOBr9wf7BTkqZ5HkYAC0eQphgCpxFHsAggBgxJU/cdvPgeJafvVHL+N2r7G1BLAwQUAAAACAC4OBNdl4q7HMAAAAATAgAACwAAAF9yZWxzLy5yZWxznZK5bsMwDEB/xdCeMAfQIYgzZfEWBPkBVqIP2BIFikWdv6/apXGQCxl5PTwS3B5pQO04pLaLqRj9EFJpWtW4AUi2JY9pzpFCrtQsHjWH0kBE22NDsFosPkAuGWa3vWQWp3OkV4hc152lPdsvT0FvgK86THFCaUhLMw7wzdJ/MvfzDDVF5UojlVsaeNPl/nbgSdGhIlgWmkXJ06IdpX8dx/aQ0+mvYyK0elvo+XFoVAqO3GMljHFitP41gskP7H4AUEsDBBQAAAAIALg4E10auhurMAEAACMCAAAPAAAAeGwvd29ya2Jvb2sueG1sjVHRSsNAEPyVcB9gUtGCpemLRS2IFit9vySbZundbdjbtNqvd5MQLPji097OLMPM3PJMfCyIjsmXdyHmphFpF2kaywa8jTfUQlCmJvZWdOVDGlsGW8UGQLxLb7NsnnqLwayWk9aW0+uFBEpBCgr2wB7hHH/5fk1OGLFAh/Kdm+HtwCQeA3q8QJWbzCSxofMLMV4oiHW7ksm53MxGYg8sWP6Bd73JT1vEARFbfFg1kpt5poI1cpThYtC36vEEejxundATOgFeW4Fnpq7FcOhlNEV6FWPoYZpjiQv+T41U11jCmsrOQ5CxRwbXGwyxwTaaJFgPuRksDoF0bqoxnKirq6p4gUrwphr9TaYqqDFA9aY6UXEtqNxy0o9B5/bufvagRXTOPSr2Hl7JVlPG6X9WP1BLAwQUAAAACAC4OBNdJB6boq0AAAD4AQAAGgAAAHhsL19yZWxzL3dvcmtib29rLnhtbC5yZWxztZE9DoMwDIWvEuUANVCpQwVMXVgrLhAF8yMSEsWuCrcvhQGQOnRhsp4tf+/JTp9oFHduoLbzJEZrBspky+zvAKRbtIouzuMwT2oXrOJZhga80r1qEJIoukHYM2Se7pminDz+Q3R13Wl8OP2yOPAPMLxd6KlFZClKFRrkTMJotjbBUuLLTJaiqDIZiiqWcFog4skgbWlWfbBPTrTneRc390WuzeMJrt8McHh0/gFQSwMEFAAAAAgAuDgTXWWQeZIZAQAAzwMAABMAAABbQ29udGVudF9UeXBlc10ueG1srZNNTsMwEIWvEmVbJS4sWKCmG2ALXXABY08aq/6TZ1rS2zNO2kqgEhWFTax43rzPnpes3o8RsOid9diUHVF8FAJVB05iHSJ4rrQhOUn8mrYiSrWTWxD3y+WDUMETeKooe5Tr1TO0cm+peOl5G03wTZnAYlk8jcLMakoZozVKEtfFwesflOpEqLlz0GBnIi5YUIqrhFz5HXDqeztASkZDsZGJXqVjleitQDpawHra4soZQ9saBTqoveOWGmMCqbEDIGfr0XQxTSaeMIzPu9n8wWYKyMpNChE5sQR/x50jyd1VZCNIZKaveCGy9ez7QU5bg76RzeP9DGk35IFiWObP+HvGF/8bzvERwu6/P7G81k4af+aL4T9efwFQSwECFAMUAAAACAC4OBNdRsdNSJUAAADNAAAAEAAAAAAAAAAAAAAAgAEAAAAAZG9jUHJvcHMvYXBwLnhtbFBLAQIUAxQAAAAIALg4E1134N1p9wAAACsCAAARAAAAAAAAAAAAAACAAcMAAABkb2NQcm9wcy9jb3JlLnhtbFBLAQIUAxQAAAAIALg4E12ZXJwjEAYAAJwnAAATAAAAAAAAAAAAAACAAekBAAB4bC90aGVtZS90aGVtZTEueG1sUEsBAhQDFAAAAAgAuDgTXb246KsSAwAAAwsAABgAAAAAAAAAAAAAAICBKggAAHhsL3dvcmtzaGVldHMvc2hlZXQxLnhtbFBLAQIUAxQAAAAIALg4E12vza+L2gIAAFMNAAANAAAAAAAAAAAAAACAAXILAAB4bC9zdHlsZXMueG1sUEsBAhQDFAAAAAgAuDgTXZeKuxzAAAAAEwIAAAsAAAAAAAAAAAAAAIABdw4AAF9yZWxzLy5yZWxzUEsBAhQDFAAAAAgAuDgTXRq6G6swAQAAIwIAAA8AAAAAAAAAAAAAAIABYA8AAHhsL3dvcmtib29rLnhtbFBLAQIUAxQAAAAIALg4E10kHpuirQAAAPgBAAAaAAAAAAAAAAAAAACAAb0QAAB4bC9fcmVscy93b3JrYm9vay54bWwucmVsc1BLAQIUAxQAAAAIALg4E11lkHmSGQEAAM8DAAATAAAAAAAAAAAAAACAAaIRAABbQ29udGVudF9UeXBlc10ueG1sUEsFBgAAAAAJAAkAPgIAAOwSAAAAAA==" download="ATA考点机构分配导入模板.xlsx">[模板下载]</a>
+          <input type="file" id="fileInputAssign" accept=".xlsx,.xls,.csv" style="display:none" onchange="onFilePicked(this,'assign')">
+          <button class="btn-outline" onclick="document.getElementById('fileInputAssign').click()">📎 添加文件</button>
+          <span class="file-picked" id="fileNameAssign">未选择文件</span>
+          <button class="btn-green" onclick="fakeUpload('assign')">⊕ 上传</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>考点名称</th>
+              <th>考点代码</th>
+              <th>考点区域</th>
+              <th>考场数</th>
+              <th>所属机构</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>666市工会职业技术学校（工行666分行）</td>
+              <td>Z166010888</td>
+              <td>广东省佛山市禅城区</td>
+              <td>1</td>
+              <td class="org-cell">上海市南湖职业学校</td>
+            </tr>
+            <tr>
+              <td>777市工会职业技术学校（工行777分行）</td>
+              <td>Z199010888</td>
+              <td>广东省佛山市禅城区</td>
+              <td>1</td>
+              <td class="org-cell">上海石化工业学校</td>
+            </tr>
+            <tr>
+              <td>安联基金管理有限公司1</td>
+              <td>Z100010694</td>
+              <td>广东省佛山市禅城区</td>
+              <td>1</td>
+              <td class="org-cell unbound">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="foot">
+          <span class="count">共3条记录，共1页</span>
+          <div class="pager">
+            <button>10</button><button>25</button><button>50</button><button>100</button>
+            <input type="text">
+            <button>跳转</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 照片压缩包命名规则 Modal -->
+<div class="rule-mask" id="ruleMask">
+  <div class="rule-modal">
+    <div class="rule-header">
+      <span>考场照片压缩包 - 命名规则说明</span>
+      <span class="x" onclick="closeNamingRule()">✕</span>
+    </div>
+    <div class="rule-body">
+      <p>压缩包内每张照片需按 <span class="rule-code">考场代码_照片类型_序号.jpg/png</span> 命名，例如 <span class="rule-code">T50001005R0001_环境_1.jpg</span>；系统按考场代码自动关联考场，环境照片（标识"环境"）需4张、监控照片（标识"监控"）需2张，用于留档；照片命名与考场代码不匹配或数量不齐的，压缩包将直接导入失败，需按命名规则修正后重新上传。</p>
+    </div>
+    <div class="rule-footer">
+      <button class="rule-close-btn" onclick="closeNamingRule()">我知道了</button>
+    </div>
+  </div>
+</div>
+
+<!-- 照片查看 Modal -->
+<div class="photo-mask" id="photoMask">
+  <div class="photo-modal">
+    <div class="photo-header">
+      <span id="photoTitle">考场照片</span>
+      <span class="x" onclick="closePhotos()">✕</span>
+    </div>
+    <div class="photo-body" id="photoBody">
+      <div class="photo-group-title">考场环境照片</div>
+      <div class="photo-grid" id="photoEnvGrid"></div>
+      <div class="photo-group-title">监控摄像头视角照片</div>
+      <div class="photo-grid" id="photoMonGrid" style="grid-template-columns: repeat(2, 1fr); max-width: 340px;"></div>
+    </div>
+    <div class="photo-footer">
+      <button class="photo-close" onclick="closePhotos()">关&nbsp;&nbsp;闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 监考信息 Modal -->
+<div class="proc-mask" id="procMask">
+  <div class="proc-modal">
+    <div class="proc-header">
+      <span>监考信息</span>
+      <span class="x" onclick="closeProctor()">✕</span>
+    </div>
+    <div class="proc-readonly-tag">只读 · 数据来源于报名/导入信息，不支持在此编辑</div>
+    <div class="proc-body">
+      <div class="proc-row">
+        <label>监考1姓名：</label>
+        <input type="text" id="p1name" readonly placeholder="暂无数据">
+      </div>
+      <div class="proc-row">
+        <label>监考1手机：</label>
+        <input type="text" id="p1phone" readonly placeholder="暂无数据">
+      </div>
+      <div class="proc-row">
+        <label>监考1电子信箱：</label>
+        <input type="text" id="p1email" readonly placeholder="暂无数据">
+      </div>
+      <div class="proc-row">
+        <label>监考2姓名：</label>
+        <input type="text" id="p2name" readonly placeholder="暂无数据">
+      </div>
+      <div class="proc-row">
+        <label>监考2手机：</label>
+        <input type="text" id="p2phone" readonly placeholder="暂无数据">
+      </div>
+      <div class="proc-row">
+        <label>监考2电子信箱：</label>
+        <input type="text" id="p2email" readonly placeholder="暂无数据">
+      </div>
+    </div>
+    <div class="proc-footer">
+      <button class="proc-cancel" onclick="closeProctor()">关&nbsp;&nbsp;闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function hideAllViews() {
+  ['listView','batchView','detailView','assignView'].forEach(function(id){
+    document.getElementById(id).style.display = 'none';
+  });
+}
+function setNavActive(target) {
+  var group = document.getElementById('navGroupArrange');
+  var sub = document.getElementById('navSubKaodian');
+  var batch = document.getElementById('navItemBatch');
+  if (target === 'batch') {
+    group.classList.remove('active-group');
+    sub.classList.remove('current');
+    batch.classList.add('active-group');
+  } else {
+    batch.classList.remove('active-group');
+    group.classList.add('active-group');
+    sub.classList.add('current');
+  }
+}
+function showDetail(type) {
+  hideAllViews();
+  setNavActive('list');
+  var cells = document.querySelectorAll('#detailView .acc-status');
+  cells.forEach(function(cell){
+    if (type === 'ata') {
+      cell.innerHTML = '<span class="status-dot ok"></span>验收通过';
+    } else {
+      // 恢复机构申请类的示例状态（第1条已通过，其余待审核中）
+      var idx = Array.prototype.indexOf.call(cells, cell);
+      if (idx === 0) {
+        cell.innerHTML = '<span class="status-dot ok"></span>验收通过';
+      } else {
+        cell.innerHTML = '<span class="status-dot pending"></span>验收中';
+      }
+    }
+  });
+  var seatCells = document.querySelectorAll('#detailView .seat-cell');
+  var total = 0;
+  seatCells.forEach(function(cell, idx){
+    if (type === 'ata') {
+      // ATA考点不走考场审核，可用机位 = 全部考场机位数加总
+      total += parseInt(cell.textContent, 10) || 0;
+    } else {
+      // 机构申请类考点需审核通过后才可用，只统计验收通过考场的机位
+      var statusCell = cells[idx];
+      if (statusCell && statusCell.textContent.indexOf('验收通过') !== -1) {
+        total += parseInt(cell.textContent, 10) || 0;
+      }
+    }
+  });
+  document.getElementById('availSeats').textContent = total;
+  document.getElementById('detailView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function showList() {
+  hideAllViews();
+  setNavActive('list');
+  document.getElementById('listView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function showBatch() {
+  hideAllViews();
+  setNavActive('batch');
+  document.getElementById('batchView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function showAssignList(e, batchName) {
+  e.preventDefault();
+  hideAllViews();
+  setNavActive('batch');
+  document.getElementById('assignBatchName').innerText = batchName;
+  document.getElementById('assignView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function showProctor(e, n1, ph1, em1, n2, ph2, em2) {
+  e.preventDefault();
+  document.getElementById('p1name').value = n1 || '';
+  document.getElementById('p1phone').value = ph1 || '';
+  document.getElementById('p1email').value = em1 || '';
+  document.getElementById('p2name').value = n2 || '';
+  document.getElementById('p2phone').value = ph2 || '';
+  document.getElementById('p2email').value = em2 || '';
+  document.getElementById('procMask').classList.add('open');
+}
+function closeProctor() {
+  document.getElementById('procMask').classList.remove('open');
+}
+var FILE_INPUT_IDS = { excel: 'fileInputExcel', zip: 'fileInputZip', assign: 'fileInputAssign' };
+var FILE_LABEL_IDS = { excel: 'fileNameExcel', zip: 'fileNameZip', assign: 'fileNameAssign' };
+var FILE_KIND_TEXT = { excel: '考点文件', zip: '考场照片压缩包', assign: 'ATA考点分配文件' };
+function onFilePicked(input, kind) {
+  var label = document.getElementById(FILE_LABEL_IDS[kind]);
+  if (input.files && input.files.length > 0) {
+    label.innerText = input.files[0].name;
+    label.classList.add('has-file');
+  } else {
+    label.innerText = '未选择文件';
+    label.classList.remove('has-file');
+  }
+}
+function fakeUpload(kind) {
+  var input = document.getElementById(FILE_INPUT_IDS[kind]);
+  if (!input.files || input.files.length === 0) {
+    alert('请先点击"添加文件"选择本地文件');
+    return;
+  }
+  alert(FILE_KIND_TEXT[kind] + '「' + input.files[0].name + '」已提交上传（原型演示，未实际处理）');
+}
+function showPhotos(e, roomCode, hasPhotos) {
+  e.preventDefault();
+  document.getElementById('photoTitle').innerText = '考场照片 - ' + roomCode;
+  var body = document.getElementById('photoBody');
+  var envGrid = document.getElementById('photoEnvGrid');
+  var monGrid = document.getElementById('photoMonGrid');
+  if (hasPhotos) {
+    envGrid.style.display = 'grid';
+    monGrid.style.display = 'grid';
+    document.querySelectorAll('#photoBody .photo-group-title').forEach(function(el){ el.style.display = 'block'; });
+    envGrid.innerHTML = '';
+    for (var i = 1; i <= 4; i++) {
+      envGrid.innerHTML += '<div class="photo-thumb"><span class="icon">🖼</span><span>环境照片 ' + i + '</span></div>';
+    }
+    monGrid.innerHTML = '';
+    for (var j = 1; j <= 2; j++) {
+      monGrid.innerHTML += '<div class="photo-thumb"><span class="icon">🖼</span><span>监控截图 ' + j + '</span></div>';
+    }
+  } else {
+    envGrid.style.display = 'none';
+    monGrid.style.display = 'none';
+    document.querySelectorAll('#photoBody .photo-group-title').forEach(function(el){ el.style.display = 'none'; });
+    var existingEmpty = document.getElementById('photoEmptyTip');
+    if (!existingEmpty) {
+      var tip = document.createElement('div');
+      tip.id = 'photoEmptyTip';
+      tip.className = 'photo-empty';
+      tip.innerText = '该考场暂无照片记录';
+      body.appendChild(tip);
+    }
+  }
+  var tip = document.getElementById('photoEmptyTip');
+  if (hasPhotos && tip) { tip.remove(); }
+  document.getElementById('photoMask').classList.add('open');
+}
+function closePhotos() {
+  document.getElementById('photoMask').classList.remove('open');
+}
+function openNamingRule(e) {
+  e.preventDefault();
+  document.getElementById('ruleMask').classList.add('open');
+}
+function closeNamingRule() {
+  document.getElementById('ruleMask').classList.remove('open');
+}
+</script>
+</body>
+</html>
