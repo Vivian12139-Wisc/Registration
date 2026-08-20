@@ -342,7 +342,7 @@
               <td>广东省佛山市禅城区</td>
               <td>轻工二路3号</td>
               <td>
-                <button class="btn-view" onclick="showDetail('ata')">查看考场信息</button>
+                <button class="btn-view" onclick="showDetail('ata', this)">查看考场信息</button>
                 <button class="btn-unbind" onclick="unbindOrg(this,'666市工会职业技术学校（工行666分行）')">解绑</button>
               </td>
             </tr>
@@ -354,7 +354,7 @@
               <td>广东省佛山市禅城区</td>
               <td>轻工二路3号</td>
               <td>
-                <button class="btn-view" onclick="showDetail('ata')">查看考场信息</button>
+                <button class="btn-view" onclick="showDetail('ata', this)">查看考场信息</button>
                 <button class="btn-unbind" onclick="unbindOrg(this,'777市工会职业技术学校（工行777分行）')">解绑</button>
               </td>
             </tr>
@@ -366,7 +366,7 @@
               <td>广东省佛山市禅城区</td>
               <td>轻工二路3号</td>
               <td>
-                <button class="btn-view" onclick="showDetail('ata')">查看考场信息</button>
+                <button class="btn-view" onclick="showDetail('ata', this)">查看考场信息</button>
                 <button class="btn-unbind" disabled>解绑</button>
               </td>
             </tr>
@@ -563,7 +563,6 @@
       <span>监考信息</span>
       <span class="x" onclick="closeProctor()">✕</span>
     </div>
-    <div class="proc-readonly-tag">只读 · 数据来源于报名/导入信息，不支持在此编辑</div>
     <div class="proc-body">
       <div class="proc-row">
         <label>监考1姓名：</label>
@@ -615,9 +614,36 @@ function setNavActive(target) {
     subOrg.classList.add('current');
   }
 }
-function showDetail(type) {
+function showDetail(type, btn) {
   hideAllViews();
   setNavActive(type === 'ata' ? 'ata' : 'org');
+  // ATA考点若已被解绑，工作人员信息、每个考场的监考信息应一并清空
+  var isUnbound = false;
+  if (btn) {
+    var tr = btn.closest('tr');
+    var orgCell = tr && tr.querySelector('.org-cell');
+    isUnbound = !!(orgCell && orgCell.classList.contains('unbound'));
+  }
+  var staffBody = document.querySelector('#detailView .dtable tbody');
+  if (isUnbound) {
+    staffBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">该考点已解绑，工作人员信息已清空</td></tr>';
+    document.querySelectorAll('#detailView .op-link[onclick^="showProctor"]').forEach(function(link){
+      link.setAttribute('onclick', "showProctor(event,'','','','','','')");
+    });
+  } else {
+    staffBody.innerHTML =
+      '<tr><td>技术人员</td><td>唐宋元</td><td>13120522544</td><td>1@1.com</td><td>2026-07-02 14:55:54</td></tr>' +
+      '<tr><td>督考</td><td>唐雄伟</td><td>13120522544</td><td>1@1.com</td><td>2026-07-02 14:56:14</td></tr>';
+    if (type === 'ata') {
+      document.querySelectorAll('#detailView .op-link[onclick^="showProctor"]').forEach(function(link, idx){
+        if (idx === 0) {
+          link.setAttribute('onclick', "showProctor(event,'监考1','13120522544','','监考2','13111111111','')");
+        } else {
+          link.setAttribute('onclick', "showProctor(event,'','','','','','')");
+        }
+      });
+    }
+  }
   var cells = document.querySelectorAll('#detailView .acc-status');
   cells.forEach(function(cell){
     if (type === 'ata') {
@@ -666,7 +692,7 @@ function showAtaList() {
   window.scrollTo(0,0);
 }
 function unbindOrg(btn, kaodianName) {
-  if (!confirm('确认解绑「' + kaodianName + '」当前所属机构？解绑后该考点将变为未绑定状态，需重新导入机构绑定文件才能恢复分配。')) {
+  if (!confirm('确认解绑「' + kaodianName + '」当前所属机构？解绑后该考点将变为未绑定状态，原机构录入的工作人员及该考点下所有考场的监考信息将一并清除，需重新导入机构绑定文件才能恢复分配。')) {
     return;
   }
   var tr = btn.closest('tr');
@@ -684,7 +710,7 @@ function unbindAll() {
     alert('当前列表中没有已绑定机构的考点。');
     return;
   }
-  if (!confirm('确认解绑当前列表中全部 ' + bound.length + ' 个已绑定考点的所属机构？解绑后需重新导入机构绑定文件才能恢复分配。')) {
+  if (!confirm('确认解绑当前列表中全部 ' + bound.length + ' 个已绑定考点的所属机构？解绑后原机构录入的工作人员及这些考点下所有考场的监考信息将一并清除，需重新导入机构绑定文件才能恢复分配。')) {
     return;
   }
   bound.forEach(function(tr){
