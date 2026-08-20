@@ -165,8 +165,8 @@
       <div class="item">✅ 审核 ⌄</div>
       <div class="item active-group" id="navGroupArrange">🗂 编排 ⌄</div>
       <div class="sub" onclick="showOrgList()">创建日程</div>
-      <div class="sub current" id="navSubOrg" onclick="showOrgList()">机构申请考点管理</div>
-      <div class="sub" id="navSubAta" onclick="showAtaList()">ATA考点管理</div>
+      <div class="sub" id="navSubOrg" onclick="showOrgList()">机构申请考点管理</div>
+      <div class="sub current" id="navSubAta" onclick="showAtaList()">ATA考点管理</div>
       <div class="sub" onclick="showOrgList()">场次列表</div>
       <div class="sub" onclick="showOrgList()">考生考场列表</div>
       <div class="item">🖨 发票</div>
@@ -180,7 +180,7 @@
     <div class="topbar">欢迎您，Ata02 ⌄</div>
 
     <!-- 机构申请考点管理（列表页） -->
-    <div class="content" id="orgListView">
+    <div class="content" id="orgListView" style="display:none;">
       <h1>机构申请考点管理</h1>
       <div class="breadcrumb">首页 &gt; 编排功能 &gt; <span class="cur">机构申请考点管理</span></div>
       <hr class="sep">
@@ -280,7 +280,7 @@
     </div>
 
     <!-- ATA考点管理（列表页） -->
-    <div class="content" id="ataListView" style="display:none;">
+    <div class="content" id="ataListView">
       <h1>ATA考点管理</h1>
       <div class="breadcrumb">首页 &gt; 编排功能 &gt; <span class="cur">ATA考点管理</span></div>
       <hr class="sep">
