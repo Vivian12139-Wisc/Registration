@@ -231,7 +231,20 @@ FILE_TYPES = {
     ".csv":  {"icon": "📊", "color": "#34c759", "shadow": "rgba(52,199,89,.25)",  "label": "CSV",  "new_tab": False, "download": True},
     ".xlsx": {"icon": "📗", "color": "#1d6f42", "shadow": "rgba(29,111,66,.25)",  "label": "XLSX", "new_tab": False, "download": True},
     ".png":  {"icon": "🖼️", "color": "#bf5af2", "shadow": "rgba(191,90,242,.25)", "label": "PNG",  "new_tab": True,  "download": False},
+    # 新增：Word 文档
+    ".docx": {"icon": "📘", "color": "#2b579a", "shadow": "rgba(43,87,154,.25)",  "label": "DOCX", "new_tab": False, "download": True},
+    ".doc":  {"icon": "📘", "color": "#2b579a", "shadow": "rgba(43,87,154,.25)",  "label": "DOC",  "new_tab": False, "download": True},
 }
+
+
+def is_listed_file(name: str) -> bool:
+    """是否应该出现在文件列表中（统一过滤条件，列表和副标题统计共用）。"""
+    return (
+        os.path.splitext(name)[1].lower() in FILE_TYPES
+        and name != "index.html"
+        and not name.startswith("~$")   # 过滤 Word 打开文档时产生的临时锁文件
+    )
+
 
 def build_breadcrumb(rel_dir: str) -> str:
     root_a = '<a href="{depth}index.html">🏠 根目录</a>'
@@ -260,8 +273,7 @@ def build_body(dirpath: str, rel_dir: str) -> str:
 
     subdirs = [i for i in items
                if os.path.isdir(os.path.join(dirpath, i)) and not i.startswith(".")]
-    files   = [i for i in items
-               if os.path.splitext(i)[1].lower() in FILE_TYPES and i != "index.html"]
+    files   = [i for i in items if is_listed_file(i)]
 
     parts = []
 
@@ -321,8 +333,7 @@ def gen_index_for_dir(dirpath: str, root: str = ".") -> None:
     try:
         children = [i for i in os.listdir(dirpath) if not i.startswith(".")]
         subdirs  = sum(1 for i in children if os.path.isdir(os.path.join(dirpath, i)))
-        files    = sum(1 for i in children
-                       if os.path.splitext(i)[1].lower() in FILE_TYPES and i != "index.html")
+        files    = sum(1 for i in children if is_listed_file(i))
         if subdirs and files:
             subtitle = f"{subdirs} 个文件夹 · {files} 个文档"
         elif subdirs:
