@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>申請人資訊詳情 - 按組顯示</title>
+<style>
+  :root{
+    --teal-900:#0f3d36;
+    --teal-800:#13574c;
+    --teal-700:#166b5c;
+    --teal-600:#1a7a68;
+    --teal-500:#1f8f7a;
+    --teal-50:#eef7f4;
+    --border:#e3e8e6;
+    --text:#2b3330;
+    --text-mid:#5b6663;
+    --text-light:#8b958f;
+    --bg:#f5f7f6;
+    --white:#ffffff;
+    --danger:#c0392b;
+    --radius:4px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"PingFang TC","Microsoft JhengHei","Segoe UI",Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-size:14px;
+  }
+  .app{display:flex;min-height:100vh;}
+
+  /* Sidebar */
+  .sidebar{width:210px;background:var(--teal-900);color:#dfeee9;flex-shrink:0;padding:16px 0;}
+  .sidebar .brand{display:flex;align-items:center;gap:8px;padding:0 20px 16px 20px;color:#fff;font-weight:600;font-size:15px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px;}
+  .nav-group{margin-bottom:2px;}
+  .nav-head{display:flex;align-items:center;gap:8px;padding:10px 20px;font-size:13.5px;color:#cfe6de;}
+  .nav-head .dot{width:6px;height:6px;border-radius:1px;background:#5fb9a4;flex-shrink:0;}
+  .nav-sub{padding:2px 0 8px 0;}
+  .nav-sub a{display:block;padding:8px 20px 8px 38px;color:#a9c9c0;text-decoration:none;font-size:13.5px;}
+  .nav-sub a.active{color:#fff;background:var(--teal-700);border-left:3px solid #5fe0c2;padding-left:35px;}
+  .nav-sub a:hover:not(.active){color:#fff;}
+
+  /* Main */
+  .main{flex:1;min-width:0;padding:18px 28px 40px 28px;}
+  .crumbs{color:var(--text-light);font-size:13px;margin-bottom:6px;}
+  .crumbs span.current{color:var(--text-mid);}
+  .crumbs a{color:var(--text-light);text-decoration:none;cursor:pointer;}
+  .crumbs a:hover{color:var(--teal-600);}
+  .page-title{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:600;color:var(--text);margin:4px 0 18px 0;}
+  .page-title .back{color:var(--teal-600);font-size:18px;cursor:pointer;}
+  .page-title .edit-icon{color:var(--teal-600);font-size:15px;cursor:pointer;}
+
+  .panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;}
+  .panel-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .panel-title .left{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text);}
+  .panel-title .bar{width:4px;height:15px;background:var(--teal-600);border-radius:2px;}
+
+  .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 40px;}
+  .info-item{display:flex;font-size:13.5px;}
+  .info-item .k{color:var(--text-mid);width:170px;flex-shrink:0;}
+  .info-item .v{color:var(--text);}
+
+  /* toolbar */
+  .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;}
+  .search-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .field{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--text-mid);}
+  .field input, .field select{border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;font-size:13.5px;color:var(--text);outline:none;min-width:150px;background:var(--white);}
+  .field input:focus, .field select:focus{border-color:var(--teal-500);}
+
+  .btn{border-radius:var(--radius);padding:7px 16px;font-size:13.5px;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text-mid);white-space:nowrap;}
+  .btn:hover{border-color:var(--teal-500);color:var(--teal-600);}
+  .btn-primary{background:var(--teal-600);border-color:var(--teal-600);color:#fff;}
+  .btn-primary:hover{background:var(--teal-700);border-color:var(--teal-700);color:#fff;}
+  .btn-outline{background:#fff;border-color:var(--teal-600);color:var(--teal-600);}
+  .btn-outline:hover{background:var(--teal-50);}
+  .btn-text{border:none;background:none;color:var(--teal-600);padding:2px 6px;cursor:pointer;font-size:13.5px;}
+  .btn-text.danger{color:var(--danger);}
+  .btn-text[disabled]{color:#b5bdb9;cursor:not-allowed;}
+  .btn[disabled]{background:#c9d3cf;border-color:#c9d3cf;color:#fff;cursor:not-allowed;}
+  .mail-sec{font-size:15px;font-weight:700;color:var(--teal-600);padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--border);}
+  .chg-before{color:var(--text-mid);}
+  .chg-after{color:var(--teal-600);font-weight:600;}
+
+  table.data-table{width:100%;border-collapse:collapse;}
+  table.data-table thead th{background:#f4f6f5;color:var(--text-mid);text-align:left;font-weight:600;font-size:13px;padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  table.data-table tbody td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text);vertical-align:middle;}
+  table.data-table tbody tr:last-child td{border-bottom:none;}
+  table.data-table tbody tr:hover{background:#fafbfb;}
+  .group-link{color:var(--teal-700);font-weight:600;cursor:pointer;}
+  .group-link:hover{text-decoration:underline;}
+  .cand-no{font-family:"SFMono-Regular",Consolas,monospace;color:var(--teal-700);font-weight:600;}
+  .cell-actions{display:flex;gap:4px;white-space:nowrap;}
+  .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:10px;font-size:12px;background:#fff;border:1px solid var(--border);color:var(--text-mid);}
+  .badge.full{background:#eef7f4;color:#2fa876;border-color:#bfe6d5;}
+  .badge.avail{background:#fdf1ea;color:#b3661a;border-color:#f3d9be;}
+  .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;}
+  .status-dot.ok{background:#2fa876;}
+  .status-dot.pending{background:#c9a227;}
+
+  .pager{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--text-mid);}
+  .pager select{border:1px solid var(--border);border-radius:var(--radius);padding:4px 6px;}
+  .pager .page-btn{border:1px solid var(--border);border-radius:var(--radius);padding:3px 9px;color:var(--text-mid);cursor:pointer;}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,30,27,.45);display:none;align-items:flex-start;justify-content:center;padding-top:6vh;z-index:50;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:#fff;width:640px;max-width:92vw;border-radius:6px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.18);max-height:88vh;display:flex;flex-direction:column;}
+  .modal-head{background:var(--teal-700);color:#fff;padding:14px 20px;font-size:15.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+  .modal-head .close{cursor:pointer;font-size:18px;opacity:.85;}
+  .modal-head .close:hover{opacity:1;}
+  .modal-body{padding:20px 22px;overflow-y:auto;}
+  .modal-section-title{font-size:13px;font-weight:600;color:var(--teal-700);margin:18px 0 10px 0;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  .modal-section-title:first-child{margin-top:0;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+  .form-item{display:flex;flex-direction:column;gap:5px;}
+  .form-item.span-2{grid-column:1 / -1;}
+  .form-item label{font-size:12.5px;color:var(--text-mid);}
+  .form-item label .req{color:var(--danger);margin-right:2px;}
+  .form-item input, .form-item select{border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:13.5px;outline:none;color:var(--text);background:#fff;}
+  .form-item input:focus, .form-item select:focus{border-color:var(--teal-500);}
+  .form-item input[disabled]{background:#f4f6f5;color:var(--text-light);}
+  .hint{font-size:11.5px;color:var(--text-light);}
+  .modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--teal-700);color:#fff;padding:10px 20px;border-radius:4px;font-size:13.5px;box-shadow:0 6px 18px rgba(0,0,0,.15);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:100;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(4px);}
+
+  .stepper{display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content;}
+  .stepper button{width:34px;height:34px;border:none;background:#f4f6f5;color:var(--text-mid);font-size:16px;cursor:pointer;}
+  .stepper button:hover{background:var(--teal-50);color:var(--teal-600);}
+  .stepper input{width:60px;height:34px;border:none;border-left:1px solid var(--border);border-right:1px solid var(--border);text-align:center;font-size:13.5px;color:var(--text);outline:none;}
+
+  .file-row{display:flex;align-items:center;gap:12px;}
+  .file-row .file-name{font-size:13.5px;color:var(--teal-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .file-pick-btn{cursor:pointer;flex-shrink:0;}
+
+  .page{display:none;}
+  .page.active{display:block;}
+
+  /* Candidate detail page (page 3) */
+  .cand-header-card{
+    background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 22px 0 22px;margin-bottom:18px;
+  }
+  .cand-header-top{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .cand-header-top .hi{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--text);}
+  .cand-header-top .hi .k{color:var(--text-mid);}
+  .cand-header-top .hi .icn{color:var(--text-light);font-size:13px;}
+  .tabs{display:flex;gap:8px;border-top:1px solid var(--border);padding:12px 0;}
+  .tab{padding:7px 16px;border-radius:var(--radius);font-size:13.5px;color:var(--text-mid);cursor:pointer;background:#f4f6f5;}
+  .tab.active{background:var(--teal-600);color:#fff;}
+
+  .detail-cols{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;}
+  .detail-left{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+  .detail-left .row{display:flex;border-bottom:1px solid var(--border);}
+  .detail-left .row:last-child{border-bottom:none;}
+  .detail-left .row .k{width:320px;flex-shrink:0;background:#f4f6f5;padding:11px 16px;font-size:13.5px;color:var(--text-mid);}
+  .detail-left .row .v{padding:11px 16px;font-size:13.5px;color:var(--text);flex:1;}
+
+  .detail-right .side-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;}
+  .side-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;}
+  .img-group{display:flex;gap:22px;}
+  .img-item{text-align:center;}
+  .img-item .cap{font-size:12px;color:var(--text-mid);margin-bottom:6px;}
+  .img-item .box{width:70px;height:70px;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-light);background:#fafbfb;}
+  .attach-list{display:flex;flex-direction:column;gap:8px;}
+  .attach-item{font-size:12.5px;color:var(--teal-700);cursor:pointer;}
+  .mini-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .mini-table th{background:#f4f6f5;color:var(--text-mid);padding:7px 10px;text-align:left;font-weight:600;}
+  .mini-table td{padding:9px 10px;color:var(--text-light);border-top:1px solid var(--border);}
+  .empty-note{padding:14px;text-align:center;color:var(--text-light);font-size:12.5px;}
+
+  /* ===== mail notification ===== */
+  .dot-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#e0752d;color:#fff;font-size:11px;margin-left:4px;vertical-align:middle;}
+  .mail-type{display:flex;flex-direction:column;gap:8px;}
+  .mail-type-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:13.5px;cursor:pointer;}
+  .mail-type-item.active{border-color:var(--teal-600);background:var(--teal-50);}
+  .mail-type-item.disabled{color:var(--text-light);background:#fafbfb;cursor:not-allowed;}
+  .mail-type-item .tag{margin-left:auto;font-style:normal;font-size:12px;color:var(--text-light);border:1px solid var(--border);border-radius:10px;padding:1px 9px;background:#fff;}
+  .mail-preview{border:1px solid var(--border);border-radius:var(--radius);background:#fafbfb;padding:14px 16px;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--text);}
+  .pending-text{color:#e0752d;font-weight:600;}
+  .mini-note{font-size:12px;color:var(--text-light);margin-top:8px;line-height:1.6;}
+  .mail-sheet{border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;background:#fff;font-size:13.5px;line-height:1.8;}
+  .mail-sheet .fixed{color:var(--text-light);}
+  .mail-sheet .sheet-label{font-size:12px;color:var(--text-mid);margin:10px 0 4px;}
+  .mail-sheet textarea{width:100%;min-height:110px;border:1px solid var(--teal-500);border-radius:var(--radius);padding:10px 12px;font-size:13.5px;line-height:1.7;font-family:inherit;color:var(--text);outline:none;resize:vertical;background:#f7fcfa;}
+  .mail-sheet .sig{margin-top:12px;color:var(--text-light);}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">CSTD 管理後台</div>
+    <div class="nav-group">
+      <div class="nav-head"><span class="dot"></span>批次配置</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-head"><span class="dot"></span>考生數據管理</div>
+      <div class="nav-sub">
+        <a href="#" class="active">申請人資訊</a>
+        <a href="#">報名數據</a>
+        <a href="#">准考證數據</a>
+        <a href="#">證書數據</a>
+        <a href="#">成績數據</a>
+        <a href="#">財務數據</a>
+        <a href="#">科目調換審核</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-head"><span class="dot"></span>數據編排</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-head"><span class="dot"></span>統計分析</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- ================= PAGE 0: 申請人資訊列表 ================= -->
+    <div class="page active" id="page-list">
+      <div class="crumbs">首頁 / 批次 / <span class="current">申請人資訊</span></div>
+      <div class="page-title"><span class="back">←</span> CSTD-UAT-0819驗收batch0825 <span class="edit-icon">✎</span></div>
+
+      <div class="panel">
+        <div class="toolbar" style="margin-bottom:0;">
+          <div class="search-row">
+            <div class="field"><input type="text" placeholder="申請人編號"></div>
+            <div class="field"><select><option value="">考試級別</option><option>Pre Grades and General Grades Examinations</option><option>Major Grade Examinations</option></select></div>
+            <div class="field"><select><option value="">考試場地類別</option><option>CENTRAL VENUE</option></select></div>
+            <div class="field"><input type="text" placeholder="申請人郵箱"></div>
+            <div class="field"><input type="text" placeholder="保送教師英文通訊地址"></div>
+          </div>
+          <div class="search-row">
+            <button class="btn btn-outline">查詢</button>
+            <button class="btn-text">展開 ⌄</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:14px;">
+          <button class="btn btn-primary">導出</button>
+          <button class="btn btn-primary">申請人編號設定</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox"></th>
+              <th>序號</th>
+              <th>申請人編號</th>
+              <th>考試級別</th>
+              <th>考試場地類別</th>
+              <th>申請人郵箱</th>
+              <th>保送教師英文通訊地址</th>
+              <th>保送教師聯絡電話</th>
+              <th>試場英文地址</th>
+              <th style="width:330px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="applicant-tbody"></tbody>
+        </table>
+        <div class="pager" style="justify-content:space-between;">
+          <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox"> 全部選擇</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span>共 4 項</span>
+            <select><option>10項/頁</option></select>
+            <span class="page-btn">‹</span><span class="page-btn" style="background:var(--teal-600);color:#fff;border-color:var(--teal-600);">1</span><span class="page-btn">›</span>
+            前往 <input type="text" value="1" style="width:36px;text-align:center;border:1px solid var(--border);border-radius:4px;padding:3px;"> 頁
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PAGE 1: 申請人資訊詳情（组别列表） ================= -->
+    <div class="page" id="page-applicant">
+      <div class="crumbs">首頁 / 批次 / <a onclick="backToList()">申請人資訊</a> / <span class="current">申請人資訊詳情</span></div>
+      <div class="page-title"><span class="back" onclick="backToList()">←</span> CSTD-UAT-0819驗收batch0825 <span class="edit-icon">✎</span></div>
+
+      <div class="panel">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div>
+            <div class="panel-title"><div class="left"><span class="bar"></span>基本信息</div></div>
+            <div style="display:flex;flex-direction:column;gap:18px;">
+              <div style="font-size:13.5px;"><b>考試級別：</b><span id="ap-level">Pre Grades and General Grades Examinations</span></div>
+              <div style="font-size:13.5px;"><b>考試場地類別：</b><span id="ap-venue">CENTRAL VENUE</span></div>
+              <div style="font-size:13.5px;"><b>申請人郵箱：</b><span id="ap-email">ie2@hkeaa.edu.hk</span></div>
+              <div style="font-size:13.5px;"><b>保送教師英文通訊地址：</b><span id="ap-addr">SPK</span></div>
+              <div style="font-size:13.5px;"><b>保送教師聯絡電話：</b><span id="ap-phone">36363636</span></div>
+              <div style="font-size:13.5px;"><b>保送教師英文姓名/學校英文名稱：</b>testing</div>
+              <div style="font-size:13.5px;"><b>保送教師英文姓名：</b>testing</div>
+              <div style="font-size:13.5px;"><b>第一選擇考試日期：</b>2027-04-15</div>
+              <div style="font-size:13.5px;"><b>第二選擇考試日期：</b>2027-04-16</div>
+              <div style="font-size:13.5px;"><b>第三選擇考試日期：</b>2027-04-17</div>
+            </div>
+          </div>
+          <div>
+            <div class="panel-title"><div class="left"><span class="bar"></span>附件信息</div></div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;">
+              <span class="attach-item">📄 CSTD LOGO.png</span>
+              <span class="attach-item">📄 CSTD LOGO.png</span>
+              <span class="attach-item">📄 CSTD LOGO.png</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <div class="left"><span class="bar"></span>郵件通知</div>
+          <button class="btn btn-primary" id="btn-mail-detail" onclick="openMailModal()">發送修改確認郵件</button>
+        </div>
+        <div style="font-size:13.5px;margin-bottom:14px;"><b>未通知的修改：</b><span id="mail-pending-count">0</span> 處</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>發送時間</th>
+              <th>參考編號</th>
+              <th>郵件類型</th>
+              <th>收件人</th>
+              <th>操作人</th>
+            </tr>
+          </thead>
+          <tbody id="mail-log-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><div class="left"><span class="bar"></span>組別數據</div></div>
+
+        <div class="toolbar">
+          <div class="search-row">
+            <div class="field">
+              <span>專業</span>
+              <select>
+                <option>全部專業</option>
+                <option>Revised Modern Jazz</option>
+              </select>
+            </div>
+            <div class="field">
+              <span>級別</span>
+              <select>
+                <option>全部級別</option>
+                <option>Pre Modern Jazz</option>
+                <option>Grade 1</option>
+              </select>
+            </div>
+            <button class="btn btn-primary">查詢</button>
+          </div>
+          <div class="search-row">
+            <button class="btn btn-outline" onclick="openGroupCreate()">＋ 新建組別</button>
+          </div>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:80px;">組別</th>
+              <th>專業</th>
+              <th>級別</th>
+              <th>每組人數上限</th>
+              <th>實際人數</th>
+              <th style="width:140px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="group-link" onclick="openGroup('RMJ-PRE-01','1','Revised Modern Jazz','Pre Modern Jazz','4')">1</span></td>
+              <td>Revised Modern Jazz</td>
+              <td>Pre Modern Jazz</td>
+              <td>4</td>
+              <td>3</td>
+              <td class="cell-actions">
+                <button class="btn-text" onclick="openGroup('RMJ-PRE-01','1','Revised Modern Jazz','Pre Modern Jazz','4')">檢視</button>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="group-link" onclick="openGroup('RMJ-PRE-02','2','Revised Modern Jazz','Pre Modern Jazz','4')">2</span></td>
+              <td>Revised Modern Jazz</td>
+              <td>Pre Modern Jazz</td>
+              <td>4</td>
+              <td>4</td>
+              <td class="cell-actions">
+                <button class="btn-text" onclick="openGroup('RMJ-PRE-02','2','Revised Modern Jazz','Pre Modern Jazz','4')">檢視</button>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="group-link" onclick="openGroup('RMJ-G1-01','3','Revised Modern Jazz','Grade 1','6')">1</span></td>
+              <td>Revised Modern Jazz</td>
+              <td>Grade 1</td>
+              <td>6</td>
+              <td>2</td>
+              <td class="cell-actions">
+                <button class="btn-text" onclick="openGroup('RMJ-G1-01','3','Revised Modern Jazz','Grade 1','6')">檢視</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="pager">
+          <span>共 3 項</span>
+          <select><option>10項/頁</option></select>
+          <span class="page-btn">‹</span><span class="page-btn" style="background:var(--teal-600);color:#fff;border-color:var(--teal-600);">1</span><span class="page-btn">›</span>
+          前往 <input type="text" value="1" style="width:36px;text-align:center;border:1px solid var(--border);border-radius:4px;padding:3px;"> 頁
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PAGE 2: 組別詳情（组内考生列表，二级） ================= -->
+    <div class="page" id="page-group">
+      <div class="crumbs">首頁 / 批次 / <a onclick="backToList()">申請人資訊</a> / <a onclick="backToApplicant()">申請人資訊詳情</a> / <span class="current" id="crumb-group-name">組別詳情</span></div>
+      <div class="page-title"><span class="back" onclick="backToApplicant()">←</span> <span id="group-title">1</span></div>
+
+      <div class="panel">
+        <div class="panel-title"><div class="left"><span class="bar"></span>組別信息</div></div>
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div style="font-size:13.5px;"><b>專業：</b><span id="group-major">Revised Modern Jazz</span></div>
+          <div style="font-size:13.5px;"><b>級別：</b><span id="group-level">Pre Modern Jazz</span></div>
+          <div style="font-size:13.5px;"><b>每組人數上限：</b><span id="group-max">4</span></div>
+          <div style="font-size:13.5px;"><b>實際人數：</b><span id="group-actual">3</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <div class="left"><span class="bar"></span>考生數據</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-row">
+            <div class="field"><span>姓名</span><input type="text" placeholder="輸入姓名查詢"></div>
+            <div class="field"><span>證件號碼</span><input type="text" placeholder="輸入證件號碼"></div>
+            <button class="btn btn-primary">查詢</button>
+          </div>
+        </div>
+
+        <table class="data-table" id="candidate-table">
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox"></th>
+              <th>姓名</th>
+              <th>證件類型</th>
+              <th>證件號碼</th>
+              <th>科目名稱</th>
+              <th style="width:170px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="candidate-tbody">
+            <!-- populated by JS depending on group -->
+          </tbody>
+        </table>
+
+        <div class="pager">
+          <span id="candidate-count">共 3 項</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PAGE 3: 考生詳情 ================= -->
+    <div class="page" id="page-candidate">
+      <div class="crumbs">首頁 / 批次 / <a onclick="backToList()">申請人資訊</a> / <a onclick="backToApplicant()">申請人資訊詳情</a> / <a onclick="backToGroupFromCandidate()" id="crumb-back-group">組別詳情</a> / <span class="current">考生詳情</span></div>
+      <div class="page-title"><span class="back" onclick="backToGroupFromCandidate()">←</span> <span id="cand-page-title">CSTD-UAT-0819驗收batch0825</span></div>
+
+      <div class="cand-header-card">
+        <div class="cand-header-top">
+          <div class="hi"><span class="icn">🖼</span><span class="k">姓名：</span><span id="hdr-name">test</span></div>
+          <div class="hi"><span class="icn">🖼</span><span class="k">證件類型：</span><span id="hdr-idtype">護照</span></div>
+          <div class="hi"><span class="icn">🆔</span><span class="k">證件號碼：</span><span id="hdr-idno">S5165316531</span></div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">考生數據</div>
+          <div class="tab">報考數據</div>
+          <div class="tab">准考證數據</div>
+          <div class="tab">成績信息</div>
+          <div class="tab">免試訊息</div>
+          <div class="tab">繳費數據</div>
+          <div class="tab">操作日誌</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button class="btn btn-primary" onclick="openCandidateEditFromDetail()">基本信息修改</button>
+      </div>
+
+      <div class="detail-cols">
+        <div class="detail-left">
+          <div class="row"><div class="k">專業：</div><div class="v" id="detail-major">Revised Modern Jazz</div></div>
+          <div class="row"><div class="k">級別：</div><div class="v" id="detail-level">Pre Modern Jazz</div></div>
+          <div class="row"><div class="k">所屬組：</div><div class="v" id="detail-group-line">1</div></div>
+          <div class="row"><div class="k">考生編號：</div><div class="v" id="detail-group-no">01</div></div>
+          <div class="row"><div class="k">保送教師英文姓名/學校英文名稱：</div><div class="v">testing</div></div>
+          <div class="row"><div class="k">英文姓名：</div><div class="v" id="detail-name">test</div></div>
+          <div class="row"><div class="k">性別：</div><div class="v" id="detail-gender">女</div></div>
+          <div class="row"><div class="k">保送教師英文姓名：</div><div class="v">testing</div></div>
+          <div class="row"><div class="k">證件類型：</div><div class="v" id="detail-idtype">護照</div></div>
+          <div class="row"><div class="k">保送教師英文通訊地址：</div><div class="v">SPK</div></div>
+          <div class="row"><div class="k">保送教師聯絡電話：</div><div class="v">36363636</div></div>
+          <div class="row"><div class="k">證件號碼：</div><div class="v" id="detail-idno">S5165316531</div></div>
+          <div class="row"><div class="k">申請人郵箱：</div><div class="v">ie2@hkeaa.edu.hk</div></div>
+          <div class="row"><div class="k">出生日期：</div><div class="v" id="detail-dob">2021-06-22</div></div>
+          <div class="row"><div class="k">是否成年：</div><div class="v">否</div></div>
+          <div class="row"><div class="k">考試級別：</div><div class="v">Pre Grades and General Grades Examinations</div></div>
+          <div class="row"><div class="k">考試場地類別：</div><div class="v">CENTRAL VENUE</div></div>
+          <div class="row"><div class="k">試場英文地址：</div><div class="v"></div></div>
+          <div class="row"><div class="k">第一選擇考試日期：</div><div class="v">2027-04-15</div></div>
+          <div class="row"><div class="k">第二選擇考試日期：</div><div class="v">2027-04-16</div></div>
+          <div class="row"><div class="k">第三選擇考試日期：</div><div class="v">2027-04-17</div></div>
+        </div>
+
+        <div class="detail-right">
+          <div class="side-panel">
+            <div class="side-title">圖片信息</div>
+            <div class="img-group">
+              <div class="img-item"><div class="cap">資格證書</div><div class="box">縮圖</div></div>
+              <div class="img-item"><div class="cap">身份證明文件</div><div class="box">縮圖</div></div>
+            </div>
+          </div>
+          <div class="side-panel">
+            <div class="side-title">附件信息</div>
+            <div class="attach-list">
+              <div class="attach-item">📎 CSTD LOGO.png</div>
+              <div class="attach-item">📎 CSTD LOGO.png</div>
+              <div class="attach-item">📎 CSTD LOGO.png</div>
+              <div class="attach-item">📎 CSTD LOGO.png</div>
+            </div>
+          </div>
+          <div class="side-panel">
+            <div class="side-title">審核記錄</div>
+            <table class="mini-table">
+              <thead><tr><th>審核帳號</th><th>結果</th><th>時間</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="empty-note">暫無資料</div>
+          </div>
+          <div class="side-panel">
+            <div class="side-title">備註數據</div>
+            <table class="mini-table">
+              <thead><tr><th>備註帳號</th><th>內容</th><th>時間</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="empty-note">暫無資料</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: Candidate edit -->
+<div class="modal-overlay" id="modal-candidate">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="cand-modal-title">考生信息修改</span>
+      <span class="close" onclick="closeModal('modal-candidate')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-title">專業級別 / 所屬組別</div>
+      <div class="form-grid">
+        <div class="form-item">
+          <label>專業</label>
+          <select id="cand-major-select">
+            <option selected>Revised Modern Jazz</option>
+            <option>Classical Ballet</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label>級別</label>
+          <select id="cand-level-select">
+            <option selected>Pre Modern Jazz</option>
+            <option>Grade 1</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label>所屬組</label>
+          <select id="cand-group-select">
+            <option>1</option>
+            <option>2</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label><span class="req">*</span>考生編號</label>
+          <input type="text" id="cand-no-input" value="01">
+        </div>
+      </div>
+
+      <div class="modal-section-title">基本信息</div>
+      <div class="form-grid">
+        <div class="form-item"><label>英文姓名</label><input type="text" id="f-name" value="test"></div>
+        <div class="form-item"><label>性別</label>
+          <select id="f-gender"><option>男</option><option selected>女</option></select>
+        </div>
+        <div class="form-item"><label>證件類型</label>
+          <select id="f-idtype"><option selected>護照</option><option>身份證</option></select>
+        </div>
+        <div class="form-item"><label><span class="req">*</span>證件號碼</label><input type="text" id="f-idno" value="S5165316531"></div>
+        <div class="form-item"><label>出生日期</label><input type="text" id="f-dob" value="2021-06-22"></div>
+        <div class="form-item"><label>是否成年</label>
+          <select id="f-adult"><option selected>否</option><option>是</option></select>
+        </div>
+      </div>
+
+      <div class="modal-section-title">考生圖片</div>
+      <div class="form-grid">
+        <div class="form-item">
+          <label>資格證書</label>
+          <div class="file-row">
+            <span class="file-name">📄 qualification_test.jpg</span>
+            <label class="btn btn-sm file-pick-btn">
+              重新上傳
+              <input type="file" style="display:none;">
+            </label>
+          </div>
+        </div>
+        <div class="form-item">
+          <label>身份證明文件</label>
+          <div class="file-row">
+            <span class="file-name">📄 id_test.jpg</span>
+            <label class="btn btn-sm file-pick-btn">
+              重新上傳
+              <input type="file" style="display:none;">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section-title">附件信息</div>
+      <div id="cand-attach-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px;"></div>
+      <label class="btn btn-outline btn-sm file-pick-btn">
+        ＋ 添加附件
+        <input type="file" id="cand-attach-input" style="display:none;" multiple>
+      </label>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-candidate')">取消</button>
+      <button class="btn btn-primary" onclick="saveCandidate()">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Group edit -->
+<div class="modal-overlay" id="modal-group">
+  <div class="modal" style="width:560px;">
+    <div class="modal-head">
+      <span id="group-modal-title">編輯組別</span>
+      <span class="close" onclick="closeModal('modal-group')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-item"><label>專業</label>
+          <select id="ge-major"><option selected>Revised Modern Jazz</option><option>Classical Ballet</option></select>
+        </div>
+        <div class="form-item"><label>級別</label>
+          <select id="ge-level"><option selected>Pre Modern Jazz</option><option>Grade 1</option></select>
+        </div>
+        <div class="form-item"><label>每組人數上限</label><input type="text" id="ge-max" value="4" disabled></div>
+        <div class="form-item">
+          <label>實際人數</label>
+          <div class="stepper">
+            <button type="button" onclick="stepActual(-1)">－</button>
+            <input type="text" id="ge-actual" value="3">
+            <button type="button" onclick="stepActual(1)">＋</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-group')">取消</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-group')">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Send confirmation mail -->
+<div class="modal-overlay" id="modal-mail">
+  <div class="modal" style="width:760px;">
+    <div class="modal-head">
+      <span>發送修改確認郵件</span>
+      <span class="close" onclick="closeModal('modal-mail')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="mail-sec">郵件信息</div>
+      <div class="form-item" style="margin-bottom:14px;">
+        <label>郵件類型</label>
+        <select id="mail-type-select" onchange="renderMailChanges()"><option>更改考生資料</option><option>更改考試日期/時間</option><option>調換考試日期/時間</option></select>
+      </div>
+      <div class="form-item"><label>考試申請人郵箱</label><input type="text" id="mail-to" disabled></div>
+      <div class="mail-sec" style="margin-top:20px;">修改內容</div>
+      <table class="data-table">
+        <thead><tr><th>考生</th><th>欄位</th><th>修改前</th><th>修改後</th><th>修改時間</th></tr></thead>
+        <tbody id="mail-chg-tbody"></tbody>
+      </table>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-mail')">取消</button>
+      <button class="btn btn-primary" id="btn-mail-send" onclick="confirmSendMail()">確認發送</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">操作成功</div>
+
+<script>
+var groupsData = {
+  'RMJ-PRE-01': {
+    name:'1', major:'Revised Modern Jazz', level:'Pre Modern Jazz', max:'4',
+    candidates:[
+      {no:'01', name:'test', idtype:'護照', idno:'S5165316531', gender:'女', dob:'2021-06-22', status:'ok'},
+      {no:'02', name:'Chan Tai Ming', idtype:'身份證', idno:'K1234567', gender:'男', dob:'2015-03-11', status:'ok'},
+      {no:'03', name:'Lee Siu Wai', idtype:'護照', idno:'P9988776', gender:'女', dob:'2014-11-02', status:'pending'}
+    ]
+  },
+  'RMJ-PRE-02': {
+    name:'2', major:'Revised Modern Jazz', level:'Pre Modern Jazz', max:'4',
+    candidates:[
+      {no:'01', name:'Wong Ka Yan', idtype:'護照', idno:'P1122334', gender:'女', dob:'2013-05-19', status:'ok'},
+      {no:'02', name:'Ho Chun Yat', idtype:'身份證', idno:'K7654321', gender:'男', dob:'2014-01-27', status:'ok'},
+      {no:'03', name:'Yu Hoi Ching', idtype:'身份證', idno:'K2468013', gender:'女', dob:'2013-09-08', status:'ok'},
+      {no:'04', name:'Cheung Wing Sze', idtype:'護照', idno:'P5566778', gender:'女', dob:'2014-07-30', status:'pending'}
+    ]
+  },
+  'RMJ-G1-01': {
+    name:'1', major:'Revised Modern Jazz', level:'Grade 1', max:'6',
+    candidates:[
+      {no:'01', name:'Fung Tsz Long', idtype:'身份證', idno:'K3355779', gender:'男', dob:'2012-02-14', status:'ok'},
+      {no:'02', name:'Lam Hei Tung', idtype:'護照', idno:'P3399005', gender:'女', dob:'2012-10-21', status:'ok'}
+    ]
+  }
+};
+var currentGroupId = null;
+
+function openGroup(groupId, name, major, level, max){
+  currentGroupId = groupId;
+  var g = groupsData[groupId];
+  document.getElementById('group-title').textContent = '組別 ' + name + ' · ' + major + ' / ' + level;
+  document.getElementById('crumb-group-name').textContent = '組別 ' + name + ' 詳情';
+  document.getElementById('group-major').textContent = major;
+  document.getElementById('group-level').textContent = level;
+  document.getElementById('group-max').textContent = max;
+  document.getElementById('group-actual').textContent = g.candidates.length;
+  renderCandidates();
+  showPage('page-group');
+}
+
+function renderCandidates(){
+  var g = groupsData[currentGroupId];
+  var tbody = document.getElementById('candidate-tbody');
+  tbody.innerHTML = '';
+  g.candidates.forEach(function(c){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><input type="checkbox"></td>'+
+      '<td><span class="group-link" onclick="openCandidateDetail(\''+c.no+'\')">'+c.name+'</span></td>'+
+      '<td>'+c.idtype+'</td>'+
+      '<td>'+c.idno+'</td>'+
+      '<td>'+g.level+'</td>'+
+      '<td class="cell-actions">'+
+        '<button class="btn-text" onclick="openCandidateDetail(\''+c.no+'\')">檢視</button>'+
+      '</td>';
+    tbody.appendChild(tr);
+  });
+  document.getElementById('candidate-count').textContent = '共 ' + g.candidates.length + ' 項';
+}
+
+var currentCandidateNo = null;
+
+function openCandidateDetail(no){
+  currentCandidateNo = no;
+  var g = groupsData[currentGroupId];
+  var c = g.candidates.find(function(x){ return x.no === no; });
+  document.getElementById('cand-page-title').textContent = 'CSTD-UAT-0819驗收batch0825 · ' + c.name;
+  document.getElementById('crumb-back-group').textContent = '組別 ' + g.name + ' 詳情';
+  document.getElementById('hdr-name').textContent = c.name;
+  document.getElementById('hdr-idtype').textContent = c.idtype;
+  document.getElementById('hdr-idno').textContent = c.idno;
+  document.getElementById('detail-major').textContent = g.major;
+  document.getElementById('detail-level').textContent = g.level;
+  document.getElementById('detail-group-line').textContent = g.name;
+  document.getElementById('detail-group-no').textContent = c.no;
+  document.getElementById('detail-name').textContent = c.name;
+  document.getElementById('detail-gender').textContent = c.gender;
+  document.getElementById('detail-idtype').textContent = c.idtype;
+  document.getElementById('detail-idno').textContent = c.idno;
+  document.getElementById('detail-dob').textContent = c.dob;
+  showPage('page-candidate');
+}
+function backToGroupFromCandidate(){
+  showPage('page-group');
+}
+function openCandidateEditFromDetail(){
+  openCandidateEdit(currentCandidateNo);
+}
+
+var applicants = [
+  {no:'', level:'Major Grade Examinations', venue:'', email:'katechow@hkeaa.edu.hk', addr:'SPK', phone:'36288783', school:''},
+  {no:'', level:'Pre Grades and General Grades Examinations', venue:'CENTRAL VENUE', email:'ie2@hkeaa.edu.hk', addr:'SPK', phone:'36363636', school:''},
+  {no:'', level:'Pre Grades and General Grades Examinations', venue:'CENTRAL VENUE', email:'1@ata.net.cn', addr:'110 E Dayton St', phone:'6087702357', school:''},
+  {no:'26010001', level:'Pre Grades and General Grades Examinations', venue:'CENTRAL VENUE', email:'212513@qq.com', addr:'测试', phone:'1231231', school:''}
+];
+applicants.forEach(function(a){ a.pending = []; a.log = []; });
+applicants[1].pending = [
+  {cand:'test', field:'出生日期', en:'Date of birth', before:'2021-06-20', after:'2021-06-22', time:'2026-10-09 10:12'},
+  {cand:'Chan Tai Ming', field:'證件號碼', en:'ID number', before:'K1234566', after:'K1234567', time:'2026-10-09 10:20'}
+];
+applicants[1].log = [
+  {time:'2026-10-08 16:30', ref:'E0CSTDCI5526002P0000001', type:'更改考生資料', to:'ie2@hkeaa.edu.hk', count:1, by:'yexunwei'}
+];
+var currentApplicantIdx = 0;
+var mailSeq = 2;
+var DEFAULT_MAIL_BODY = '本局已於系統更新閣下申請中的考生資料。如有任何疑問，請與本局聯絡。';
+function nextRefNo(){
+  function pad(n, l){ var t = String(n); while(t.length < l) t = '0' + t; return t; }
+  return 'E0CSTDCI5526' + pad(currentApplicantIdx + 1, 3) + 'P' + pad(mailSeq, 7);
+}
+
+function nowStr(){
+  var d = new Date();
+  function z(n){ return (n<10?'0':'')+n; }
+  return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+' '+z(d.getHours())+':'+z(d.getMinutes());
+}
+function renderMailPanel(){
+  var a = applicants[currentApplicantIdx];
+  var cnt = document.getElementById('mail-pending-count');
+  cnt.textContent = a.pending.length;
+  cnt.className = a.pending.length ? 'pending-text' : '';
+  var tb = document.getElementById('mail-log-tbody');
+  tb.innerHTML = '';
+  if(!a.log.length){
+    tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:18px;">暫無發送記錄</td></tr>';
+    return;
+  }
+  a.log.slice().reverse().forEach(function(l){
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+l.time+'</td><td>'+l.ref+'</td><td>'+l.type+'</td><td>'+l.to+'</td><td>'+l.by+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function openMailModal(i){
+  if(typeof i === 'number') currentApplicantIdx = i;
+  var a = applicants[currentApplicantIdx];
+  document.getElementById('mail-to').value = a.email;
+  document.getElementById('mail-type-select').value = '更改考生資料';
+  renderMailChanges();
+  document.getElementById('modal-mail').classList.add('open');
+}
+function renderMailChanges(){
+  var a = applicants[currentApplicantIdx];
+  var type = document.getElementById('mail-type-select').value;
+  var list = a.pending.filter(function(c){ return (c.type || '更改考生資料') === type; });
+  var tb = document.getElementById('mail-chg-tbody');
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:22px;">暫無資料</td></tr>';
+  } else {
+    tb.innerHTML = list.map(function(c){
+      return '<tr><td>'+c.cand+'</td><td>'+c.field+'</td><td>'+(c.before||'—')+'</td><td>'+(c.after||'—')+'</td><td>'+c.time+'</td></tr>';
+    }).join('');
+  }
+  document.getElementById('btn-mail-send').disabled = !list.length;
+}
+function confirmSendMail(){
+  var a = applicants[currentApplicantIdx];
+  var type = document.getElementById('mail-type-select').value;
+  var sendList = a.pending.filter(function(c){ return (c.type || '更改考生資料') === type; });
+  if(!sendList.length) return;
+  var ref = nextRefNo();
+  a.log.push({time:nowStr(), ref:ref, type:type, to:a.email, count:sendList.length, by:'yexunwei'});
+  mailSeq++;
+  a.pending = a.pending.filter(function(c){ return (c.type || '更改考生資料') !== type; });
+  closeModal('modal-mail');
+  renderMailPanel();
+  renderApplicants();
+  showToast('已向 ' + a.email + ' 發送修改確認郵件');
+}
+
+function renderApplicants(){
+  var tb = document.getElementById('applicant-tbody');
+  tb.innerHTML = '';
+  applicants.forEach(function(a, i){
+    var tr = document.createElement('tr');
+    var cell = 'style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"';
+    tr.innerHTML =
+      '<td><input type="checkbox"></td>'+
+      '<td>'+(i+1)+'</td>'+
+      '<td>'+a.no+'</td>'+
+      '<td '+cell+'>'+a.level+'</td>'+
+      '<td>'+a.venue+'</td>'+
+      '<td '+cell+'>'+a.email+'</td>'+
+      '<td>'+a.addr+'</td>'+
+      '<td>'+a.phone+'</td>'+
+      '<td>'+a.school+'</td>'+
+      '<td class="cell-actions">'+
+        '<button class="btn-text" onclick="openApplicant('+i+')">查看詳情</button>'+
+        '<button class="btn-text">修改基本信息</button>'+
+        '<button class="btn-text" onclick="openMailModal('+i+')">發送修改確認郵件</button>'+
+      '</td>';
+    tb.appendChild(tr);
+  });
+}
+function openApplicant(i){
+  var a = applicants[i];
+  document.getElementById('ap-level').textContent = a.level;
+  document.getElementById('ap-venue').textContent = a.venue;
+  document.getElementById('ap-email').textContent = a.email;
+  document.getElementById('ap-addr').textContent = a.addr;
+  document.getElementById('ap-phone').textContent = a.phone;
+  currentApplicantIdx = i;
+  renderMailPanel();
+  showPage('page-applicant');
+}
+function backToList(){
+  showPage('page-list');
+}
+renderApplicants();
+
+function backToApplicant(){
+  showPage('page-applicant');
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function openCandidateEdit(no){
+  currentCandidateNo = no;
+  var g = groupsData[currentGroupId];
+  var c = g.candidates.find(function(x){ return x.no === no; });
+  document.getElementById('cand-modal-title').textContent = '考生信息修改';
+  setSelectValue('cand-major-select', g.major);
+  setSelectValue('cand-level-select', g.level);
+  document.getElementById('cand-no-input').value = c.no;
+  document.getElementById('f-name').value = c.name;
+  document.getElementById('f-idno').value = c.idno;
+  document.getElementById('f-dob').value = c.dob;
+  setSelectValue('f-gender', c.gender);
+  setSelectValue('f-idtype', c.idtype);
+  setSelectValue('f-adult', c.adult || '否');
+  document.getElementById('modal-candidate').classList.add('open');
+}
+function setSelectValue(id, val){
+  var el = document.getElementById(id);
+  for(var i=0;i<el.options.length;i++){
+    if(el.options[i].text === val){ el.selectedIndex = i; return; }
+  }
+}
+document.querySelectorAll('.file-pick-btn input[type=file]').forEach(function(input){
+  input.addEventListener('change', function(){
+    var row = input.closest('.file-row');
+    if(row && input.files && input.files[0]){
+      row.querySelector('.file-name').textContent = '📄 ' + input.files[0].name;
+    }
+  });
+});
+
+var candAttachments = ['CSTD LOGO.png', 'CSTD LOGO.png', 'CSTD LOGO.png', 'CSTD LOGO.png'];
+function renderCandAttachments(){
+  var list = document.getElementById('cand-attach-list');
+  list.innerHTML = '';
+  candAttachments.forEach(function(name, idx){
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:4px;padding:7px 12px;';
+    row.innerHTML = '<span class="file-name">📄 '+name+'</span>'+
+      '<button type="button" class="btn-text danger" onclick="removeCandAttachment('+idx+')">移除</button>';
+    list.appendChild(row);
+  });
+}
+function removeCandAttachment(idx){
+  candAttachments.splice(idx, 1);
+  renderCandAttachments();
+}
+var candAttachInput = document.getElementById('cand-attach-input');
+if(candAttachInput){
+  candAttachInput.addEventListener('change', function(){
+    Array.prototype.forEach.call(candAttachInput.files, function(f){
+      candAttachments.push(f.name);
+    });
+    candAttachInput.value = '';
+    renderCandAttachments();
+  });
+}
+renderCandAttachments();
+
+function saveCandidate(){
+  closeModal('modal-candidate');
+  var recorded = 0;
+  if(currentCandidateNo){
+    var g = groupsData[currentGroupId];
+    var c = g.candidates.find(function(x){ return x.no === currentCandidateNo; });
+    if(c){
+      var a = applicants[currentApplicantIdx];
+      var candLabel = c.name;
+      var defs = [
+        ['name','f-name','姓名','Name'],
+        ['gender','f-gender','性別','Gender'],
+        ['idtype','f-idtype','證件類型','ID type'],
+        ['idno','f-idno','證件號碼','ID number'],
+        ['dob','f-dob','出生日期','Date of birth'],
+        ['adult','f-adult','是否成年','Adult'],
+        ['no','cand-no-input','考生編號','Candidate no.']
+      ];
+      defs.forEach(function(d){
+        var nv = document.getElementById(d[1]).value;
+        var ov = d[0] === 'adult' ? (c.adult || '否') : c[d[0]];
+        if(nv !== ov){
+          a.pending.push({cand:candLabel, field:d[2], en:d[3], before:ov, after:nv, time:nowStr()});
+          c[d[0]] = nv;
+          recorded++;
+        }
+      });
+      currentCandidateNo = c.no;
+      renderCandidates();
+      if(document.getElementById('page-candidate').classList.contains('active')){
+        openCandidateDetail(c.no);
+      }
+      renderMailPanel();
+      renderApplicants();
+    }
+  }
+  showToast(recorded ? '考生信息已保存，新增 ' + recorded + ' 處待通知修改（尚未發送郵件）' : '考生信息已保存');
+}
+function removeCandidate(no){
+  var g = groupsData[currentGroupId];
+  g.candidates = g.candidates.filter(function(c){ return c.no !== no; });
+  renderCandidates();
+  showToast('考生已移除');
+}
+function openGroupEdit(groupId){
+  var g = groupsData[groupId];
+  document.getElementById('group-modal-title').textContent = '編輯組別';
+  setSelectValue('ge-major', g.major);
+  setSelectValue('ge-level', g.level);
+  document.getElementById('ge-max').value = g.max;
+  document.getElementById('ge-actual').value = g.candidates.length;
+  document.getElementById('modal-group').classList.add('open');
+}
+function openGroupCreate(){
+  document.getElementById('group-modal-title').textContent = '新建組別';
+  document.getElementById('ge-major').selectedIndex = 0;
+  document.getElementById('ge-level').selectedIndex = 0;
+  document.getElementById('ge-max').value = '4';
+  document.getElementById('ge-actual').value = '0';
+  document.getElementById('modal-group').classList.add('open');
+}
+function stepActual(delta){
+  var input = document.getElementById('ge-actual');
+  var v = parseInt(input.value, 10) || 0;
+  v = Math.max(0, v + delta);
+  input.value = v;
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+</script>
+</body>
+</html>

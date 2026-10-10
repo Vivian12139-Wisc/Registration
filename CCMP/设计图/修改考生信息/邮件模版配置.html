@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>通知公告功能 - 申請人郵件通知</title>
+<style>
+  :root{
+    --teal-side:#127560;
+    --teal-main:#127560;
+    --teal-active:#22d3a6;
+    --teal-text:#0f8a6f;
+    --border:#e6ebe9;
+    --text:#2b3330;
+    --text-mid:#5b6663;
+    --text-light:#8b958f;
+    --bg:#f3f4f4;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"PingFang TC","Microsoft JhengHei","Segoe UI",Helvetica,Arial,sans-serif;font-size:14px;color:var(--text);background:var(--bg);}
+
+  /* top bar */
+  .topbar{height:68px;background:#fff;display:flex;align-items:stretch;box-shadow:0 1px 6px rgba(0,0,0,.06);position:relative;z-index:2;}
+  .logo{width:218px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#127560;font-size:18px;letter-spacing:1px;}
+  .logo span{border:2px solid #127560;border-radius:6px;padding:2px 10px;}
+  .top-nav{display:flex;margin-left:auto;margin-right:auto;}
+  .top-nav a{width:142px;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:2px;color:#1f2724;text-decoration:none;font-size:14px;}
+  .top-nav a.active{background:var(--teal-active);color:#fff;}
+  .top-right{display:flex;align-items:center;gap:22px;padding-right:50px;font-size:14px;color:var(--text-mid);}
+  .lang{border:1px solid var(--border);border-radius:3px;padding:6px 14px;font-size:12.5px;min-width:114px;display:flex;justify-content:space-between;gap:12px;}
+
+  .layout{display:flex;min-height:calc(100vh - 68px);}
+
+  /* sidebar */
+  .sidebar{width:218px;background:var(--teal-side);color:#e9f6f2;flex-shrink:0;position:relative;padding-top:6px;}
+  .collapse{position:absolute;top:36px;right:-16px;width:32px;height:32px;border-radius:50%;background:var(--teal-side);border:2px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+  .nav-item{display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 26px;height:58px;font-size:14px;font-weight:600;}
+  .nav-item .left{display:flex;align-items:center;gap:10px;}
+  .nav-item .ico{width:14px;height:12px;background:#a9d3c8;border-radius:2px;opacity:.9;}
+  .nav-item .arrow{font-size:10px;opacity:.7;}
+  .nav-sub a{display:block;text-align:center;height:52px;line-height:52px;color:#e9f6f2;text-decoration:none;font-weight:600;}
+  .nav-sub a.active{color:#3be0b8;}
+
+  /* main */
+  .main{flex:1;min-width:0;}
+  .crumbs{padding:6px 40px 0 40px;color:var(--text-light);font-size:13px;}
+  .title-row{display:flex;align-items:center;gap:18px;padding:6px 40px 14px 40px;}
+  .title-row .back{color:var(--teal-text);font-size:22px;cursor:pointer;}
+  .title-row h1{margin:0;font-size:22px;font-weight:700;color:#1b2220;display:flex;align-items:center;gap:8px;}
+  .title-row h1 .edit{color:var(--teal-text);font-size:16px;font-weight:400;}
+
+  .card{background:#fff;margin:0 0 0 16px;}
+  .tabs{display:flex;gap:0;padding:0 0 0 0;border-bottom:1px solid var(--border);}
+  .tabs a{padding:16px 23px 14px 23px;font-size:13.5px;letter-spacing:1px;color:#606a67;text-decoration:none;position:relative;cursor:pointer;white-space:nowrap;}
+  .tabs a.active{color:var(--teal-text);font-weight:600;}
+  .tabs a.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--teal-text);}
+
+  .content{padding:42px 46px 42px 46px;}
+  .notice-row{display:flex;align-items:center;justify-content:space-between;}
+  .notice-left{display:flex;align-items:center;gap:16px;font-size:13.5px;}
+  .notice-left .name{font-weight:700;color:var(--teal-text);}
+  .notice-left .desc{color:var(--text);}
+  .notice-right{display:flex;gap:10px;}
+  .btn-dark{background:#127560;color:#fff;border:none;border-radius:3px;padding:0 20px;height:42px;font-size:13.5px;font-weight:600;cursor:pointer;}
+  .btn-dark:hover{background:#0e5f4d;}
+
+  .toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);background:#127560;color:#fff;padding:10px 20px;border-radius:4px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;}
+  .toast.show{opacity:1;}
+
+  .page{display:none;}
+  .page.active{display:block;}
+  .tag{display:inline-block;background:#e7f4f0;color:var(--teal-text);border-radius:3px;padding:2px 10px;font-size:13px;font-weight:600;}
+  .btn{background:#fff;color:var(--text);border:1px solid #d5dcda;border-radius:3px;padding:0 20px;height:36px;font-size:13.5px;cursor:pointer;}
+  .btn:hover{border-color:var(--teal-text);color:var(--teal-text);}
+  .btn-primary{background:#127560;color:#fff;border:1px solid #127560;}
+  .btn-primary:hover{background:#0e5f4d;color:#fff;}
+  input[type=text],select{height:36px;border:1px solid #d5dcda;border-radius:3px;padding:0 10px;font-size:13.5px;color:var(--text);background:#fff;font-family:inherit;}
+  .filter{display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin-bottom:18px;}
+  .filter label{color:var(--text-mid);margin-right:8px;}
+  .toolbar{display:flex;gap:10px;margin-bottom:16px;}
+  table.grid{width:100%;border-collapse:collapse;font-size:13px;}
+  table.grid th{background:#f5f7f6;text-align:left;font-weight:600;padding:12px 10px;border-bottom:1px solid var(--border);color:var(--text-mid);white-space:nowrap;}
+  table.grid td{padding:12px 10px;border-bottom:1px solid var(--border);}
+  .empty{text-align:center;color:var(--text-light);padding:60px 0;}
+  .pager{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:18px;color:var(--text-mid);font-size:13px;}
+  .pager input{width:50px;text-align:center;}
+  .tpl-wrap{display:flex;gap:40px;align-items:flex-start;}
+  .tpl-form{flex:1;min-width:0;}
+  .tpl-side{width:470px;flex-shrink:0;}
+  .sec-title{font-size:16px;font-weight:700;margin:0 0 4px 0;}
+  .sec-tip{color:#d9534f;font-size:12.5px;margin-bottom:22px;}
+  .frow{display:flex;align-items:center;margin-bottom:20px;}
+  .frow>label{width:130px;color:var(--text-mid);flex-shrink:0;}
+  .frow input[type=text]{width:100%;max-width:520px;}
+  .form-actions{display:flex;gap:10px;margin-top:30px;}
+  .h-line{margin-bottom:14px;font-size:12px;color:var(--text-light);}
+  .h-line b{color:var(--teal-text);font-size:12.5px;margin-right:6px;}
+  .row-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .f-label{display:block;color:var(--teal-text);font-weight:700;font-size:12.5px;margin-bottom:8px;}
+  .editor{margin-top:22px;border:1px solid #d5dcda;}
+  .tb-row{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:6px 8px;border-bottom:1px solid #d5dcda;background:#fff;}
+  .tb{padding:3px 7px;font-size:12px;color:#444;cursor:default;}
+  .ed-body{min-height:420px;padding:14px 8px;font-size:12.5px;line-height:2;outline:none;}
+  .ed-foot{border-top:1px solid #d5dcda;padding:6px 14px;text-align:right;font-size:10.5px;color:var(--text-light);}
+  table.map{width:100%;border-collapse:collapse;font-size:12px;}
+  table.map td{border:1px solid #d5dcda;padding:9px 6px;text-align:center;color:var(--text);}
+  table.map td:first-child{width:50%;}
+  .stat-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:40;}
+  .stat-overlay.open{display:flex;}
+  .stat-modal{background:#fff;width:860px;max-width:94vw;max-height:94vh;overflow:auto;border-radius:4px;}
+  .stat-head{background:#127560;color:#fff;text-align:center;font-size:18px;font-weight:600;padding:16px 0;}
+  .stat-body{padding:20px 40px 0;}
+  .stat-foot{text-align:center;padding:10px 0 26px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span>HKEAA</span></div>
+  <div class="top-nav">
+    <a class="active">批 次</a>
+    <a>集 體</a>
+    <a>考 站</a>
+    <a>促 銷</a>
+    <a>輔 助</a>
+  </div>
+  <div class="top-right">
+    <span>yexunwei ▾</span>
+    <span class="lang"><span>繁體中文</span><span>⌄</span></span>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="collapse">‹</div>
+    <div class="nav-item"><span class="left"><span class="ico"></span>批次配置</span></div>
+    <div class="nav-item"><span class="left"><span class="ico"></span>考生數據管理</span><span class="arrow">⌄</span></div>
+    <div class="nav-item"><span class="left"><span class="ico"></span>數據編排</span><span class="arrow">⌄</span></div>
+    <div class="nav-item"><span class="left"><span class="ico"></span>輔助功能管理</span><span class="arrow">⌃</span></div>
+    <div class="nav-sub">
+      <a>考試數據交互</a>
+      <a class="active">通知公告功能</a>
+      <a>客製化管理</a>
+      <a>任務管理</a>
+    </div>
+    <div class="nav-item"><span class="left"><span class="ico"></span>統計分析</span><span class="arrow">⌄</span></div>
+  </div>
+
+  <div class="main">
+    <div class="page active" id="page-notice">
+    <div class="crumbs">首頁 &nbsp;/&nbsp; 批次 &nbsp;/&nbsp; 通知公告功能</div>
+    <div class="title-row">
+      <span class="back">↩</span>
+      <h1>中央音樂學院音樂水平等級術科測試 <span class="edit">✎</span></h1>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <a>報名簡訊通知</a>
+        <a>預約郵件通知</a>
+        <a>預約介面通知</a>
+        <a>彈跳窗通知</a>
+        <a>提示訊息管理</a>
+        <a>成績郵件通知</a>
+        <a>報名郵件通知</a>
+        <a>管理員郵件通知</a>
+        <a>SEN 郵件通知</a>
+        <a class="active">申請人郵件通知</a>
+      </div>
+
+      <div class="content">
+        <div class="notice-row">
+          <div class="notice-left">
+            <span class="name">修改完成通知</span>
+            <span class="desc">申請人修改考生資料後，發送通知郵件</span>
+          </div>
+          <div class="notice-right">
+            <button class="btn-dark" onclick="showPage('page-template')">郵件模板</button>
+            <button class="btn-dark" onclick="showPage('page-detail')">發送明細</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- 郵件模版 -->
+    <div class="page" id="page-template">
+      <div class="crumbs">首頁 &nbsp;/&nbsp; 批次 &nbsp;/&nbsp; 通知公告功能 &nbsp;/&nbsp; 郵件模版</div>
+      <div class="title-row">
+        <span class="back" onclick="showPage('page-notice')">↩</span>
+        <h1>郵件模版 <span class="tag">修改完成通知</span></h1>
+      </div>
+      <div class="card"><div class="content" style="padding:26px 30px 40px;">
+        <div class="tpl-wrap">
+          <div class="tpl-form">
+            <div class="h-line"><b>模版配置</b><span>設定完成請務必儲存</span></div>
+            <div class="row-top">
+              <div><label class="f-label">發送方郵件前部名稱</label><input type="text" value="noreply_das" style="width:160px;"></div>
+              <button class="btn-dark" style="height:32px;padding:0 16px;font-size:12.5px;" onclick="showToast('選擇附件（原型）')">新增附件</button>
+              <div style="width:160px;"></div>
+            </div>
+            <label class="f-label" style="margin-top:20px;">標題</label>
+            <input type="text" value="[確認申請] μμ考試名稱μμ — 申請更改報考資料及考試安排 (μμ申請人編號μμ)" style="width:100%;">
+            <div class="editor">
+              <div class="tb-row"><span class="tb">&lt;&gt;</span><span class="tb">段落 ▾</span><span class="tb">14px ▾</span><span class="tb">Verdana ▾</span><span class="tb">格式 ▾</span><span class="tb"><b>B</b></span><span class="tb"><i>I</i></span><span class="tb"><u>U</u></span><span class="tb"><s>S</s></span><span class="tb">▦</span><span class="tb"><u>A</u></span><span class="tb">A</span><span class="tb">≡</span><span class="tb">≡</span><span class="tb">≡</span><span class="tb">≡</span><span class="tb">❝</span><span class="tb">↶</span><span class="tb">↷</span><span class="tb">Tx</span><span class="tb">x₂</span><span class="tb">x²</span><span class="tb">{;}</span><span class="tb">—</span><span class="tb">•≡</span><span class="tb">1≡</span><span class="tb">🔗</span><span class="tb">▣</span><span class="tb">◉</span><span class="tb">⛶</span></div>
+              <div class="ed-body" id="ed-body" contenteditable="true" oninput="countChars()">您好！<br><br>本局已完成閣下的更改考生資料申請。如有任何疑問，請與本局聯絡。<br><br>謝謝！<br><br>香港考試及評核局<br>國際及專業考試部<br>地址：<a href="#" style="color:#2a7f8e;">香港九龍新蒲崗爵祿街17號</a><br>網址：<a href="#" style="color:#2a7f8e;">www.hkeaa.edu.hk</a><br>/NL/<br>******************<br>免責聲明<br>如 閣下不是指定收件人或負責將訊息傳送至指定收件人的僱員或人士，特此通知閣下：嚴禁散播或複印本訊息及其附件。<br>請注意，本訊息及其附件內之任何錯誤，本局概不承擔責任。如閣下錯誤地收到本訊息，請將本訊息之原文及其附件寄回寄件人。<br>******************</div>
+              <div class="ed-foot"><span id="ed-count">0</span> 字 由TINY驅動</div>
+            </div>
+            <div class="form-actions" style="justify-content:center;">
+              <button class="btn" onclick="showPage('page-notice')">返回</button>
+              <button class="btn btn-primary" onclick="showToast('已儲存')">儲存</button>
+              <button class="btn btn-primary" onclick="showToast('預覽（原型）')">預覽</button>
+            </div>
+          </div>
+          <div class="tpl-side">
+            <div class="h-line"><b>字段對應表</b><span>將字段代碼填入模板</span></div>
+            <table class="map"><tbody><tr><td>姓名:</td><td>μμ姓名μμ</td></tr><tr><td>申請人英文姓名:</td><td>μμ申請人英文姓名μμ</td></tr><tr><td>英文姓名:</td><td>μμ英文姓名μμ</td></tr><tr><td>申請人中文姓名:</td><td>μμ申請人中文姓名μμ</td></tr><tr><td>證件類型:</td><td>μμ證件類型μμ</td></tr><tr><td>申請人與考生關係:</td><td>μμ申請人與考生關係μμ</td></tr><tr><td>稱謂:</td><td>μμ稱謂μμ</td></tr><tr><td>證件號碼:</td><td>μμ證件號碼μμ</td></tr><tr><td>通訊地址:</td><td>μμ通訊地址μμ</td></tr><tr><td>出生日期:</td><td>μμ出生日期μμ</td></tr><tr><td>聯絡電話:</td><td>μμ聯絡電話μμ</td></tr><tr><td>考生聯絡電話:</td><td>μμ考生聯絡電話μμ</td></tr><tr><td>申請人郵箱:</td><td>μμ申請人郵箱μμ</td></tr><tr><td>機構英文名稱:</td><td>μμ機構英文名稱μμ</td></tr><tr><td>機構中文名稱:</td><td>μμ機構中文名稱μμ</td></tr><tr><td>考試名稱:</td><td>μμ考試名稱μμ</td></tr><tr><td>申請人編號:</td><td>μμ申請人編號μμ</td></tr><tr><td>區域名稱:</td><td>μμ區域名稱μμ</td></tr><tr><td>科目名稱:</td><td>μμ科目名稱μμ</td></tr><tr><td>報名申請時間:</td><td>μμ報名申請時間μμ</td></tr><tr><td>繳費時間:</td><td>μμ繳費時間μμ</td></tr></tbody></table>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- 發送明細 -->
+    <div class="page" id="page-detail">
+      <div class="crumbs">首頁 &nbsp;/&nbsp; 批次 &nbsp;/&nbsp; 通知公告功能 &nbsp;/&nbsp; 郵件發送明細</div>
+      <div class="title-row">
+        <span class="back" onclick="showPage('page-notice')">↩</span>
+        <h1>郵件發送明細 <span class="tag">修改完成通知</span></h1>
+      </div>
+      <div class="card"><div class="content" style="padding-top:30px;">
+        <div class="filter">
+          <span><label>考試申請人姓名</label><input type="text" placeholder="請輸入"></span>
+          <span><label>發送狀態</label><select><option>全部</option><option>成功</option><option>失敗</option></select></span>
+          <span><label>接收狀態</label><select><option>全部</option><option>已接收</option><option>未接收</option></select></span>
+          <span><label>考生閱讀狀態</label><select><option>全部</option><option>已閱讀</option><option>未閱讀</option></select></span>
+          <button class="btn btn-primary" onclick="showToast('查詢（原型）')">查詢</button>
+        </div>
+        <div class="toolbar">
+          <button class="btn-dark" style="height:36px;" onclick="showToast('導出清單（原型）')">導出清單</button>
+          <button class="btn-dark" style="height:36px;" onclick="openStats()">統計數據</button>
+        </div>
+        <table class="grid">
+          <thead><tr><th>考試申請人姓名</th><th>考試申請人郵箱</th><th>申請編號</th><th>通知狀態</th><th>接收狀態</th><th>考生閱讀狀態</th><th>發送時間</th><th>操作</th></tr></thead>
+          <tbody><tr><td colspan="8" class="empty">暫無資料</td></tr></tbody>
+        </table>
+        <div class="pager">
+          <span>共 0 項</span>
+          <select><option>10項/頁</option><option>20項/頁</option><option>50項/頁</option></select>
+          <span>前往 <input type="text" value="1"> 頁</span>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="stat-overlay" id="modal-stat">
+  <div class="stat-modal">
+    <div class="stat-head">郵件統計</div>
+    <div class="stat-body"><svg id="stat-svg" viewBox="0 0 1200 800" width="100%"></svg></div>
+    <div class="stat-foot"><button class="btn-dark" style="height:40px;padding:0 28px;" onclick="closeStats()">關閉</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function countChars(){ document.getElementById('ed-count').textContent = document.getElementById('ed-body').innerText.replace(/\s/g,'').length; }
+var statData = [
+  {l:'已通知',v:0},{l:'通知失敗',v:0},{l:'',v:null},
+  {l:'成功',v:0},{l:'等待接收',v:0},{l:'失敗',v:0},{l:'',v:null},
+  {l:'已閱讀',v:0},{l:'未閱讀',v:0}
+];
+function openStats(){
+  var W=1200,H=800,L=90,R=1160,T=40,B=700;
+  var max=1; statData.forEach(function(d){ if(d.v>max) max=d.v; });
+  var n=statData.length, slot=(R-L)/n, c='#0b84d6';
+  var h='<line x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+B+'" stroke="'+c+'" stroke-width="2"/>'+
+        '<line x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'" stroke="'+c+'" stroke-width="2"/>'+
+        '<line x1="'+L+'" y1="'+T+'" x2="'+R+'" y2="'+T+'" stroke="#eee"/>'+
+        '<line x1="'+(L-8)+'" y1="'+T+'" x2="'+L+'" y2="'+T+'" stroke="'+c+'" stroke-width="2"/>'+
+        '<text x="'+(L-14)+'" y="'+(T+6)+'" text-anchor="end" font-size="22" fill="'+c+'">'+max+'人</text>'+
+        '<text x="'+(L-14)+'" y="'+(B+6)+'" text-anchor="end" font-size="22" fill="'+c+'">0人</text>'+
+        '<line x1="'+(L-8)+'" y1="'+B+'" x2="'+L+'" y2="'+B+'" stroke="'+c+'" stroke-width="2"/>';
+  statData.forEach(function(d,i){
+    var x=L+slot*i, cx=x+slot/2;
+    h+='<line x1="'+x+'" y1="'+B+'" x2="'+x+'" y2="'+(B+8)+'" stroke="'+c+'" stroke-width="2"/>';
+    if(d.v){ var bh=(B-T)*d.v/max; h+='<rect x="'+(cx-28)+'" y="'+(B-bh)+'" width="56" height="'+bh+'" fill="#127560"/>'; }
+    if(d.l) h+='<text x="'+cx+'" y="'+(B+36)+'" text-anchor="middle" font-size="22" fill="'+c+'">'+d.l+'</text>';
+  });
+  h+='<line x1="'+R+'" y1="'+B+'" x2="'+R+'" y2="'+(B+8)+'" stroke="'+c+'" stroke-width="2"/>';
+  document.getElementById('stat-svg').innerHTML=h;
+  document.getElementById('modal-stat').classList.add('open');
+}
+function closeStats(){ document.getElementById('modal-stat').classList.remove('open'); }
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 1800);
+}
+countChars();
+</script>
+</body>
+</html>
