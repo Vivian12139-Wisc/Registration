@@ -227,7 +227,7 @@ HTML_TEMPLATE = """\
 # ── 支持的文件类型配置 ──────────────────────────────────────────────
 FILE_TYPES = {
     ".html": {"icon": "📄", "color": "#30b0c7", "shadow": "rgba(48,176,199,.25)", "label": "HTML", "new_tab": True,  "download": False},
-    ".pdf":  {"icon": "📕", "color": "#ff3b30", "shadow": "rgba(255,59,48,.25)",  "label": "PDF",  "new_tab": True,  "download": True},
+    ".pdf":  {"icon": "📕", "color": "#ff3b30", "shadow": "rgba(255,59,48,.25)",  "label": "PDF",  "new_tab": True,  "download": False},
     ".csv":  {"icon": "📊", "color": "#34c759", "shadow": "rgba(52,199,89,.25)",  "label": "CSV",  "new_tab": False, "download": True},
     ".xlsx": {"icon": "📗", "color": "#1d6f42", "shadow": "rgba(29,111,66,.25)",  "label": "XLSX", "new_tab": False, "download": True},
     ".png":  {"icon": "🖼️", "color": "#bf5af2", "shadow": "rgba(191,90,242,.25)", "label": "PNG",  "new_tab": True,  "download": False},
